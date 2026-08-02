@@ -36,7 +36,7 @@ internal partial class MainWindow : Form
         webView = new WebView2
         {
             Dock = DockStyle.Fill,
-            Source = new Uri("about:blank")
+            Source = new Uri("http://localhost:13545/ameno-ui/")
         };
 
         Controls.Add(webView);

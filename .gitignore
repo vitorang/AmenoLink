@@ -5,6 +5,7 @@
 [Ll]ogs/
 build/
 dist/
+wwwroot/
 
 # Visual Studio / Rider / VS Code
 .vs/

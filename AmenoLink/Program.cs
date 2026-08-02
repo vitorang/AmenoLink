@@ -2,7 +2,10 @@ using AmenoLink.Interfaces.ProgramManager;
 using AmenoLink.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace AmenoLink;
 
@@ -24,6 +27,33 @@ internal static class Program
         app.UseCors("AllowLocalhostOrigins");
         app.MapApiEndpoints();
         app.MapConfigEndpoints();
+
+        var staticPath = ResolveStaticPath(builder.Environment);
+
+        if (Directory.Exists(staticPath))
+        {
+            var fileProvider = new PhysicalFileProvider(staticPath);
+
+            app.Map("/ameno-ui", spa =>
+            {
+                spa.UseDefaultFiles(new DefaultFilesOptions
+                {
+                    FileProvider = fileProvider
+                });
+
+                spa.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = fileProvider
+                });
+
+                spa.Run(async context =>
+                {
+                    context.Response.ContentType = "text/html";
+                    await context.Response.SendFileAsync(Path.Combine(staticPath, "index.html"));
+                });
+            });
+        }
+
         _ = app.RunAsync();
 
         ServiceProvider = app.Services;
@@ -61,5 +91,26 @@ internal static class Program
 
         services.AddSingleton<IProgramManager, ProgramManager.ProgramManager>();
         services.AddTransient<MainWindow>();
+    }
+
+    private static string ResolveStaticPath(IWebHostEnvironment env)
+    {
+        var candidates = new[]
+        {
+            Path.Combine(env.ContentRootPath, "wwwroot", "browser"),
+            Path.Combine(AppContext.BaseDirectory, "wwwroot", "browser"),
+            Path.Combine(env.ContentRootPath, "wwwroot"),
+            Path.Combine(AppContext.BaseDirectory, "wwwroot")
+        };
+
+        foreach (var path in candidates)
+        {
+            if (Directory.Exists(path) && File.Exists(Path.Combine(path, "index.html")))
+            {
+                return path;
+            }
+        }
+
+        return env.WebRootPath ?? Path.Combine(AppContext.BaseDirectory, "wwwroot");
     }
 }
