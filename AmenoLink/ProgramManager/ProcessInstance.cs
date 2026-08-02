@@ -232,17 +232,17 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
         string extension = Path.GetExtension(path).ToLowerInvariant();
 
-        if (extension == ".exe")
+        if (extension == Constants.ExeExtension)
             return (path, "", null);
 
-        if (extension == ".py")
+        if (extension == Constants.PyExtension)
         {
             string? scriptDir = Path.GetDirectoryName(path);
             if (string.IsNullOrEmpty(scriptDir))
                 scriptDir = Directory.GetCurrentDirectory();
 
-            string venvPythonPath = Path.Combine(scriptDir, ".venv", "Scripts", "python.exe");
-            string altVenvPythonPath = Path.Combine(scriptDir, "venv", "Scripts", "python.exe");
+            string venvPythonPath = Path.Combine(scriptDir, ".venv", "Scripts", $"python{Constants.ExeExtension}");
+            string altVenvPythonPath = Path.Combine(scriptDir, "venv", "Scripts", $"python{Constants.ExeExtension}");
 
             string? selectedPython = null;
             if (File.Exists(venvPythonPath))
@@ -256,7 +256,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             return (selectedPython, $"\"{path}\"", null);
         }
 
-        return ("", "", $"Formato de arquivo '{extension}' não suportado. Apenas arquivos '.exe' e '.py' são permitidos.");
+        return ("", "", $"Formato de arquivo '{extension}' não suportado. Apenas arquivos '{Constants.ExeExtension}' e '{Constants.PyExtension}' são permitidos.");
     }
 
     private static string? DecodeBase64(string rawBase64)

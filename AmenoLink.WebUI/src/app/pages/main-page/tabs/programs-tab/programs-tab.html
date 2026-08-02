@@ -1,0 +1,38 @@
+<div class="programs-tab-container">
+  <div class="left-column">
+    <div class="column-actions">
+      <button mat-stroked-button (click)="onAdd()" title="Adicionar novo programa">
+        <mat-icon>add</mat-icon>
+        Adicionar
+      </button>
+      <button mat-stroked-button color="warn" (click)="onRemove()" [disabled]="!programsService.selectedProgram()"
+        title="Excluir programa selecionado">
+        <mat-icon>delete</mat-icon>
+        Excluir
+      </button>
+    </div>
+
+    <div class="entries-scroll-list">
+      @for (program of programsService.programs(); track program.id) {
+      <app-program-entry [program]="program" [isSelected]="program.id === programsService.selectedProgram()?.id"
+        (click)="programsService.selectProgram(program)" />
+      } @empty {
+      <div class="empty-state">Nenhum programa cadastrado.</div>
+      }
+    </div>
+  </div>
+
+  <div class="right-column">
+    @if (programsService.selectedProgram(); as selected) {
+      <app-program-details
+        [program]="selected"
+        (programChange)="programsService.updateSelectedProgram($event)"
+      />
+    } @else {
+      <div class="no-selection-state">
+        <mat-icon class="no-selection-icon">mouse</mat-icon>
+        <span>Selecione ou adicione um programa para ver os detalhes.</span>
+      </div>
+    }
+  </div>
+</div>

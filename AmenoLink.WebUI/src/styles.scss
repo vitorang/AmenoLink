@@ -1,0 +1,93 @@
+@use '@angular/material' as mat;
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/600.css';
+@import 'material-symbols/outlined.css';
+
+@include mat.core();
+
+$theme: mat.m2-define-dark-theme((color: (primary: mat.m2-define-palette(mat.$m2-orange-palette, 700),
+        accent: mat.m2-define-palette(mat.$m2-amber-palette, A200),
+      )));
+
+@include mat.all-component-themes($theme);
+
+:root {
+  --primary-color: #ff9800;
+  --primary-color-light: #ffb74d;
+  --danger-color: #f44336;
+  --danger-color-bg: rgba(244, 67, 54, 0.12);
+
+  --surface-bg: #121212;
+  --surface-panel-bg: rgba(255, 255, 255, 0.03);
+  --surface-panel-bg-hover: rgba(255, 255, 255, 0.07);
+  --surface-card-bg: rgba(255, 255, 255, 0.02);
+  --surface-item-hover: rgba(255, 255, 255, 0.05);
+  --surface-item-selected: rgba(255, 255, 255, 0.1);
+  --surface-badge-bg: rgba(255, 255, 255, 0.08);
+
+  --border-color-subtle: rgba(255, 255, 255, 0.06);
+  --border-color-medium: rgba(255, 255, 255, 0.08);
+  --border-color-hover: rgba(255, 255, 255, 0.12);
+  --border-color-dashed: rgba(255, 255, 255, 0.1);
+}
+
+html {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--surface-bg);
+  color: var(--mat-app-text-color, #ffffff);
+}
+
+.compact-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .mat-mdc-tab-labels {
+    justify-content: flex-start;
+  }
+
+  .mat-mdc-tab {
+    min-width: 0 !important;
+    flex-grow: 0 !important;
+    padding: 0 16px !important;
+
+    .mdc-tab__text-label {
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+  }
+}
+
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.75;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.08);
+  transition: all 0.15s ease;
+
+  .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+
+  .badge-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+}

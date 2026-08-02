@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>{{ isEditing ? 'Editar Ação' : 'Nova Ação' }}</h2>
+
+<mat-dialog-content class="modal-content">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Rota</mat-label>
+    <input matInput type="text" [ngModel]="route()" (ngModelChange)="route.set($event)" />
+    <mat-icon matSuffix>label</mat-icon>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Limite de Execução</mat-label>
+    <input matInput type="number" min="1" step="1" [ngModel]="timeoutInSeconds()"
+      (ngModelChange)="onTimeoutChange($event)" (blur)="onTimeoutBlur($event)" />
+    <mat-icon matSuffix>timer</mat-icon>
+  </mat-form-field>
+
+  <div class="time-note">
+    <mat-icon class="note-icon">info</mat-icon>
+    <span>Tempo em segundos</span>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="onConfirm()" [disabled]="!isValid">
+    Confirmar
+  </button>
+</mat-dialog-actions>

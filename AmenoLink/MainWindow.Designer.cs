@@ -34,7 +34,7 @@ partial class MainWindow
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(1008, 729);
+        ClientSize = new Size(1264, 681);
         Name = "MainWindow";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "AmenoLink";

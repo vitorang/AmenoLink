@@ -1,0 +1,49 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.tab-header-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .compact-tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .tab-actions {
+    position: absolute;
+    right: 8px;
+    top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 10;
+  }
+}
+
+.tab-content {
+  padding: 16px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Garante que o container interno das abas do Angular Material preencha o espaço sem altura fixa harcoded */
+:host ::ng-deep {
+  .mat-mdc-tab-body-wrapper,
+  .mat-mdc-tab-body,
+  .mat-mdc-tab-body-content {
+    height: 100% !important;
+    overflow: hidden;
+  }
+}

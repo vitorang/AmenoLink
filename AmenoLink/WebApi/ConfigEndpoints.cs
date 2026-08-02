@@ -1,0 +1,58 @@
+using System;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
+using AmenoLink.Configurations;
+using AmenoLink.ProgramManager;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+
+namespace AmenoLink.WebApi;
+
+internal static class ConfigEndpoints
+{
+    public static IEndpointRouteBuilder MapConfigEndpoints(this IEndpointRouteBuilder routes)
+    {
+        var group = routes.MapGroup("/api/config");
+
+        group.MapGet("/programs", () =>
+        {
+            var configs = ConfigPathProvider.LoadProgramConfigs();
+            return Results.Ok(configs);
+        });
+
+        group.MapPost("/programs", (ProgramConfig[] configs) =>
+        {
+            ConfigPathProvider.SaveProgramConfigs(configs);
+            return Results.Ok();
+        });
+
+        group.MapGet("/select-executable", () =>
+        {
+            string? selectedFile = null;
+
+            var thread = new Thread(() =>
+            {
+                using var openFileDialog = new OpenFileDialog
+                {
+                    Filter = "Executáveis e Scripts (*.exe;*.py)|*.exe;*.py|Todos os Arquivos (*.*)|*.*",
+                    Title = "Selecionar Executável ou Script"
+                };
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    selectedFile = openFileDialog.FileName?.Replace('\\', '/');
+                }
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            return Results.Ok(selectedFile);
+        });
+
+        return routes;
+    }
+}

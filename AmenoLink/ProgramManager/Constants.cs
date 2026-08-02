@@ -13,4 +13,8 @@ internal static class Constants
     public const string OnActionSuccess = "[AmenoLink.ActionSuccess]";
     public const string OnActionError = "[AmenoLink.ActionError]";
     public const string OnActionLogged = "[AmenoLink.ActionLog]";
+
+    public const string ExeExtension = ".exe";
+    public const string PyExtension = ".py";
+    public static readonly string[] SupportedExtensions = [ExeExtension, PyExtension];
 }

@@ -21,7 +21,9 @@ internal static class Program
         ConfigureServices(builder.Services);
 
         var app = builder.Build();
+        app.UseCors("AllowLocalhostOrigins");
         app.MapApiEndpoints();
+        app.MapConfigEndpoints();
         _ = app.RunAsync();
 
         ServiceProvider = app.Services;
@@ -35,6 +37,20 @@ internal static class Program
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowLocalhostOrigins", policy =>
+            {
+                policy.SetIsOriginAllowed(origin =>
+                {
+                    var host = new Uri(origin).Host;
+                    return host == "localhost" || host == "127.0.0.1";
+                })
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+        });
+
         services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
         {
             options.SerializerOptions.PropertyNamingPolicy = Shared.JsonDefaults.Options.PropertyNamingPolicy;

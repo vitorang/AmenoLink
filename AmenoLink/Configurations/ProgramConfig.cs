@@ -1,6 +1,7 @@
 namespace AmenoLink.Configurations;
 
-internal record ProgramConfig(
+public record ProgramConfig(
+    string Id,
     string Path,
     ProgramConfig.Handler[] Handlers,
     int SlidingExpirationInSeconds,
@@ -8,7 +9,7 @@ internal record ProgramConfig(
     int MaxInstances
 )
 {
-    internal record Handler(
+    public record Handler(
         string Route,
         int TimeoutInSeconds
     );

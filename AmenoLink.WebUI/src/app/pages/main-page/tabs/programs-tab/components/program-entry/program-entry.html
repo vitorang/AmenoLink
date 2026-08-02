@@ -1,0 +1,10 @@
+<div class="entry-item" [class.selected]="isSelected()">
+  <mat-icon class="entry-icon">terminal</mat-icon>
+  <div class="entry-info">
+    <span class="entry-name" [title]="program().path">{{ programName }}</span>
+  </div>
+  <div class="pill-badge actions-badge" [title]="program().handlers.length + ' ações'">
+    <mat-icon class="actions-icon">bolt</mat-icon>
+    <span class="badge-value actions-count">{{ program().handlers.length }}</span>
+  </div>
+</div>
