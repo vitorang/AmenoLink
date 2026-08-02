@@ -214,6 +214,9 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             if (startupErrorMessage != null)
                 return FailAndDispose(request, Constants.StartupFailed, startupErrorMessage);
 
+            if (proccess.HasExited)
+                return FailAndDispose(request, Constants.StartupFailed, "O processo finalizou inesperadamente durante a inicialização.");
+
             startupTimer?.Change(Timeout.Infinite, Timeout.Infinite);
             inUse = false;
 

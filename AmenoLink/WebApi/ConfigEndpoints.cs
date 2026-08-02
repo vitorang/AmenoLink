@@ -1,9 +1,5 @@
-using System;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
 using AmenoLink.Configurations;
-using AmenoLink.ProgramManager;
+using AmenoLink.Interfaces.ProgramManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -22,9 +18,10 @@ internal static class ConfigEndpoints
             return Results.Ok(configs);
         });
 
-        group.MapPost("/programs", (ProgramConfig[] configs) =>
+        group.MapPost("/programs", (ProgramConfig[] configs, IProgramManager programManager) =>
         {
             ConfigPathProvider.SaveProgramConfigs(configs);
+            programManager.LoadConfigurations();
             return Results.Ok();
         });
 

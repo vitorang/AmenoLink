@@ -12,6 +12,12 @@ internal class ProgramManager : IProgramManager
     public void LoadConfigurations()
     {
         var configs = ConfigPathProvider.LoadProgramConfigs();
+
+        lock (runners)
+        {
+            runners.Clear();
+        }
+
         lock (routeMap)
         {
             routeMap.Clear();
@@ -37,7 +43,7 @@ internal class ProgramManager : IProgramManager
                     ActionRequest: request,
                     Success: false,
                     ErrorType: Constants.ActionNotFound,
-                    ErrorMessage: $"Nenhum handler encontrado para a rota '{request.Route}'."
+                    ErrorMessage: $"Nenhuma ação encontrada para a rota '{request.Route}'."
                 );
             }
         }
