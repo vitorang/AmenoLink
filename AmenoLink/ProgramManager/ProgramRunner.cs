@@ -4,7 +4,7 @@ using AmenoLink.Interfaces.ProgramManager;
 
 namespace AmenoLink.ProgramManager;
 
-internal class ProgramRunner(ProgramManager manager, ProgramConfig config) : IProgramRunner
+internal class ProgramRunner(ProgramConfig config) : IProgramRunner
 {
     private readonly SemaphoreSlim semaphore = new(config.MaxInstances, config.MaxInstances);
     private readonly List<ProcessInstance> instances = [];

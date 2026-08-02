@@ -53,7 +53,7 @@ internal class ProgramManager : IProgramManager
         {
             if (!runners.TryGetValue(routeData.Program, out runner!))
             {
-                runner = new ProgramRunner(this, routeData.Program);
+                runner = new ProgramRunner(routeData.Program);
                 runners[routeData.Program] = runner;
             }
         }
