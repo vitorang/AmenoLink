@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-import json
 from typing import Self
 
 
@@ -17,19 +16,12 @@ class ActionRequest:
             payload=data.get('payload', ''),
         )
 
-    @classmethod
-    def from_json(cls, json_str: str) -> Self:
-        return cls.from_dict(json.loads(json_str))
-
     def to_dict(self) -> dict:
         return {
             'id': self.id,
             'route': self.route,
             'payload': self.payload,
         }
-
-    def to_json(self) -> str:
-        return json.dumps(self.to_dict())
 
 
 @dataclass(frozen=True)
@@ -56,6 +48,3 @@ class ActionResponse:
             'errorType': self.error_type,
             'errorMessage': self.error_message,
         }
-
-    def to_json(self) -> str:
-        return json.dumps(self.to_dict())
