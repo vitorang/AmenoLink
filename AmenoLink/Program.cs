@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using System.IO;
 
 namespace AmenoLink;
@@ -103,9 +104,9 @@ internal static class Program
         var candidates = new[]
         {
             Path.Combine(env.ContentRootPath, "wwwroot", "browser"),
-            Path.Combine(AppContext.BaseDirectory, "wwwroot", "browser"),
             Path.Combine(env.ContentRootPath, "wwwroot"),
-            Path.Combine(AppContext.BaseDirectory, "wwwroot")
+            Path.Combine(AppContext.BaseDirectory, "wwwroot", "browser"),
+            Path.Combine(AppContext.BaseDirectory, "wwwroot"),
         };
 
         foreach (var path in candidates)

@@ -33,4 +33,8 @@
     <Exec WorkingDirectory="../AmenoLink.WebUI" Command="npm run build" />
   </Target>
 
+  <Target Name="CleanWwwrootOnClean" AfterTargets="Clean">
+    <RemoveDir Directories="$(TargetDir)wwwroot" />
+  </Target>
+
 </Project>
