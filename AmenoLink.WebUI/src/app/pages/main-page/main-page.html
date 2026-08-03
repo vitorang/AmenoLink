@@ -1,25 +1,35 @@
 <div class="page-container">
-  <div class="tab-header-bar">
-    <mat-tab-group class="compact-tabs" animationDuration="0ms" [fitInkBarToContent]="true" [(selectedIndex)]="activeTabIndex">
-      <mat-tab label="Programas">
-        <div class="tab-content">
-          <app-programs-tab />
-        </div>
-      </mat-tab>
-      <mat-tab label="Hubs">
-        <div class="tab-content">
-          <app-hubs-tab />
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+    <div class="tab-header-bar">
+        <mat-tab-group
+            class="compact-tabs"
+            animationDuration="0ms"
+            [fitInkBarToContent]="true"
+            [(selectedIndex)]="activeTabIndex"
+        >
+            <mat-tab label="Programas">
+                <div class="tab-content">
+                    <app-programs-tab />
+                </div>
+            </mat-tab>
+            <mat-tab label="Cache">
+                <div class="tab-content">
+                    <app-cache-tab />
+                </div>
+            </mat-tab>
+            <mat-tab label="Estado">
+                <div class="tab-content">
+                    <app-store-tab />
+                </div>
+            </mat-tab>
+        </mat-tab-group>
 
-    <div class="tab-actions">
-      <button mat-icon-button (click)="onUndo()" title="Desfazer alterações">
-        <mat-icon>undo</mat-icon>
-      </button>
-      <button mat-icon-button (click)="onSave()" title="Salvar alterações">
-        <mat-icon>save</mat-icon>
-      </button>
+        <div class="tab-actions">
+            <button mat-icon-button (click)="onUndo()" title="Desfazer alterações">
+                <mat-icon>undo</mat-icon>
+            </button>
+            <button mat-icon-button (click)="onSave()" title="Salvar alterações">
+                <mat-icon>save</mat-icon>
+            </button>
+        </div>
     </div>
-  </div>
 </div>

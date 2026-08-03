@@ -32,7 +32,7 @@
           "options": {
             "browser": "src/main.ts",
             "outputPath": "../AmenoLink/wwwroot",
-            "baseHref": ".",
+            "baseHref": "./",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [

@@ -1,3 +1,4 @@
+using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.ProgramManager;
 using AmenoLink.WebApi;
 using Microsoft.AspNetCore.Builder;
@@ -61,6 +62,9 @@ internal static class Program
         var processManager = ServiceProvider.GetRequiredService<IProgramManager>();
         processManager.LoadConfigurations();
 
+        var cacheManager = ServiceProvider.GetRequiredService<ICacheManager>();
+        cacheManager.LoadConfigurations();
+
         var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
         Application.Run(mainWindow);
     }
@@ -90,6 +94,7 @@ internal static class Program
         });
 
         services.AddSingleton<IProgramManager, ProgramManager.ProgramManager>();
+        services.AddSingleton<ICacheManager, Caching.CacheManager>();
         services.AddTransient<MainWindow>();
     }
 

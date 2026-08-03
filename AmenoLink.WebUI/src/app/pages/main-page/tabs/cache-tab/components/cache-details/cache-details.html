@@ -1,0 +1,76 @@
+<div class="cache-details-container">
+    <div class="details-header">
+        <mat-icon class="header-icon">hourglass_empty</mat-icon>
+        <div class="header-titles">
+            <h2 class="group-title">{{ config().groupKey }}</h2>
+            <span class="group-subtitle">Grupo de Cache</span>
+        </div>
+        <button mat-icon-button (click)="onRenameGroup()" title="Renomear grupo">
+            <mat-icon>edit_square</mat-icon>
+        </button>
+    </div>
+
+    <div class="section-title">Limite de Tempo</div>
+    <div class="fields-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Inatividade</mat-label>
+            <input matInput type="number" min="0" step="1" [ngModel]="config().slidingExpirationInSeconds"
+                (ngModelChange)="onSlidingExpirationChange($event)" (blur)="onBlur($event)" />
+            <mat-icon matSuffix>hourglass_empty</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Absoluto</mat-label>
+            <input matInput type="number" min="0" step="1" [ngModel]="config().absoluteExpirationInSeconds"
+                (ngModelChange)="onAbsoluteExpirationChange($event)" (blur)="onBlur($event)" />
+            <mat-icon matSuffix>timer</mat-icon>
+        </mat-form-field>
+    </div>
+
+    <div class="time-note">
+        <mat-icon class="note-icon">info</mat-icon>
+        <span>Tempo em segundos, deixe 0 para ilimitado</span>
+    </div>
+</div>
+
+<div class="cache-details-container">
+    <div class="section-header">
+        <div class="section-title">Valores</div>
+        <button mat-stroked-button (click)="onRefreshValues()" [disabled]="loadingEntries()">
+            <mat-icon>refresh</mat-icon>
+            Atualizar
+        </button>
+    </div>
+
+    @if (cacheEntries() === null) {
+    <div class="empty-values">Clique em "Atualizar" para carregar os valores do cache.</div>
+    } @else if (cacheEntries()!.length === 0) {
+    <div class="empty-values">Nenhum valor armazenado neste grupo de cache.</div>
+    } @else {
+    <div class="table-container">
+        <table mat-table [dataSource]="cacheEntries()!" class="values-table">
+            <ng-container matColumnDef="key">
+                <th mat-header-cell *matHeaderCellDef>Chave</th>
+                <td mat-cell *matCellDef="let element" class="key-cell">{{ element.key }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef>Valor</th>
+                <td mat-cell *matCellDef="let element" class="value-cell">{{ formatValue(element.value) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
+                <td mat-cell *matCellDef="let element" class="actions-cell">
+                    <button mat-icon-button class="delete-btn" (click)="onDeleteEntry(element.key)" title="Excluir">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+    </div>
+    }
+</div>

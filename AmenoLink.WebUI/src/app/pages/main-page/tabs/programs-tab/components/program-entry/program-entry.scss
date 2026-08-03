@@ -1,62 +1,64 @@
 .entry-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
 
-  &:hover {
-    background-color: var(--surface-item-hover);
-  }
+    &:hover {
+        background-color: var(--surface-item-hover);
+    }
 
-  &.selected {
-    background-color: var(--surface-item-selected);
-    border-left: 3px solid var(--primary-color);
+    &.selected {
+        background-color: var(--surface-item-selected);
+        border-left: 3px solid var(--primary-color);
+
+        .entry-icon {
+            opacity: 1;
+            color: var(--primary-color);
+        }
+
+        .actions-badge {
+            opacity: 1;
+            background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
+            color: var(--primary-color);
+
+            .actions-icon,
+            .actions-count {
+                color: var(--primary-color-light);
+            }
+        }
+    }
 
     .entry-icon {
-      opacity: 1;
-      color: var(--primary-color);
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        opacity: 0.7;
+        transition:
+            color 0.15s ease,
+            opacity 0.15s ease;
+    }
+
+    .entry-info {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex: 1;
+
+        .entry-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 
     .actions-badge {
-      opacity: 1;
-      background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
-      color: var(--primary-color);
-
-      .actions-icon,
-      .actions-count {
-        color: var(--primary-color-light);
-      }
+        margin-left: auto;
     }
-  }
-
-  .entry-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    opacity: 0.7;
-    transition: color 0.15s ease, opacity 0.15s ease;
-  }
-
-  .entry-info {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    flex: 1;
-
-    .entry-name {
-      font-size: 0.9rem;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .actions-badge {
-    margin-left: auto;
-  }
 }

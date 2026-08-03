@@ -4,17 +4,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { ProgramConfigHandler } from '../../../../../../models/program-config.model';
 
 @Component({
-  selector: 'app-handler-entry',
-  imports: [MatIconModule, MatButtonModule],
-  templateUrl: './handler-entry.html',
-  styleUrl: './handler-entry.scss',
+    selector: 'app-handler-entry',
+    imports: [MatIconModule, MatButtonModule],
+    templateUrl: './handler-entry.html',
+    styleUrl: './handler-entry.scss',
 })
 export class HandlerEntry {
-  readonly handler = input.required<ProgramConfigHandler>();
-  readonly remove = output<void>();
+    readonly handler = input.required<ProgramConfigHandler>();
+    readonly remove = output<void>();
 
-  onRemoveClick(event: MouseEvent): void {
-    event.stopPropagation();
-    this.remove.emit();
-  }
+    onRemoveClick(event: MouseEvent): void {
+        event.stopPropagation();
+        this.remove.emit();
+    }
 }

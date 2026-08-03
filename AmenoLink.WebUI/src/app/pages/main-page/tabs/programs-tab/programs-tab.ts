@@ -1,27 +1,41 @@
-import { Component, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, computed, inject } from '@angular/core';
 import { ProgramsService } from '../../../../services/programs.service';
-import { ProgramEntry } from './components/program-entry/program-entry';
 import { ProgramDetails } from './components/program-details/program-details';
+import { GroupManager, GroupManagerItem } from '../../components/group-manager/group-manager';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-programs-tab',
-  imports: [MatButtonModule, MatIconModule, ProgramEntry, ProgramDetails],
-  templateUrl: './programs-tab.html',
-  styleUrl: './programs-tab.scss',
+    selector: 'app-programs-tab',
+    imports: [ProgramDetails, GroupManager, MatIconModule],
+    templateUrl: './programs-tab.html',
+    styleUrl: './programs-tab.scss',
 })
 export class ProgramsTab {
-  protected readonly programsService = inject(ProgramsService);
+    protected readonly programsService = inject(ProgramsService);
 
-  onAdd(): void {
-    this.programsService.addProgram();
-  }
+    readonly programItems = computed<GroupManagerItem[]>(() =>
+        this.programsService.programs().map((p) => {
+            const parts = p.path.split(/[/\\]/);
+            const name = parts[parts.length - 1] || p.path;
+            return {
+                id: p.id,
+                name,
+                count: p.handlers.length,
+            };
+        }),
+    );
 
-  onRemove(): void {
-    const selected = this.programsService.selectedProgram();
-    if (selected) {
-      this.programsService.removeProgram(selected);
+    onAdd(): void {
+        this.programsService.addProgram();
     }
-  }
+
+    onRemove(id: string): void {
+        const program = this.programsService.programs().find((p) => p.id === id);
+        if (program) this.programsService.removeProgram(program);
+    }
+
+    onSelect(item: GroupManagerItem): void {
+        const program = this.programsService.programs().find((p) => p.id === item.id);
+        if (program) this.programsService.selectProgram(program);
+    }
 }

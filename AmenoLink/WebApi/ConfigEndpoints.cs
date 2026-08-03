@@ -1,4 +1,5 @@
 using AmenoLink.Configurations;
+using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.ProgramManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,19 @@ internal static class ConfigEndpoints
             return Results.Ok();
         });
 
+        group.MapGet("/cache", () =>
+        {
+            var configs = ConfigPathProvider.LoadCacheConfigs();
+            return Results.Ok(configs);
+        });
+
+        group.MapPost("/cache", (CacheConfig[] configs, ICacheManager cacheManager) =>
+        {
+            ConfigPathProvider.SaveCacheConfigs(configs);
+            cacheManager.LoadConfigurations();
+            return Results.Ok();
+        });
+
         group.MapGet("/select-executable", () =>
         {
             string? selectedFile = null;
@@ -38,9 +52,7 @@ internal static class ConfigEndpoints
                 };
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
                     selectedFile = openFileDialog.FileName?.Replace('\\', '/');
-                }
             });
 
             thread.SetApartmentState(ApartmentState.STA);

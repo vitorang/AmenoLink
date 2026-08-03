@@ -8,66 +8,71 @@ import { MatIconModule } from '@angular/material/icon';
 import { ProgramConfigHandler } from '../../../../../../models/program-config.model';
 
 export interface HandlerRegisterModalData {
-  handler?: ProgramConfigHandler;
+    handler?: ProgramConfigHandler;
 }
 
 @Component({
-  selector: 'app-handler-register-modal',
-  imports: [
-    FormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
-  templateUrl: './handler-register-modal.html',
-  styleUrl: './handler-register-modal.scss',
+    selector: 'app-handler-register-modal',
+    imports: [
+        FormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+    ],
+    templateUrl: './handler-register-modal.html',
+    styleUrl: './handler-register-modal.scss',
 })
 export class HandlerRegisterModal {
-  private readonly dialogRef = inject(MatDialogRef<HandlerRegisterModal>);
-  private readonly data: HandlerRegisterModalData = inject(MAT_DIALOG_DATA, { optional: true }) || {};
+    private readonly dialogRef = inject(MatDialogRef<HandlerRegisterModal>);
+    private readonly data: HandlerRegisterModalData =
+        inject(MAT_DIALOG_DATA, { optional: true }) || {};
 
-  readonly isEditing = !!this.data.handler;
-  readonly route = signal<string>(this.data.handler?.route || '');
-  readonly timeoutInSeconds = signal<number>(this.data.handler?.timeoutInSeconds ?? 10);
+    readonly isEditing = !!this.data.handler;
+    readonly route = signal<string>(this.data.handler?.route || '');
+    readonly timeoutInSeconds = signal<number>(this.data.handler?.timeoutInSeconds ?? 10);
 
-  get isValid(): boolean {
-    const value = this.route();
-    if (!value) return false;
-    if (value.trim() !== value) return false;
-    if (value.trim().length === 0) return false;
-    return true;
-  }
+    get isValid(): boolean {
+        const value = this.route();
+        if (!value)
+            return false;
+        if (value.trim() !== value)
+            return false;
+        if (value.trim().length === 0)
+            return false;
 
-  onTimeoutChange(value: number | null): void {
-    if (!value || value < 1) {
-      this.timeoutInSeconds.set(1);
-    } else {
-      this.timeoutInSeconds.set(Math.floor(value));
+        return true;
     }
-  }
 
-  onTimeoutBlur(event: FocusEvent): void {
-    const inputElement = event.target as HTMLInputElement;
-    if (inputElement && (!inputElement.value || Number(inputElement.value) < 1)) {
-      inputElement.value = '1';
-      this.timeoutInSeconds.set(1);
+    onTimeoutChange(value: number | null): void {
+        if (!value || value < 1)
+            this.timeoutInSeconds.set(1);
+        else
+            this.timeoutInSeconds.set(Math.floor(value));
     }
-  }
 
-  onCancel(): void {
-    this.dialogRef.close();
-  }
+    onTimeoutBlur(event: FocusEvent): void {
+        const inputElement = event.target as HTMLInputElement;
+        if (inputElement && (!inputElement.value || Number(inputElement.value) < 1)) {
+            inputElement.value = '1';
+            this.timeoutInSeconds.set(1);
+        }
+    }
 
-  onConfirm(): void {
-    if (!this.isValid) return;
+    onCancel(): void {
+        this.dialogRef.close();
+    }
 
-    const result: ProgramConfigHandler = {
-      route: this.route().trim(),
-      timeoutInSeconds: this.timeoutInSeconds(),
-    };
+    onConfirm(): void {
+        if (!this.isValid)
+            return;
 
-    this.dialogRef.close(result);
-  }
+        const result: ProgramConfigHandler = {
+            route: this.route().trim(),
+            timeoutInSeconds: this.timeoutInSeconds(),
+        };
+
+        this.dialogRef.close(result);
+    }
 }

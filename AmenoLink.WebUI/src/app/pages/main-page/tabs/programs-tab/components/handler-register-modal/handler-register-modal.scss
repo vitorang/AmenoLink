@@ -1,26 +1,26 @@
 .modal-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 400px;
-  padding-top: 8px !important;
-
-  mat-form-field {
-    width: 100%;
-  }
-
-  .time-note {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
-    opacity: 0.55;
-    margin-top: -4px;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 400px;
+    padding-top: 8px !important;
 
-    .note-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+    mat-form-field {
+        width: 100%;
     }
-  }
+
+    .time-note {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        opacity: 0.55;
+        margin-top: -4px;
+
+        .note-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+        }
+    }
 }

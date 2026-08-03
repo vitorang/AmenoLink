@@ -1,0 +1,123 @@
+:host {
+    display: block;
+    width: 360px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.group-manager-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    overflow: hidden;
+
+    .column-actions {
+        display: flex;
+        gap: 8px;
+
+        button {
+            flex: 1;
+        }
+    }
+
+    .entries-scroll-list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px;
+        border-radius: 12px;
+        background-color: var(--surface-panel-bg);
+        border: 1px solid var(--border-color-subtle);
+
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--surface-badge-bg);
+            border-radius: 3px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: var(--border-color-dashed);
+            border-radius: 3px;
+        }
+
+        .empty-state {
+            padding: 48px 24px;
+            text-align: center;
+            opacity: 0.5;
+            font-size: 0.85rem;
+        }
+    }
+
+    .entry-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 44px;
+        padding: 0 14px;
+        box-sizing: border-box;
+        border-radius: 8px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s ease;
+
+        &:hover {
+            background-color: var(--surface-item-hover);
+        }
+
+        &.selected {
+            background-color: var(--surface-item-selected);
+            border-left: 3px solid var(--primary-color);
+
+            .entry-icon {
+                opacity: 1;
+                color: var(--primary-color);
+            }
+
+            .actions-badge {
+                opacity: 1;
+                background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
+                color: var(--primary-color);
+
+                .actions-icon,
+                .actions-count {
+                    color: var(--primary-color-light);
+                }
+            }
+        }
+
+        .entry-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+            transition:
+                color 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        .entry-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1;
+
+            .entry-name {
+                font-size: 0.9rem;
+                font-weight: 500;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        .actions-badge {
+            margin-left: auto;
+        }
+    }
+}

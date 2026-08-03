@@ -1,0 +1,35 @@
+<div class="group-manager-container">
+    <div class="column-actions">
+        <button mat-stroked-button (click)="onAdd()">
+            <mat-icon>add</mat-icon>
+            Adicionar
+        </button>
+        <button mat-stroked-button color="warn" (click)="onRemove()" [disabled]="!selectedId()">
+            <mat-icon>delete</mat-icon>
+            Excluir
+        </button>
+    </div>
+
+    <div class="entries-scroll-list">
+        @for (item of items(); track item.id) {
+            <div
+                class="entry-item"
+                [class.selected]="item.id === selectedId()"
+                (click)="onSelect(item)"
+            >
+                <mat-icon class="entry-icon">{{ itemIcon() }}</mat-icon>
+                <div class="entry-info">
+                    <span class="entry-name">{{ item.name }}</span>
+                </div>
+                @if (item.count !== undefined) {
+                    <div class="pill-badge actions-badge">
+                        <span class="badge-value actions-count">{{ item.count }}</span>
+                        <mat-icon class="actions-icon">{{ badgeIcon() }}</mat-icon>
+                    </div>
+                }
+            </div>
+        } @empty {
+            <div class="empty-state">{{ emptyText() }}</div>
+        }
+    </div>
+</div>

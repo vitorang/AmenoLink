@@ -1,0 +1,29 @@
+<div class="cache-tab-container">
+    <div class="left-column">
+        <app-group-manager
+            [items]="cacheItems()"
+            [selectedId]="cacheService.selectedCacheConfig()?.groupKey ?? null"
+            itemIcon="hourglass_empty"
+            badgeIcon="folder"
+            emptyText="Nenhum grupo de cache cadastrado."
+            (add)="onAdd()"
+            (remove)="onRemove($event)"
+            (select)="onSelect($event)"
+        />
+    </div>
+
+    <div class="right-column">
+        @if (cacheService.selectedCacheConfig(); as selected) {
+            <app-cache-details
+                [config]="selected"
+                (configChange)="cacheService.updateSelectedCacheConfig($event)"
+                (rename)="onRename()"
+            />
+        } @else {
+            <div class="no-selection-state">
+                <mat-icon class="no-selection-icon">mouse</mat-icon>
+                <span>Selecione ou adicione um grupo de cache para ver os detalhes.</span>
+            </div>
+        }
+    </div>
+</div>
