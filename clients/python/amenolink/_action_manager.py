@@ -47,27 +47,19 @@ class ActionRouter:
                 parameters = list(signature.parameters.values())
                 parameter_type = parameters[0].annotation
 
-                argument = self._parse_payload(request.payload, parameter_type)
+                argument = _parse_data(request.payload, parameter_type)
                 raw_result = handler(argument)
                 return self._format_result(raw_result)
 
         raise ValueError(f"Rota '{request.route}' não encontrada")
 
-    def _parse_payload(self, payload: str, parameter_type: type) -> Any:
-        if parameter_type == str:
-            return payload
-        parsed_json = json.loads(payload) if isinstance(payload, str) else payload
-        return _parse_data(parsed_json, parameter_type)
-
     def _format_result(self, raw_result: Any) -> str:
-        if isinstance(raw_result, str):
-            return raw_result
         if hasattr(raw_result, 'to_dict'):
             return json.dumps(raw_result.to_dict())
         if is_dataclass(raw_result):
             from dataclasses import asdict
             return json.dumps(asdict(raw_result))
-        return str(raw_result)
+        return json.dumps(raw_result)
 
     def serve(self):
         global current_action

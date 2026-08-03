@@ -1,19 +1,19 @@
 from dataclasses import dataclass, field
-from typing import Self
+from typing import Any, Self
 
 
 @dataclass(frozen=True)
 class ActionRequest:
     id: str
     route: str
-    payload: str
+    payload: Any = None
 
     @classmethod
     def from_dict(cls, data: dict) -> Self:
         return cls(
             id=data.get('id', ''),
             route=data.get('route', ''),
-            payload=data.get('payload', ''),
+            payload=data.get('payload'),
         )
 
     def to_dict(self) -> dict:
@@ -30,7 +30,7 @@ class ActionResponse:
     success: bool
     id: str = ''
     logs: list[str] = field(default_factory=list)
-    response: str | None = None
+    response: Any = None
     error_type: str | None = None
     error_message: str | None = None
 

@@ -5,7 +5,7 @@ public record ActionResponse(
     bool Success,
     string[]? Logs = null,
     string Id = "",
-    string? Response = null,
+    object? Response = null,
     string? ErrorType = null,
     string? ErrorMessage = null
 )

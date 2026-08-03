@@ -80,12 +80,41 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             else if (e.Data.StartsWith(Constants.OnActionSuccess))
             {
                 string rawValue = e.Data[Constants.OnActionSuccess.Length..].Trim();
-                string? responseValue = DecodeBase64(rawValue);
-                response = new ActionResponse(
-                    ActionRequest: request,
-                    Success: true,
-                    Response: responseValue
-                );
+                string? decodedJson = DecodeBase64(rawValue);
+                if (decodedJson == null)
+                {
+                    Logs.Add($"[Erro] Valor retornado não é um Base64 válido: '{rawValue}'");
+
+                    response = new ActionResponse(
+                        ActionRequest: request,
+                        Success: false,
+                        ErrorType: Constants.ActionInvalidResponse,
+                        ErrorMessage: "Falha ao decodificar a resposta base64 do processo."
+                    );
+                }
+                else
+                {
+                    try
+                    {
+                        var parsedResponse = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.Nodes.JsonNode>(decodedJson, JsonDefaults.Options);
+                        response = new ActionResponse(
+                            ActionRequest: request,
+                            Success: true,
+                            Response: parsedResponse
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        Logs.Add($"[Erro] JSON inválido recebido do processo: '{decodedJson}'");
+
+                        response = new ActionResponse(
+                            ActionRequest: request,
+                            Success: false,
+                            ErrorType: Constants.ActionInvalidResponse,
+                            ErrorMessage: $"Resposta do processo não é um JSON válido: {ex.Message}"
+                        );
+                    }
+                }
                 responseEvent.Set();
             }
             else if (e.Data.StartsWith(Constants.OnActionError))

@@ -7,6 +7,7 @@ internal static class Constants
     public const string ActionTimeout = "AmenoLink.ActionTimeout";
     public const string ActionFailed = "AmenoLink.ActionFailed";
     public const string ActionNotFound = "AmenoLink.ActionNotFound";
+    public const string ActionInvalidResponse = "AmenoLink.ActionInvalidResponse";
 
     public const string OnStartupSuccess = "[AmenoLink.StartupSuccess]";
     public const string OnStartupError = "[AmenoLink.StartupError]";
