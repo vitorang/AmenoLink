@@ -101,17 +101,17 @@ export class CacheDetails {
         return String(value);
     }
 
-    onSlidingExpirationChange(value: number | null): void {
+    onInactivityExpirationChange(value: number | null): void {
         this.configChange.emit({
             ...this.config(),
-            slidingExpirationInSeconds: this.sanitizeNonNegativeInteger(value),
+            inactivityExpirationInSeconds: this.sanitizeNonNegativeInteger(value),
         });
     }
 
-    onAbsoluteExpirationChange(value: number | null): void {
+    onTotalExpirationChange(value: number | null): void {
         this.configChange.emit({
             ...this.config(),
-            absoluteExpirationInSeconds: this.sanitizeNonNegativeInteger(value),
+            totalExpirationInSeconds: this.sanitizeNonNegativeInteger(value),
         });
     }
 

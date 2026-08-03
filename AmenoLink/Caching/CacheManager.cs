@@ -62,11 +62,11 @@ internal class CacheManager : ICacheManager
         var entry = GetGroupEntry(groupKey);
         var options = new MemoryCacheEntryOptions();
 
-        if (entry.Config.SlidingExpirationInSeconds > 0)
-            options.SetSlidingExpiration(TimeSpan.FromSeconds(entry.Config.SlidingExpirationInSeconds));
+        if (entry.Config.InactivityExpirationInSeconds > 0)
+            options.SetSlidingExpiration(TimeSpan.FromSeconds(entry.Config.InactivityExpirationInSeconds));
 
-        if (entry.Config.AbsoluteExpirationInSeconds > 0)
-            options.SetAbsoluteExpiration(TimeSpan.FromSeconds(entry.Config.AbsoluteExpirationInSeconds));
+        if (entry.Config.TotalExpirationInSeconds > 0)
+            options.SetAbsoluteExpiration(TimeSpan.FromSeconds(entry.Config.TotalExpirationInSeconds));
 
         options.RegisterPostEvictionCallback((evictedKey, _, _, _) =>
         {

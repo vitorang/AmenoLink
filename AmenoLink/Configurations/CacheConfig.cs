@@ -1,7 +1,7 @@
-﻿namespace AmenoLink.Configurations;
+namespace AmenoLink.Configurations;
 
 internal record CacheConfig(
     string GroupKey,
-    int SlidingExpirationInSeconds,
-    int AbsoluteExpirationInSeconds
+    int InactivityExpirationInSeconds,
+    int TotalExpirationInSeconds
 );

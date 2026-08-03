@@ -55,8 +55,8 @@ export class CacheService {
 
         const newConfig: CacheConfig = {
             groupKey: key,
-            slidingExpirationInSeconds: 300,
-            absoluteExpirationInSeconds: 3600,
+            inactivityExpirationInSeconds: 300,
+            totalExpirationInSeconds: 3600,
         };
 
         this.cacheConfigs.update((prev) => [...prev, newConfig]);

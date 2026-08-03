@@ -14,15 +14,15 @@
     <div class="fields-grid">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Inatividade</mat-label>
-            <input matInput type="number" min="0" step="1" [ngModel]="config().slidingExpirationInSeconds"
-                (ngModelChange)="onSlidingExpirationChange($event)" (blur)="onBlur($event)" />
+            <input matInput type="number" min="0" step="1" [ngModel]="config().inactivityExpirationInSeconds"
+                (ngModelChange)="onInactivityExpirationChange($event)" (blur)="onBlur($event)" />
             <mat-icon matSuffix>hourglass_empty</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Absoluto</mat-label>
-            <input matInput type="number" min="0" step="1" [ngModel]="config().absoluteExpirationInSeconds"
-                (ngModelChange)="onAbsoluteExpirationChange($event)" (blur)="onBlur($event)" />
+            <mat-label>Total</mat-label>
+            <input matInput type="number" min="0" step="1" [ngModel]="config().totalExpirationInSeconds"
+                (ngModelChange)="onTotalExpirationChange($event)" (blur)="onBlur($event)" />
             <mat-icon matSuffix>timer</mat-icon>
         </mat-form-field>
     </div>
