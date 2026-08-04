@@ -232,6 +232,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
             proccess.OutputDataReceived += startupOutputHandler;
             proccess.Start();
+            ChildProcessTracker.AddProcess(proccess);
             proccess.BeginOutputReadLine();
 
             startupEvent.WaitOne();

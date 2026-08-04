@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using System.IO;
 
 namespace AmenoLink;
 
@@ -67,7 +66,14 @@ internal static class Program
         cacheManager.LoadConfigurations();
 
         var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-        Application.Run(mainWindow);
+        try
+        {
+            Application.Run(mainWindow);
+        }
+        finally
+        {
+            processManager.Dispose();
+        }
     }
 
     private static void ConfigureServices(IServiceCollection services)

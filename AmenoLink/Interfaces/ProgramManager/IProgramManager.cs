@@ -1,8 +1,8 @@
-﻿using AmenoLink.Dtos;
+using AmenoLink.Dtos;
 
 namespace AmenoLink.Interfaces.ProgramManager;
 
-internal interface IProgramManager
+internal interface IProgramManager : IDisposable
 {
     void LoadConfigurations();
     Task<ActionResponse> Execute(ActionRequest request);

@@ -20,7 +20,11 @@ internal class ProgramRunner(ProgramConfig config) : IProgramRunner
         }
         finally
         {
-            semaphore.Release();
+            try
+            {
+                semaphore.Release();
+            }
+            catch (ObjectDisposedException) { }
         }
     }
 
@@ -44,5 +48,18 @@ internal class ProgramRunner(ProgramConfig config) : IProgramRunner
         {
             instances.Remove(instance);
         }
+    }
+
+    public void Dispose()
+    {
+        lock (instances)
+        {
+            foreach (var instance in instances.ToList())
+                instance.Dispose();
+
+            instances.Clear();
+        }
+
+        semaphore.Dispose();
     }
 }

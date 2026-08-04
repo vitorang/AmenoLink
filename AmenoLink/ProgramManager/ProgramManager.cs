@@ -15,6 +15,9 @@ internal class ProgramManager : IProgramManager
 
         lock (runners)
         {
+            foreach (var runner in runners.Values)
+                runner.Dispose();
+
             runners.Clear();
         }
 
@@ -59,5 +62,16 @@ internal class ProgramManager : IProgramManager
         }
 
         return await runner.Execute(routeData.Handler, request);
+    }
+
+    public void Dispose()
+    {
+        lock (runners)
+        {
+            foreach (var runner in runners.Values)
+                runner.Dispose();
+
+            runners.Clear();
+        }
     }
 }
