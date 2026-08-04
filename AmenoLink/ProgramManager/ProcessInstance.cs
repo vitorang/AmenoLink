@@ -117,8 +117,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
                 response = new ActionResponse(
                     Previous: request,
                     Success: false,
-                    ErrorType: Constants.ActionInvalidResponse,
-                    ErrorMessage: "Falha ao decodificar a resposta base64 do processo."
+                    Error: new ActionError(Constants.ActionInvalidResponse, "Falha ao decodificar a resposta base64 do processo.")
                 );
             }
             else
@@ -129,7 +128,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
                     response = new ActionResponse(
                         Previous: request,
                         Success: true,
-                        Response: parsedResponse
+                        Result: parsedResponse
                     );
                 }
                 catch (Exception ex)
@@ -139,8 +138,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
                     response = new ActionResponse(
                         Previous: request,
                         Success: false,
-                        ErrorType: Constants.ActionInvalidResponse,
-                        ErrorMessage: $"Resposta do processo não é um JSON válido: {ex.Message}"
+                        Error: new ActionError(Constants.ActionInvalidResponse, $"Resposta do processo não é um JSON válido: {ex.Message}")
                     );
                 }
             }
@@ -153,8 +151,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             response = new ActionResponse(
                 Previous: request,
                 Success: false,
-                ErrorType: Constants.ActionFailed,
-                ErrorMessage: errorMsg
+                Error: new ActionError(Constants.ActionFailed, errorMsg ?? string.Empty)
             );
             responseEvent.Set();
         }
@@ -316,8 +313,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         return new ActionResponse(
             Previous: request,
             Success: false,
-            ErrorType: errorType,
-            ErrorMessage: errorMessage
+            Error: new ActionError(errorType, errorMessage)
         );
     }
 

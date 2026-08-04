@@ -3,9 +3,8 @@ namespace AmenoLink.Dtos;
 public record ActionResponse(
     bool Success,
     string[]? Logs = null,
-    object? Response = null,
-    string? ErrorType = null,
-    string? ErrorMessage = null,
+    object? Result = null,
+    ActionError? Error = null,
     string Id = "",
     Message? Previous = null,
     string Type = "ActionResponse",

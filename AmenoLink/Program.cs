@@ -98,6 +98,7 @@ internal static class Program
             options.SerializerOptions.WriteIndented = Shared.JsonDefaults.Options.WriteIndented;
             options.SerializerOptions.DefaultIgnoreCondition = Shared.JsonDefaults.Options.DefaultIgnoreCondition;
             options.SerializerOptions.Encoder = Shared.JsonDefaults.Options.Encoder;
+            options.SerializerOptions.TypeInfoResolver = Shared.JsonDefaults.Options.TypeInfoResolver;
         });
 
         services.AddSingleton<IProgramManager, ProgramManager.ProgramManager>();

@@ -45,8 +45,7 @@ internal class ProgramManager : IProgramManager
                 return new ActionResponse(
                     Previous: request,
                     Success: false,
-                    ErrorType: Constants.ActionNotFound,
-                    ErrorMessage: $"Nenhuma ação encontrada para a rota '{request.Route}'."
+                    Error: new ActionError(Constants.ActionNotFound, $"Nenhuma ação encontrada para a rota '{request.Route}'.")
                 );
             }
         }

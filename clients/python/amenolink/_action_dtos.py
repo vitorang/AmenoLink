@@ -25,14 +25,32 @@ class ActionRequest:
 
 
 @dataclass(frozen=True)
+class ActionError:
+    type: str
+    message: str
+
+    @classmethod
+    def from_dict(cls, data: dict) -> Self:
+        return cls(
+            type=data.get('type', ''),
+            message=data.get('message', ''),
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            'type': self.type,
+            'message': self.message,
+        }
+
+
+@dataclass(frozen=True)
 class ActionResponse:
     action_request: ActionRequest
     success: bool
     id: str = ''
     logs: list[str] = field(default_factory=list)
-    response: Any = None
-    error_type: str | None = None
-    error_message: str | None = None
+    result: Any = None
+    error: ActionError | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -44,7 +62,6 @@ class ActionResponse:
             'success': self.success,
             'id': self.id,
             'logs': self.logs,
-            'response': self.response,
-            'errorType': self.error_type,
-            'errorMessage': self.error_message,
+            'result': self.result,
+            'error': self.error.to_dict() if self.error else None,
         }
