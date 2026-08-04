@@ -14,21 +14,21 @@ export class CacheDataService {
     private readonly http = inject(HttpClient);
     private readonly baseUrl = 'http://localhost:13545/api/cache';
 
-    getAllEntries(groupKey: string): Observable<Record<string, unknown>> {
+    getAllEntries(groupName: string): Observable<Record<string, unknown>> {
         return this.http.get<Record<string, unknown>>(`${this.baseUrl}/all`, {
-            params: { groupKey },
+            params: { groupName },
         });
     }
 
-    getValue(groupKey: string, key: string): Observable<unknown> {
+    getValue(groupName: string, key: string): Observable<unknown> {
         return this.http.get<unknown>(`${this.baseUrl}`, {
-            params: { groupKey, key },
+            params: { groupName, key },
         });
     }
 
-    deleteEntry(groupKey: string, key: string): Observable<void> {
+    deleteEntry(groupName: string, key: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}`, {
-            params: { groupKey, key },
+            params: { groupName, key },
         });
     }
 }

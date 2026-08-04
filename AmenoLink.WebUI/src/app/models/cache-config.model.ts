@@ -1,5 +1,5 @@
 export interface CacheConfig {
-    groupKey: string;
+    groupName: string;
     inactivityExpirationInSeconds: number;
     totalExpirationInSeconds: number;
 }

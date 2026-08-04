@@ -26,30 +26,30 @@ internal class CacheManager : ICacheManager
     public void LoadConfigurations()
     {
         var configs = ConfigPathProvider.LoadCacheConfigs();
-        var newConfigMap = configs.ToDictionary(c => c.GroupKey);
+        var newConfigMap = configs.ToDictionary(c => c.GroupName);
 
         var existingKeys = CacheGroups.Keys.ToList();
-        foreach (var groupKey in existingKeys)
+        foreach (var groupName in existingKeys)
         {
-            if (!newConfigMap.ContainsKey(groupKey))
+            if (!newConfigMap.ContainsKey(groupName))
             {
-                if (CacheGroups.TryRemove(groupKey, out var removedEntry))
+                if (CacheGroups.TryRemove(groupName, out var removedEntry))
                     removedEntry.Cache.Dispose();
             }
         }
 
         foreach (var config in configs)
         {
-            if (CacheGroups.TryGetValue(config.GroupKey, out var entry))
+            if (CacheGroups.TryGetValue(config.GroupName, out var entry))
                 entry.Config = config;
             else
-                CacheGroups[config.GroupKey] = new CacheGroupEntry(config);
+                CacheGroups[config.GroupName] = new CacheGroupEntry(config);
         }
     }
 
-    public JsonElement? Get(string groupKey, string key)
+    public JsonElement? Get(string groupName, string key)
     {
-        var entry = GetGroupEntry(groupKey);
+        var entry = GetGroupEntry(groupName);
         if (entry.Cache.TryGetValue(key, out JsonElement value))
             return value;
 
@@ -57,9 +57,9 @@ internal class CacheManager : ICacheManager
         return null;
     }
 
-    public void Set(string groupKey, string key, JsonElement value)
+    public void Set(string groupName, string key, JsonElement value)
     {
-        var entry = GetGroupEntry(groupKey);
+        var entry = GetGroupEntry(groupName);
         var options = new MemoryCacheEntryOptions();
 
         if (entry.Config.InactivityExpirationInSeconds > 0)
@@ -78,16 +78,16 @@ internal class CacheManager : ICacheManager
         entry.Keys[key] = 0;
     }
 
-    public void Delete(string groupKey, string key)
+    public void Delete(string groupName, string key)
     {
-        var entry = GetGroupEntry(groupKey);
+        var entry = GetGroupEntry(groupName);
         entry.Cache.Remove(key);
         entry.Keys.TryRemove(key, out _);
     }
 
-    public Dictionary<string, JsonElement?> All(string groupKey)
+    public Dictionary<string, JsonElement?> All(string groupName)
     {
-        var entry = GetGroupEntry(groupKey);
+        var entry = GetGroupEntry(groupName);
         var result = new Dictionary<string, JsonElement?>();
 
         foreach (var key in entry.Keys.Keys)
@@ -101,18 +101,18 @@ internal class CacheManager : ICacheManager
         return result;
     }
 
-    public void Clear(string groupKey)
+    public void Clear(string groupName)
     {
-        var entry = GetGroupEntry(groupKey);
+        var entry = GetGroupEntry(groupName);
         entry.Cache.Dispose();
         entry.Cache = new MemoryCache(new MemoryCacheOptions());
         entry.Keys.Clear();
     }
 
-    private CacheGroupEntry GetGroupEntry(string groupKey)
+    private CacheGroupEntry GetGroupEntry(string groupName)
     {
-        if (!CacheGroups.TryGetValue(groupKey, out var entry))
-            throw new KeyNotFoundException($"O grupo de cache '{groupKey}' não foi encontrado.");
+        if (!CacheGroups.TryGetValue(groupName, out var entry))
+            throw new KeyNotFoundException($"O grupo de cache '{groupName}' não foi encontrado.");
 
         return entry;
     }

@@ -36,13 +36,13 @@ export class CacheDetails {
     readonly loadingEntries = signal<boolean>(false);
     readonly displayedColumns: string[] = ['key', 'value', 'actions'];
 
-    private currentGroupKey: string | null = null;
+    private currentGroupName: string | null = null;
 
     constructor() {
         effect(() => {
-            const groupKey = this.config().groupKey;
-            if (this.currentGroupKey !== groupKey) {
-                this.currentGroupKey = groupKey;
+            const groupName = this.config().groupName;
+            if (this.currentGroupName !== groupName) {
+                this.currentGroupName = groupName;
                 this.cacheEntries.set(null);
             }
         });
@@ -53,11 +53,11 @@ export class CacheDetails {
     }
 
     onRefreshValues(): void {
-        const groupKey = this.config().groupKey;
+        const groupName = this.config().groupName;
         this.loadingEntries.set(true);
 
         this.cacheDataService
-            .getAllEntries(groupKey)
+            .getAllEntries(groupName)
             .pipe(
                 catchError(() => of({})),
                 finalize(() => this.loadingEntries.set(false)),
@@ -86,8 +86,8 @@ export class CacheDetails {
     }
 
     onDeleteEntry(key: string): void {
-        const groupKey = this.config().groupKey;
-        this.cacheDataService.deleteEntry(groupKey, key).subscribe({
+        const groupName = this.config().groupName;
+        this.cacheDataService.deleteEntry(groupName, key).subscribe({
             next: () => this.onRefreshValues(),
         });
     }

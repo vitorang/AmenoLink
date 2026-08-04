@@ -40,7 +40,7 @@ internal class ProgramManager : IProgramManager
             if (!routeMap.TryGetValue(request.Route, out routeData))
             {
                 return new ActionResponse(
-                    ActionRequest: request,
+                    Previous: request,
                     Success: false,
                     ErrorType: Constants.ActionNotFound,
                     ErrorMessage: $"Nenhuma ação encontrada para a rota '{request.Route}'."

@@ -8,8 +8,8 @@ from ._http_requests import origin_url
 
 
 class Cache:
-    def __init__(self, group_key: str):
-        self.group = group_key
+    def __init__(self, group_name: str):
+        self.group = group_name
 
     def get(self, key: str, response_type: type[T]) -> T | None:
         raw_value = self._request('GET', self._cache_url(key))
@@ -41,10 +41,10 @@ class Cache:
         self._request('DELETE', self._cache_url(key))
 
     def _cache_url(self, key: str) -> str:
-        return f'{origin_url.get()}/api/cache?' + urllib.parse.urlencode({'groupKey': self.group, 'key': key})
+        return f'{origin_url.get()}/api/cache?' + urllib.parse.urlencode({'groupName': self.group, 'key': key})
 
     def _cache_all_url(self) -> str:
-        return f'{origin_url.get()}/api/cache/all?' + urllib.parse.urlencode({'groupKey': self.group})
+        return f'{origin_url.get()}/api/cache/all?' + urllib.parse.urlencode({'groupName': self.group})
 
     def _request(self, method: str, url: str, data: Any = None) -> Any:
         try:
@@ -68,5 +68,5 @@ class Cache:
             raise AmenoException(f'Erro na operação de cache: {str(exception)}')
 
 
-def cache(group_key: str) -> Cache:
-    return Cache(group_key)
+def cache(group_name: str) -> Cache:
+    return Cache(group_name)

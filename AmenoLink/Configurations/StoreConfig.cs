@@ -1,7 +1,7 @@
-﻿namespace AmenoLink.Configurations;
+namespace AmenoLink.Configurations;
 
 internal record StoreConfig(
-    string GroupKey,
+    string GroupName,
     StoreConfig.StorePersistenceMode PersistenceMode
 )
 {
@@ -9,6 +9,6 @@ internal record StoreConfig(
     {
         Ephemeral = 0,
         Memory = 1,
-        Disk = 2 // TODO: usar SQLite WAL
+        Disk = 2
     }
 }

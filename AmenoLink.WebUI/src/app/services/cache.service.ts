@@ -27,8 +27,8 @@ export class CacheService {
                     this.cacheConfigs.set(list);
 
                     const currentSelected = this.selectedCacheConfig();
-                    if (currentSelected?.groupKey) {
-                        const matched = list.find((c) => c.groupKey === currentSelected.groupKey);
+                    if (currentSelected?.groupName) {
+                        const matched = list.find((c) => c.groupName === currentSelected.groupName);
                         this.selectedCacheConfig.set(matched || (list.length > 0 ? list[0] : null));
                     } else {
                         this.selectedCacheConfig.set(list.length > 0 ? list[0] : null);
@@ -42,19 +42,19 @@ export class CacheService {
             });
     }
 
-    addCacheConfig(groupKey: string): void {
-        const key = groupKey.trim();
+    addCacheConfig(groupName: string): void {
+        const key = groupName.trim();
         if (!key)
             return;
 
-        const exists = this.cacheConfigs().some((c) => c.groupKey === key);
+        const exists = this.cacheConfigs().some((c) => c.groupName === key);
         if (exists) {
             this.showErrorDialog('Grupo Existente', `O grupo de cache '${key}' já existe.`);
             return;
         }
 
         const newConfig: CacheConfig = {
-            groupKey: key,
+            groupName: key,
             inactivityExpirationInSeconds: 300,
             totalExpirationInSeconds: 3600,
         };
@@ -75,26 +75,26 @@ export class CacheService {
         this.selectedCacheConfig.set(config);
     }
 
-    renameCacheConfig(oldGroupKey: string, newGroupKey: string): void {
-        const newKey = newGroupKey.trim();
-        if (!newKey || oldGroupKey === newKey)
+    renameCacheConfig(oldGroupName: string, newGroupName: string): void {
+        const newKey = newGroupName.trim();
+        if (!newKey || oldGroupName === newKey)
             return;
 
-        const exists = this.cacheConfigs().some((c) => c.groupKey === newKey);
+        const exists = this.cacheConfigs().some((c) => c.groupName === newKey);
         if (exists) {
             this.showErrorDialog('Grupo Existente', `O grupo de cache '${newKey}' já existe.`);
             return;
         }
 
         this.cacheConfigs.update((prev) =>
-            prev.map((c) => (c.groupKey === oldGroupKey ? { ...c, groupKey: newKey } : c)),
+            prev.map((c) => (c.groupName === oldGroupName ? { ...c, groupName: newKey } : c)),
         );
 
         const currentSelected = this.selectedCacheConfig();
-        if (currentSelected?.groupKey === oldGroupKey) {
+        if (currentSelected?.groupName === oldGroupName) {
             this.selectedCacheConfig.set({
                 ...currentSelected,
-                groupKey: newKey,
+                groupName: newKey,
             });
         }
     }
@@ -110,7 +110,7 @@ export class CacheService {
 
     save(): void {
         const sortedConfigs = [...this.cacheConfigs()].sort((a, b) =>
-            a.groupKey.localeCompare(b.groupKey, undefined, {
+            a.groupName.localeCompare(b.groupName, undefined, {
                 numeric: true,
                 sensitivity: 'base',
             }),

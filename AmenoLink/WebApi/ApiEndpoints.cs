@@ -30,11 +30,11 @@ internal static class ApiEndpoints
             return Results.Ok();
         });
 
-        group.MapGet("/cache", (string groupKey, string key, ICacheManager cacheManager) =>
+        group.MapGet("/cache", (string groupName, string key, ICacheManager cacheManager) =>
         {
             try
             {
-                var value = cacheManager.Get(groupKey, key);
+                var value = cacheManager.Get(groupName, key);
                 return Results.Ok(value);
             }
             catch (KeyNotFoundException ex)
@@ -43,11 +43,11 @@ internal static class ApiEndpoints
             }
         });
 
-        group.MapPost("/cache", ([FromQuery] string groupKey, [FromQuery] string key, [FromBody] JsonElement value, ICacheManager cacheManager) =>
+        group.MapPost("/cache", ([FromQuery] string groupName, [FromQuery] string key, [FromBody] JsonElement value, ICacheManager cacheManager) =>
         {
             try
             {
-                cacheManager.Set(groupKey, key, value);
+                cacheManager.Set(groupName, key, value);
                 return Results.Ok();
             }
             catch (KeyNotFoundException ex)
@@ -56,11 +56,11 @@ internal static class ApiEndpoints
             }
         });
 
-        group.MapDelete("/cache", (string groupKey, string key, ICacheManager cacheManager) =>
+        group.MapDelete("/cache", (string groupName, string key, ICacheManager cacheManager) =>
         {
             try
             {
-                cacheManager.Delete(groupKey, key);
+                cacheManager.Delete(groupName, key);
                 return Results.Ok();
             }
             catch (KeyNotFoundException ex)
@@ -69,11 +69,11 @@ internal static class ApiEndpoints
             }
         });
 
-        group.MapGet("/cache/all", (string groupKey, ICacheManager cacheManager) =>
+        group.MapGet("/cache/all", (string groupName, ICacheManager cacheManager) =>
         {
             try
             {
-                var entries = cacheManager.All(groupKey);
+                var entries = cacheManager.All(groupName);
                 return Results.Ok(entries);
             }
             catch (KeyNotFoundException ex)
@@ -82,11 +82,11 @@ internal static class ApiEndpoints
             }
         });
 
-        group.MapDelete("/cache/all", (string groupKey, ICacheManager cacheManager) =>
+        group.MapDelete("/cache/all", (string groupName, ICacheManager cacheManager) =>
         {
             try
             {
-                cacheManager.Clear(groupKey);
+                cacheManager.Clear(groupName);
                 return Results.Ok();
             }
             catch (KeyNotFoundException ex)

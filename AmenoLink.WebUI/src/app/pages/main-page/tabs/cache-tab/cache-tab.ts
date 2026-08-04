@@ -18,8 +18,8 @@ export class CacheTab implements OnInit {
 
     readonly cacheItems = computed<GroupManagerItem[]>(() =>
         this.cacheService.cacheConfigs().map((config) => ({
-            id: config.groupKey,
-            name: config.groupKey,
+            id: config.groupName,
+            name: config.groupName,
         })),
     );
 
@@ -32,22 +32,22 @@ export class CacheTab implements OnInit {
             CacheGroupRegisterModal,
         );
 
-        dialogRef.afterClosed().subscribe((groupKey) => {
-            if (!groupKey)
+        dialogRef.afterClosed().subscribe((groupName) => {
+            if (!groupName)
                 return;
 
-            this.cacheService.addCacheConfig(groupKey);
+            this.cacheService.addCacheConfig(groupName);
         });
     }
 
-    onRemove(groupKey: string): void {
-        const config = this.cacheService.cacheConfigs().find((c) => c.groupKey === groupKey);
+    onRemove(groupName: string): void {
+        const config = this.cacheService.cacheConfigs().find((c) => c.groupName === groupName);
         if (config)
             this.cacheService.removeCacheConfig(config);
     }
 
     onSelect(item: GroupManagerItem): void {
-        const config = this.cacheService.cacheConfigs().find((c) => c.groupKey === item.id);
+        const config = this.cacheService.cacheConfigs().find((c) => c.groupName === item.id);
         if (config)
             this.cacheService.selectCacheConfig(config);
     }
@@ -57,16 +57,16 @@ export class CacheTab implements OnInit {
         if (!current)
             return;
 
-        const dialogRef = this.dialog.open<CacheGroupRegisterModal, { groupKey?: string }, string>(
+        const dialogRef = this.dialog.open<CacheGroupRegisterModal, { groupName?: string }, string>(
             CacheGroupRegisterModal,
-            { data: { groupKey: current.groupKey } },
+            { data: { groupName: current.groupName } },
         );
 
-        dialogRef.afterClosed().subscribe((newGroupKey) => {
-            if (!newGroupKey)
+        dialogRef.afterClosed().subscribe((newGroupName) => {
+            if (!newGroupName)
                 return;
 
-            this.cacheService.renameCacheConfig(current.groupKey, newGroupKey);
+            this.cacheService.renameCacheConfig(current.groupName, newGroupName);
         });
     }
 }

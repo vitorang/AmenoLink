@@ -2,7 +2,7 @@
     <div class="left-column">
         <app-group-manager
             [items]="cacheItems()"
-            [selectedId]="cacheService.selectedCacheConfig()?.groupKey ?? null"
+            [selectedId]="cacheService.selectedCacheConfig()?.groupName ?? null"
             itemIcon="hourglass_empty"
             badgeIcon="folder"
             emptyText="Nenhum grupo de cache cadastrado."

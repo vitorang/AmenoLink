@@ -5,8 +5,8 @@
         <mat-label>Grupo</mat-label>
         <input
             matInput
-            [ngModel]="groupKey()"
-            (ngModelChange)="groupKey.set($event)"
+            [ngModel]="groupName()"
+            (ngModelChange)="groupName.set($event)"
             (keyup.enter)="onConfirm()"
             cdkFocusInitial
         />

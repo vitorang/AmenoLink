@@ -17,7 +17,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
     private Timer? actionTimer;
     private AutoResetEvent? currentResponseEvent;
     private AutoResetEvent? currentStartupEvent;
-    private List<string> Logs = new();
+    private readonly List<string> Logs = [];
 
     public ActionResponse Execute(ProgramConfig.Handler handler, ActionRequest request)
     {
@@ -40,7 +40,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
     private ActionResponse ExecuteInternal(ProgramConfig.Handler handler, ActionRequest request)
     {
-        var errorResponse = StartProccess(handler, request);
+        var errorResponse = StartProccess(request);
         if (errorResponse != null)
             return errorResponse;
 
@@ -60,76 +60,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             responseEvent.Set();
         }, null, TimeSpan.FromSeconds(handler.TimeoutInSeconds), Timeout.InfiniteTimeSpan);
 
-        DataReceivedEventHandler outputHandler = (sender, e) =>
-        {
-            if (e.Data == null)
-                return;
-
-            if (e.Data.StartsWith(Constants.OnActionLogged))
-            {
-                string rawLog = e.Data[Constants.OnActionLogged.Length..].Trim();
-                string? logMessage = DecodeBase64(rawLog);
-                if (logMessage != null)
-                {
-                    lock (Logs)
-                    {
-                        Logs.Add(logMessage);
-                    }
-                }
-            }
-            else if (e.Data.StartsWith(Constants.OnActionSuccess))
-            {
-                string rawValue = e.Data[Constants.OnActionSuccess.Length..].Trim();
-                string? decodedJson = DecodeBase64(rawValue);
-                if (decodedJson == null)
-                {
-                    Logs.Add($"[Erro] Valor retornado não é um Base64 válido: '{rawValue}'");
-
-                    response = new ActionResponse(
-                        ActionRequest: request,
-                        Success: false,
-                        ErrorType: Constants.ActionInvalidResponse,
-                        ErrorMessage: "Falha ao decodificar a resposta base64 do processo."
-                    );
-                }
-                else
-                {
-                    try
-                    {
-                        var parsedResponse = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.Nodes.JsonNode>(decodedJson, JsonDefaults.Options);
-                        response = new ActionResponse(
-                            ActionRequest: request,
-                            Success: true,
-                            Response: parsedResponse
-                        );
-                    }
-                    catch (Exception ex)
-                    {
-                        Logs.Add($"[Erro] JSON inválido recebido do processo: '{decodedJson}'");
-
-                        response = new ActionResponse(
-                            ActionRequest: request,
-                            Success: false,
-                            ErrorType: Constants.ActionInvalidResponse,
-                            ErrorMessage: $"Resposta do processo não é um JSON válido: {ex.Message}"
-                        );
-                    }
-                }
-                responseEvent.Set();
-            }
-            else if (e.Data.StartsWith(Constants.OnActionError))
-            {
-                string rawMsg = e.Data[Constants.OnActionError.Length..].Trim();
-                string? errorMsg = DecodeBase64(rawMsg);
-                response = new ActionResponse(
-                    ActionRequest: request,
-                    Success: false,
-                    ErrorType: Constants.ActionFailed,
-                    ErrorMessage: errorMsg
-                );
-                responseEvent.Set();
-            }
-        };
+        void outputHandler(object sender, DataReceivedEventArgs e) => HandleOutputData(e, request, responseEvent, ref response);
 
         proccess!.OutputDataReceived += outputHandler;
 
@@ -158,7 +89,78 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         return response;
     }
 
-    private ActionResponse? StartProccess(ProgramConfig.Handler handler, ActionRequest request)
+    private void HandleOutputData(DataReceivedEventArgs e, ActionRequest request, AutoResetEvent responseEvent, ref ActionResponse? response)
+    {
+        if (e.Data == null)
+            return;
+
+        if (e.Data.StartsWith(Constants.OnActionLogged))
+        {
+            string rawLog = e.Data[Constants.OnActionLogged.Length..].Trim();
+            string? logMessage = DecodeBase64(rawLog);
+            if (logMessage != null)
+            {
+                lock (Logs)
+                {
+                    Logs.Add(logMessage);
+                }
+            }
+        }
+        else if (e.Data.StartsWith(Constants.OnActionSuccess))
+        {
+            string rawValue = e.Data[Constants.OnActionSuccess.Length..].Trim();
+            string? decodedJson = DecodeBase64(rawValue);
+            if (decodedJson == null)
+            {
+                Logs.Add($"[Erro] Valor retornado não é um Base64 válido: '{rawValue}'");
+
+                response = new ActionResponse(
+                    Previous: request,
+                    Success: false,
+                    ErrorType: Constants.ActionInvalidResponse,
+                    ErrorMessage: "Falha ao decodificar a resposta base64 do processo."
+                );
+            }
+            else
+            {
+                try
+                {
+                    var parsedResponse = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.Nodes.JsonNode>(decodedJson, JsonDefaults.Options);
+                    response = new ActionResponse(
+                        Previous: request,
+                        Success: true,
+                        Response: parsedResponse
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Logs.Add($"[Erro] JSON inválido recebido do processo: '{decodedJson}'");
+
+                    response = new ActionResponse(
+                        Previous: request,
+                        Success: false,
+                        ErrorType: Constants.ActionInvalidResponse,
+                        ErrorMessage: $"Resposta do processo não é um JSON válido: {ex.Message}"
+                    );
+                }
+            }
+            responseEvent.Set();
+        }
+        else if (e.Data.StartsWith(Constants.OnActionError))
+        {
+            string rawMsg = e.Data[Constants.OnActionError.Length..].Trim();
+            string? errorMsg = DecodeBase64(rawMsg);
+            response = new ActionResponse(
+                Previous: request,
+                Success: false,
+                ErrorType: Constants.ActionFailed,
+                ErrorMessage: errorMsg
+            );
+            responseEvent.Set();
+        }
+    }
+
+    private ActionResponse? StartProccess(ActionRequest request)
     {
         if (proccess != null)
             return null;
@@ -214,7 +216,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
             string? startupErrorMessage = null;
 
-            DataReceivedEventHandler startupOutputHandler = (sender, e) =>
+            void startupOutputHandler(object sender, DataReceivedEventArgs e)
             {
                 if (e.Data == null)
                     return;
@@ -226,7 +228,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
                     startupErrorMessage = e.Data[Constants.OnStartupError.Length..].Trim();
                     startupEvent.Set();
                 }
-            };
+            }
 
             proccess.OutputDataReceived += startupOutputHandler;
             proccess.Start();
@@ -257,7 +259,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         }
     }
 
-    private (string fileName, string arguments, string? errorMessage) ResolveExecutableInfo(string path)
+    private static (string fileName, string arguments, string? errorMessage) ResolveExecutableInfo(string path)
     {
         if (!File.Exists(path))
             return ("", "", $"O arquivo especificado em Path não foi encontrado: '{path}'.");
@@ -311,7 +313,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
     {
         Dispose();
         return new ActionResponse(
-            ActionRequest: request,
+            Previous: request,
             Success: false,
             ErrorType: errorType,
             ErrorMessage: errorMessage
