@@ -11,7 +11,7 @@ internal class ProgramManager : IProgramManager
 
     public void LoadConfigurations()
     {
-        var configs = ConfigPathProvider.LoadProgramConfigs();
+        var configs = ConfigPathProvider.Program.LoadConfigs();
 
         lock (runners)
         {

@@ -5,11 +5,8 @@ namespace AmenoLink.Configurations;
 
 internal static class ConfigPathProvider
 {
-    private const string ProgramConfigFileName = "program-config.json";
-    private const string CacheConfigFileName = "cache-config.json";
-
     private static readonly string BaseDirectory = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "AmenoLink"
     );
 
@@ -19,57 +16,96 @@ internal static class ConfigPathProvider
         return BaseDirectory;
     }
 
-    public static string GetProgramConfigFilePath()
+    private static T[] LoadConfigs<T>(string filePath)
     {
-        return Path.Combine(GetConfigDirectory(), ProgramConfigFileName);
-    }
-
-    public static string GetCacheConfigFilePath()
-    {
-        return Path.Combine(GetConfigDirectory(), CacheConfigFileName);
-    }
-
-    public static ProgramConfig[] LoadProgramConfigs()
-    {
-        string filePath = GetProgramConfigFilePath();
-
         if (!File.Exists(filePath))
         {
-            ProgramConfig[] defaultConfig = [];
-            SaveProgramConfigs(defaultConfig);
+            T[] defaultConfig = [];
+            SaveConfigs(filePath, defaultConfig);
             return defaultConfig;
         }
 
         string json = File.ReadAllText(filePath);
-        return JsonSerializer.Deserialize<ProgramConfig[]>(json, JsonDefaults.Options) ?? [];
+        return JsonSerializer.Deserialize<T[]>(json, JsonDefaults.Options) ?? [];
     }
 
-    public static void SaveProgramConfigs(ProgramConfig[] configs)
+    private static void SaveConfigs<T>(string filePath, T[] configs)
     {
-        string filePath = GetProgramConfigFilePath();
         string json = JsonSerializer.Serialize(configs, JsonDefaults.Options);
         File.WriteAllText(filePath, json);
     }
 
-    public static CacheConfig[] LoadCacheConfigs()
+    private static T LoadSingleConfig<T>(string filePath, Func<T> createDefault)
     {
-        string filePath = GetCacheConfigFilePath();
-
         if (!File.Exists(filePath))
         {
-            CacheConfig[] defaultConfig = [];
-            SaveCacheConfigs(defaultConfig);
+            T defaultConfig = createDefault();
+            SaveSingleConfig(filePath, defaultConfig);
             return defaultConfig;
         }
 
         string json = File.ReadAllText(filePath);
-        return JsonSerializer.Deserialize<CacheConfig[]>(json, JsonDefaults.Options) ?? [];
+        return JsonSerializer.Deserialize<T>(json, JsonDefaults.Options) ?? createDefault();
     }
 
-    public static void SaveCacheConfigs(CacheConfig[] configs)
+    private static void SaveSingleConfig<T>(string filePath, T config)
     {
-        string filePath = GetCacheConfigFilePath();
-        string json = JsonSerializer.Serialize(configs, JsonDefaults.Options);
+        string json = JsonSerializer.Serialize(config, JsonDefaults.Options);
         File.WriteAllText(filePath, json);
+    }
+
+    public static class Program
+    {
+        private const string ConfigFileName = "program-config.json";
+
+        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
+
+        public static ProgramConfig[] LoadConfigs() => ConfigPathProvider.LoadConfigs<ProgramConfig>(GetFilePath());
+
+        public static void SaveConfigs(ProgramConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
+    }
+
+    public static class Cache
+    {
+        private const string ConfigFileName = "cache-config.json";
+
+        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
+
+        public static CacheConfig[] LoadConfigs() => ConfigPathProvider.LoadConfigs<CacheConfig>(GetFilePath());
+
+        public static void SaveConfigs(CacheConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
+    }
+
+    public static class General
+    {
+        private const string ConfigFileName = "general-config.json";
+
+        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
+
+        public static GeneralConfig LoadConfig() => ConfigPathProvider.LoadSingleConfig(GetFilePath(), () => new GeneralConfig());
+
+        public static void SaveConfig(GeneralConfig config) => ConfigPathProvider.SaveSingleConfig(GetFilePath(), config);
+    }
+
+    public static class Store
+    {
+        private const string ConfigFileName = "store-config.json";
+
+        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
+
+        public static StoreConfig[] LoadConfigs() => ConfigPathProvider.LoadConfigs<StoreConfig>(GetFilePath());
+
+        public static void SaveConfigs(StoreConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
+    }
+
+    public static class Topic
+    {
+        private const string ConfigFileName = "topic-config.json";
+
+        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
+
+        public static TopicConfig[] LoadConfigs() => ConfigPathProvider.LoadConfigs<TopicConfig>(GetFilePath());
+
+        public static void SaveConfigs(TopicConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
     }
 }

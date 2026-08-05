@@ -15,26 +15,26 @@ internal static class ConfigEndpoints
 
         group.MapGet("/programs", () =>
         {
-            var configs = ConfigPathProvider.LoadProgramConfigs();
+            var configs = ConfigPathProvider.Program.LoadConfigs();
             return Results.Ok(configs);
         });
 
         group.MapPost("/programs", (ProgramConfig[] configs, IProgramManager programManager) =>
         {
-            ConfigPathProvider.SaveProgramConfigs(configs);
+            ConfigPathProvider.Program.SaveConfigs(configs);
             programManager.LoadConfigurations();
             return Results.Ok();
         });
 
         group.MapGet("/cache", () =>
         {
-            var configs = ConfigPathProvider.LoadCacheConfigs();
+            var configs = ConfigPathProvider.Cache.LoadConfigs();
             return Results.Ok(configs);
         });
 
         group.MapPost("/cache", (CacheConfig[] configs, ICacheManager cacheManager) =>
         {
-            ConfigPathProvider.SaveCacheConfigs(configs);
+            ConfigPathProvider.Cache.SaveConfigs(configs);
             cacheManager.LoadConfigurations();
             return Results.Ok();
         });

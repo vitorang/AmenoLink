@@ -1,3 +1,4 @@
+using AmenoLink.Hubs;
 using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.ProgramManager;
 using AmenoLink.WebApi;
@@ -21,6 +22,7 @@ internal static class Program
 
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseUrls("http://localhost:13545");
+        builder.Services.AddSignalR();
 
         ConfigureServices(builder.Services);
 
@@ -28,6 +30,7 @@ internal static class Program
         app.UseCors("AllowLocalhostOrigins");
         app.MapApiEndpoints();
         app.MapConfigEndpoints();
+        app.MapHub<MainHub>("/main-hub");
 
         var staticPath = ResolveStaticPath(builder.Environment);
 

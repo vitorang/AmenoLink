@@ -10,22 +10,16 @@ internal class CacheManager : ICacheManager
 {
     private readonly ConcurrentDictionary<string, CacheGroupEntry> CacheGroups = new();
 
-    private class CacheGroupEntry
+    private class CacheGroupEntry(CacheConfig config)
     {
-        public MemoryCache Cache { get; set; }
-        public CacheConfig Config { get; set; }
+        public MemoryCache Cache { get; set; } = new MemoryCache(new MemoryCacheOptions());
+        public CacheConfig Config { get; set; } = config;
         public ConcurrentDictionary<string, byte> Keys { get; } = new();
-
-        public CacheGroupEntry(CacheConfig config)
-        {
-            Config = config;
-            Cache = new MemoryCache(new MemoryCacheOptions());
-        }
     }
 
     public void LoadConfigurations()
     {
-        var configs = ConfigPathProvider.LoadCacheConfigs();
+        var configs = ConfigPathProvider.Cache.LoadConfigs();
         var newConfigMap = configs.ToDictionary(c => c.GroupName);
 
         var existingKeys = CacheGroups.Keys.ToList();
