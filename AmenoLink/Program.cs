@@ -1,6 +1,9 @@
 using AmenoLink.Hubs;
 using AmenoLink.Interfaces.Caching;
+using AmenoLink.Interfaces.Configurations;
+using AmenoLink.Interfaces.Hub;
 using AmenoLink.Interfaces.ProgramManager;
+using AmenoLink.Interfaces.TopicManager;
 using AmenoLink.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -62,11 +65,17 @@ internal static class Program
 
         ServiceProvider = app.Services;
 
+        var configManager = ServiceProvider.GetRequiredService<IConfigurationManager>();
+        configManager.LoadConfigurations();
+
         var processManager = ServiceProvider.GetRequiredService<IProgramManager>();
         processManager.LoadConfigurations();
 
         var cacheManager = ServiceProvider.GetRequiredService<ICacheManager>();
         cacheManager.LoadConfigurations();
+
+        var topicManager = ServiceProvider.GetRequiredService<ITopicManager>();
+        topicManager.LoadConfigurations();
 
         var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
         try
@@ -104,8 +113,11 @@ internal static class Program
             options.SerializerOptions.TypeInfoResolver = Shared.JsonDefaults.Options.TypeInfoResolver;
         });
 
+        services.AddSingleton<IConfigurationManager, Configurations.ConfigurationManager>();
+        services.AddSingleton<IHubService, HubService>();
         services.AddSingleton<IProgramManager, ProgramManager.ProgramManager>();
         services.AddSingleton<ICacheManager, Caching.CacheManager>();
+        services.AddSingleton<ITopicManager, TopicManager.TopicManager>();
         services.AddTransient<MainWindow>();
     }
 

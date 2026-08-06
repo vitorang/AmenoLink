@@ -1,10 +1,11 @@
 using AmenoLink.Configurations;
 using AmenoLink.Dtos;
 using AmenoLink.Interfaces.ProgramManager;
+using AmenoLink.Interfaces.TopicManager;
 
 namespace AmenoLink.ProgramManager;
 
-internal class ProgramManager : IProgramManager
+internal class ProgramManager(ITopicManager topicManager) : IProgramManager
 {
     private readonly Dictionary<ProgramConfig, IProgramRunner> runners = [];
     private readonly Dictionary<string, (ProgramConfig Program, ProgramConfig.Handler Handler)> routeMap = [];
@@ -60,7 +61,12 @@ internal class ProgramManager : IProgramManager
             }
         }
 
-        return await runner.Execute(routeData.Handler, request);
+        var response = await runner.Execute(routeData.Handler, request);
+        var topicMessage = new TopicMessage(request.Route, response, Previous: request);
+        if (topicManager.Exists(request.Route))
+            _ = topicManager.Publish(request.Route, topicMessage);
+
+        return response;
     }
 
     public void Dispose()

@@ -1,0 +1,47 @@
+using AmenoLink.Dtos;
+using AmenoLink.Interfaces.Hub;
+using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
+
+namespace AmenoLink.Hubs;
+
+internal class HubService(IHubContext<MainHub> hubContext) : IHubService
+{
+    private readonly ConcurrentDictionary<string, HubClient> clients = new();
+
+    public string TopicChannel(string name) => $"topic:{name}";
+
+    public string StoreChannel(string name) => $"store:{name}";
+
+    public bool Add(HubClient client) => clients.TryAdd(client.ConnectionId, client);
+
+    public bool Remove(string connectionId, out HubClient? client) => clients.TryRemove(connectionId, out client);
+
+    public HubClient Get(string connectionId)
+    {
+        if (clients.TryGetValue(connectionId, out var client))
+            return client;
+
+        throw new KeyNotFoundException($"O cliente com ID de conexão '{connectionId}' não foi encontrado.");
+    }
+
+    public HubClient[] ListSubscribers(string topicName)
+    {
+        return clients.Values.Where(c => c.Topics.Contains(topicName)).ToArray();
+    }
+
+    public Task PublishToTopic(string name, TopicMessage message)
+    {
+        return hubContext.Clients.Group(TopicChannel(name)).SendAsync("Topic.Message", name, message);
+    }
+
+    public async Task RemoveTopicSubscribers(string name)
+    {
+        var subscribers = ListSubscribers(name);
+        foreach (var client in subscribers)
+        {
+            client.Topics.Remove(name);
+            await hubContext.Groups.RemoveFromGroupAsync(client.ConnectionId, TopicChannel(name));
+        }
+    }
+}
