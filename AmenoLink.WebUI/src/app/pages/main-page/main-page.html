@@ -6,19 +6,29 @@
             [fitInkBarToContent]="true"
             [(selectedIndex)]="activeTabIndex"
         >
+            <mat-tab label="Geral">
+                <div class="tab-content">
+                    <app-general-tab />
+                </div>
+            </mat-tab>
             <mat-tab label="Programas">
                 <div class="tab-content">
                     <app-programs-tab />
                 </div>
             </mat-tab>
-            <mat-tab label="Cache">
+            <mat-tab label="Caches">
                 <div class="tab-content">
-                    <app-cache-tab />
+                    <app-caches-tab />
                 </div>
             </mat-tab>
-            <mat-tab label="Estado">
+            <mat-tab label="Tópicos">
                 <div class="tab-content">
-                    <app-store-tab />
+                    <app-topics-tab />
+                </div>
+            </mat-tab>
+            <mat-tab label="Estados">
+                <div class="tab-content">
+                    <app-stores-tab />
                 </div>
             </mat-tab>
         </mat-tab-group>

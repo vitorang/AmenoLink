@@ -56,7 +56,7 @@ export class ProgramsService {
                     const newProgram: ProgramConfig = {
                         id: ulid(),
                         path: selectedPath,
-                        handlers: [],
+                        actions: [],
                         slidingExpirationInSeconds: 300,
                         startupTimeoutInSeconds: 30,
                         maxInstances: 1,
@@ -97,7 +97,7 @@ export class ProgramsService {
     save(): void {
         const sortedPrograms = [...this.programs()]
             .map((program) => {
-                const sortedHandlers = [...(program.handlers || [])].sort((a, b) =>
+                const sortedActions = [...(program.actions || [])].sort((a, b) =>
                     (a.route || '').localeCompare(b.route || '', undefined, {
                         numeric: true,
                         sensitivity: 'base',
@@ -106,7 +106,7 @@ export class ProgramsService {
 
                 return {
                     ...program,
-                    handlers: sortedHandlers,
+                    actions: sortedActions,
                 };
             })
             .sort((a, b) => {

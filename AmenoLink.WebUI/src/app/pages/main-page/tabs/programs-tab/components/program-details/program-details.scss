@@ -88,12 +88,12 @@
         }
     }
 
-    .handlers-list {
+    .actions-list {
         display: flex;
         flex-direction: column;
         gap: 8px;
 
-        .empty-handlers {
+        .empty-actions {
             padding: 16px;
             text-align: center;
             opacity: 0.45;

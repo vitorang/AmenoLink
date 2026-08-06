@@ -33,7 +33,7 @@ internal static class Program
         app.UseCors("AllowLocalhostOrigins");
         app.MapApiEndpoints();
         app.MapConfigEndpoints();
-        app.MapHub<MainHub>("/main-hub");
+        app.MapHub<AppHub>("/app-hub");
 
         var staticPath = ResolveStaticPath(builder.Environment);
 

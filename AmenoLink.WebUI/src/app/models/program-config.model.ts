@@ -1,4 +1,4 @@
-export interface ProgramConfigHandler {
+export interface ProgramConfigAction {
     route: string;
     timeoutInSeconds: number;
 }
@@ -6,7 +6,7 @@ export interface ProgramConfigHandler {
 export interface ProgramConfig {
     id: string;
     path: string;
-    handlers: ProgramConfigHandler[];
+    actions: ProgramConfigAction[];
     slidingExpirationInSeconds: number;
     startupTimeoutInSeconds: number;
     maxInstances: number;

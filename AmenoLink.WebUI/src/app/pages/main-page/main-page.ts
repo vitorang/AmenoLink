@@ -2,17 +2,19 @@ import { Component, OnInit, inject } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { GeneralTab } from './tabs/general-tab/general-tab';
 import { ProgramsTab } from './tabs/programs-tab/programs-tab';
-import { CacheTab } from './tabs/cache-tab/cache-tab';
-import { StoreTab } from './tabs/store-tab/store-tab';
+import { CachesTab } from './tabs/caches-tab/caches-tab';
+import { TopicsTab } from './tabs/topics-tab/topics-tab';
+import { StoresTab } from './tabs/stores-tab/stores-tab';
 import { ProgramsService } from '../../services/programs.service';
 import { CacheService } from '../../services/cache.service';
 
-export type TabAlias = 'programs' | 'cache' | 'store';
+export type TabAlias = 'general' | 'programs' | 'caches' | 'topics' | 'stores';
 
 @Component({
     selector: 'app-main-page',
-    imports: [MatTabsModule, MatButtonModule, MatIconModule, ProgramsTab, CacheTab, StoreTab],
+    imports: [MatTabsModule, MatButtonModule, MatIconModule, GeneralTab, ProgramsTab, CachesTab, TopicsTab, StoresTab],
     templateUrl: './main-page.html',
     styleUrl: './main-page.scss',
 })
@@ -20,22 +22,24 @@ export class MainPage implements OnInit {
     protected readonly programsService = inject(ProgramsService);
     protected readonly cacheService = inject(CacheService);
 
-    activeTab: TabAlias = 'programs';
+    activeTab: TabAlias = 'general';
 
     readonly tabIndexMap: Record<TabAlias, number> = {
-        programs: 0,
-        cache: 1,
-        store: 2,
+        general: 0,
+        programs: 1,
+        caches: 2,
+        topics: 3,
+        stores: 4,
     };
 
-    readonly tabAliases: TabAlias[] = ['programs', 'cache', 'store'];
+    readonly tabAliases: TabAlias[] = ['general', 'programs', 'caches', 'topics', 'stores'];
 
     get activeTabIndex(): number {
         return this.tabIndexMap[this.activeTab];
     }
 
     set activeTabIndex(index: number) {
-        this.activeTab = this.tabAliases[index] ?? 'programs';
+        this.activeTab = this.tabAliases[index] ?? 'general';
     }
 
     ngOnInit(): void {
@@ -45,14 +49,14 @@ export class MainPage implements OnInit {
     onUndo(): void {
         if (this.activeTab === 'programs')
             this.programsService.load();
-        else if (this.activeTab === 'cache')
+        else if (this.activeTab === 'caches')
             this.cacheService.load();
     }
 
     onSave(): void {
         if (this.activeTab === 'programs')
             this.programsService.save();
-        else if (this.activeTab === 'cache')
+        else if (this.activeTab === 'caches')
             this.cacheService.save();
     }
 }

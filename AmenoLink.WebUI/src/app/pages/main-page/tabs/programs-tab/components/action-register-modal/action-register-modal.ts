@@ -5,14 +5,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ProgramConfigHandler } from '../../../../../../models/program-config.model';
+import { ProgramConfigAction } from '../../../../../../models/program-config.model';
 
-export interface HandlerRegisterModalData {
-    handler?: ProgramConfigHandler;
+export interface ActionRegisterModalData {
+    action?: ProgramConfigAction;
 }
 
 @Component({
-    selector: 'app-handler-register-modal',
+    selector: 'app-action-register-modal',
     imports: [
         FormsModule,
         MatDialogModule,
@@ -21,17 +21,17 @@ export interface HandlerRegisterModalData {
         MatButtonModule,
         MatIconModule,
     ],
-    templateUrl: './handler-register-modal.html',
-    styleUrl: './handler-register-modal.scss',
+    templateUrl: './action-register-modal.html',
+    styleUrl: './action-register-modal.scss',
 })
-export class HandlerRegisterModal {
-    private readonly dialogRef = inject(MatDialogRef<HandlerRegisterModal>);
-    private readonly data: HandlerRegisterModalData =
+export class ActionRegisterModal {
+    private readonly dialogRef = inject(MatDialogRef<ActionRegisterModal>);
+    private readonly data: ActionRegisterModalData =
         inject(MAT_DIALOG_DATA, { optional: true }) || {};
 
-    readonly isEditing = !!this.data.handler;
-    readonly route = signal<string>(this.data.handler?.route || '');
-    readonly timeoutInSeconds = signal<number>(this.data.handler?.timeoutInSeconds ?? 10);
+    readonly isEditing = !!this.data.action;
+    readonly route = signal<string>(this.data.action?.route || '');
+    readonly timeoutInSeconds = signal<number>(this.data.action?.timeoutInSeconds ?? 10);
 
     get isValid(): boolean {
         const value = this.route();
@@ -68,7 +68,7 @@ export class HandlerRegisterModal {
         if (!this.isValid)
             return;
 
-        const result: ProgramConfigHandler = {
+        const result: ProgramConfigAction = {
             route: this.route().trim(),
             timeoutInSeconds: this.timeoutInSeconds(),
         };

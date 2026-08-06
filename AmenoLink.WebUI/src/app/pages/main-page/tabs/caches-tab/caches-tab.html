@@ -20,10 +20,10 @@
                 (rename)="onRename()"
             />
         } @else {
-            <div class="no-selection-state">
-                <mat-icon class="no-selection-icon">mouse</mat-icon>
-                <span>Selecione ou adicione um grupo de cache para ver os detalhes.</span>
-            </div>
+            <app-empty-state
+                icon="mouse"
+                message="Selecione ou adicione um grupo de cache para ver os detalhes."
+            />
         }
     </div>
 </div>

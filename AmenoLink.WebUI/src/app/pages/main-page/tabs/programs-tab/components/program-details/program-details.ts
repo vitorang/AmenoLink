@@ -5,13 +5,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ProgramConfig, ProgramConfigHandler } from '../../../../../../models/program-config.model';
+import { ProgramConfig, ProgramConfigAction } from '../../../../../../models/program-config.model';
 import { ConfigurationService } from '../../../../../../services/configuration.service';
-import { HandlerEntry } from '../handler-entry/handler-entry';
+import { ActionEntry } from '../action-entry/action-entry';
 import {
-    HandlerRegisterModal,
-    HandlerRegisterModalData,
-} from '../handler-register-modal/handler-register-modal';
+    ActionRegisterModal,
+    ActionRegisterModalData,
+} from '../action-register-modal/action-register-modal';
 
 @Component({
     selector: 'app-program-details',
@@ -22,7 +22,7 @@ import {
         MatIconModule,
         MatButtonModule,
         MatDialogModule,
-        HandlerEntry,
+        ActionEntry,
     ],
     templateUrl: './program-details.html',
     styleUrl: './program-details.scss',
@@ -57,59 +57,59 @@ export class ProgramDetails {
         });
     }
 
-    onAddHandler(): void {
+    onAddAction(): void {
         const dialogRef = this.dialog.open<
-            HandlerRegisterModal,
-            HandlerRegisterModalData,
-            ProgramConfigHandler
-        >(HandlerRegisterModal);
+            ActionRegisterModal,
+            ActionRegisterModalData,
+            ProgramConfigAction
+        >(ActionRegisterModal);
 
         dialogRef.afterClosed().subscribe((result) => {
             if (!result)
                 return;
 
-            const currentHandlers = this.program().handlers || [];
-            const updatedHandlers = [...currentHandlers, result];
+            const currentActions = this.program().actions || [];
+            const updatedActions = [...currentActions, result];
 
             this.programChange.emit({
                 ...this.program(),
-                handlers: updatedHandlers,
+                actions: updatedActions,
             });
         });
     }
 
-    onEditHandler(handlerIndex: number): void {
-        const targetHandler = this.program().handlers[handlerIndex];
-        if (!targetHandler)
+    onEditAction(actionIndex: number): void {
+        const targetAction = this.program().actions[actionIndex];
+        if (!targetAction)
             return;
 
         const dialogRef = this.dialog.open<
-            HandlerRegisterModal,
-            HandlerRegisterModalData,
-            ProgramConfigHandler
-        >(HandlerRegisterModal, {
-            data: { handler: targetHandler },
+            ActionRegisterModal,
+            ActionRegisterModalData,
+            ProgramConfigAction
+        >(ActionRegisterModal, {
+            data: { action: targetAction },
         });
 
         dialogRef.afterClosed().subscribe((result) => {
             if (!result)
                 return;
 
-            const updatedHandlers = [...this.program().handlers];
-            updatedHandlers[handlerIndex] = result;
+            const updatedActions = [...this.program().actions];
+            updatedActions[actionIndex] = result;
 
             this.programChange.emit({
                 ...this.program(),
-                handlers: updatedHandlers,
+                actions: updatedActions,
             });
         });
     }
 
-    onRemoveHandler(handlerIndex: number): void {
-        const updatedHandlers = this.program().handlers.filter((_, i) => i !== handlerIndex);
+    onRemoveAction(actionIndex: number): void {
+        const updatedActions = this.program().actions.filter((_, i) => i !== actionIndex);
         this.programChange.emit({
             ...this.program(),
-            handlers: updatedHandlers,
+            actions: updatedActions,
         });
     }
 

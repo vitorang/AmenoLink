@@ -2,11 +2,11 @@ import { Component, computed, inject } from '@angular/core';
 import { ProgramsService } from '../../../../services/programs.service';
 import { ProgramDetails } from './components/program-details/program-details';
 import { GroupManager, GroupManagerItem } from '../../components/group-manager/group-manager';
-import { MatIconModule } from '@angular/material/icon';
+import { EmptyState } from '../../../../components/empty-state/empty-state';
 
 @Component({
     selector: 'app-programs-tab',
-    imports: [ProgramDetails, GroupManager, MatIconModule],
+    imports: [ProgramDetails, GroupManager, EmptyState],
     templateUrl: './programs-tab.html',
     styleUrl: './programs-tab.scss',
 })
@@ -20,7 +20,7 @@ export class ProgramsTab {
             return {
                 id: p.id,
                 name,
-                count: p.handlers.length,
+                count: p.actions.length,
             };
         }),
     );
@@ -31,11 +31,13 @@ export class ProgramsTab {
 
     onRemove(id: string): void {
         const program = this.programsService.programs().find((p) => p.id === id);
-        if (program) this.programsService.removeProgram(program);
+        if (program)
+            this.programsService.removeProgram(program);
     }
 
     onSelect(item: GroupManagerItem): void {
         const program = this.programsService.programs().find((p) => p.id === item.id);
-        if (program) this.programsService.selectProgram(program);
+        if (program)
+            this.programsService.selectProgram(program);
     }
 }

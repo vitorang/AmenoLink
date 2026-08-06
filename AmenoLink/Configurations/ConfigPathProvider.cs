@@ -5,9 +5,15 @@ namespace AmenoLink.Configurations;
 
 internal static class ConfigPathProvider
 {
+#if DEBUG
+    private const string FolderName = "AmenoLink-Debug";
+#else
+    private const string FolderName = "AmenoLink";
+#endif
+
     private static readonly string BaseDirectory = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "AmenoLink"
+        FolderName
     );
 
     public static string GetConfigDirectory()

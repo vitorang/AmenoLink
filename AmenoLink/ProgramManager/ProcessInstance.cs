@@ -19,14 +19,14 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
     private AutoResetEvent? currentStartupEvent;
     private readonly List<string> Logs = [];
 
-    public ActionResponse Execute(ProgramConfig.Handler handler, ActionRequest request)
+    public ActionResponse Execute(ProgramConfig.Action action, ActionRequest request)
     {
         lock (Logs)
         {
             Logs.Clear();
         }
 
-        var response = ExecuteInternal(handler, request);
+        var response = ExecuteInternal(action, request);
 
         string[] capturedLogs;
         lock (Logs)
@@ -38,7 +38,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         return response with { Logs = capturedLogs };
     }
 
-    private ActionResponse ExecuteInternal(ProgramConfig.Handler handler, ActionRequest request)
+    private ActionResponse ExecuteInternal(ProgramConfig.Action action, ActionRequest request)
     {
         var errorResponse = StartProccess(request);
         if (errorResponse != null)
@@ -58,7 +58,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         {
             actionTimedOut = true;
             responseEvent.Set();
-        }, null, TimeSpan.FromSeconds(handler.TimeoutInSeconds), Timeout.InfiniteTimeSpan);
+        }, null, TimeSpan.FromSeconds(action.TimeoutInSeconds), Timeout.InfiniteTimeSpan);
 
         void outputHandler(object sender, DataReceivedEventArgs e) => HandleOutputData(e, request, responseEvent, ref response);
 
@@ -341,4 +341,3 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         runner.RemoveInstance(this);
     }
 }
-

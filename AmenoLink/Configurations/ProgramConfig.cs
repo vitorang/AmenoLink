@@ -3,13 +3,13 @@ namespace AmenoLink.Configurations;
 public record ProgramConfig(
     string Id,
     string Path,
-    ProgramConfig.Handler[] Handlers,
+    ProgramConfig.Action[] Actions,
     int SlidingExpirationInSeconds,
     int StartupTimeoutInSeconds,
     int MaxInstances
 )
 {
-    public record Handler(
+    public record Action(
         string Route,
         int TimeoutInSeconds
     );

@@ -9,14 +9,14 @@ internal class ProgramRunner(ProgramConfig config) : IProgramRunner
     private readonly SemaphoreSlim semaphore = new(config.MaxInstances, config.MaxInstances);
     private readonly List<ProcessInstance> instances = [];
 
-    public async Task<ActionResponse> Execute(ProgramConfig.Handler handler, ActionRequest request)
+    public async Task<ActionResponse> Execute(ProgramConfig.Action action, ActionRequest request)
     {
         await semaphore.WaitAsync();
 
         try
         {
             ProcessInstance instance = GetOrCreateInstance();
-            return await Task.Run(() => instance.Execute(handler, request));
+            return await Task.Run(() => instance.Execute(action, request));
         }
         finally
         {

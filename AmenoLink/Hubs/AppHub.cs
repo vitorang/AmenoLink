@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace AmenoLink.Hubs;
 
-internal partial class MainHub(IHubService hubService, ITopicManager topicManager) : Hub
+internal class AppHub(IHubService hubService, ITopicManager topicManager) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -27,5 +27,25 @@ internal partial class MainHub(IHubService hubService, ITopicManager topicManage
     {
         hubService.Remove(Context.ConnectionId, out _);
         await base.OnDisconnectedAsync(exception);
+    }
+
+    [HubMethodName("Topic.Subscribe")]
+    public async Task<bool> SubscribeToTopic(string name)
+    {
+        if (!topicManager.Exists(name))
+            return false;
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, hubService.TopicChannel(name));
+        var client = hubService.Get(Context.ConnectionId);
+        client.Topics.Add(name);
+        return true;
+    }
+
+    [HubMethodName("Topic.Unsubscribe")]
+    public async Task UnsubscribeFromTopic(string name)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, hubService.TopicChannel(name));
+        var client = hubService.Get(Context.ConnectionId);
+        client.Topics.Remove(name);
     }
 }

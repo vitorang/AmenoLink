@@ -70,21 +70,21 @@
             <mat-icon class="section-icon">bolt</mat-icon>
             Ações
         </div>
-        <button mat-stroked-button (click)="onAddHandler()">
+        <button mat-stroked-button (click)="onAddAction()">
             <mat-icon>add</mat-icon>
             Adicionar Ação
         </button>
     </div>
 
-    <div class="handlers-list">
-        @for (handler of program().handlers; track $index) {
-            <app-handler-entry
-                [handler]="handler"
-                (click)="onEditHandler($index)"
-                (remove)="onRemoveHandler($index)"
+    <div class="actions-list">
+        @for (action of program().actions; track $index) {
+            <app-action-entry
+                [action]="action"
+                (click)="onEditAction($index)"
+                (remove)="onRemoveAction($index)"
             />
         } @empty {
-            <div class="empty-handlers">Nenhuma ação cadastrada para este programa.</div>
+            <div class="empty-actions">Nenhuma ação cadastrada para este programa.</div>
         }
     </div>
 </div>

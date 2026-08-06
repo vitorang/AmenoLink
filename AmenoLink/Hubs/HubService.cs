@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 
 namespace AmenoLink.Hubs;
 
-internal class HubService(IHubContext<MainHub> hubContext) : IHubService
+internal class HubService(IHubContext<AppHub> hubContext) : IHubService
 {
     private readonly ConcurrentDictionary<string, HubClient> clients = new();
 

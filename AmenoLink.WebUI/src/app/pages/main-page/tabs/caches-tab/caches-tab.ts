@@ -1,18 +1,18 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CacheService } from '../../../../services/cache.service';
 import { GroupManager, GroupManagerItem } from '../../components/group-manager/group-manager';
 import { CacheDetails } from './components/cache-details/cache-details';
 import { CacheGroupRegisterModal } from './components/cache-group-register-modal/cache-group-register-modal';
+import { EmptyState } from '../../../../components/empty-state/empty-state';
 
 @Component({
-    selector: 'app-cache-tab',
-    imports: [GroupManager, CacheDetails, MatIconModule, MatDialogModule],
-    templateUrl: './cache-tab.html',
-    styleUrl: './cache-tab.scss',
+    selector: 'app-caches-tab',
+    imports: [GroupManager, CacheDetails, MatDialogModule, EmptyState],
+    templateUrl: './caches-tab.html',
+    styleUrl: './caches-tab.scss',
 })
-export class CacheTab implements OnInit {
+export class CachesTab implements OnInit {
     protected readonly cacheService = inject(CacheService);
     private readonly dialog = inject(MatDialog);
 

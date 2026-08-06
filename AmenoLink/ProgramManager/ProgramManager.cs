@@ -8,7 +8,7 @@ namespace AmenoLink.ProgramManager;
 internal class ProgramManager(ITopicManager topicManager) : IProgramManager
 {
     private readonly Dictionary<ProgramConfig, IProgramRunner> runners = [];
-    private readonly Dictionary<string, (ProgramConfig Program, ProgramConfig.Handler Handler)> routeMap = [];
+    private readonly Dictionary<string, (ProgramConfig Program, ProgramConfig.Action Action)> routeMap = [];
 
     public void LoadConfigurations()
     {
@@ -27,9 +27,9 @@ internal class ProgramManager(ITopicManager topicManager) : IProgramManager
             routeMap.Clear();
             foreach (var program in configs)
             {
-                foreach (var handler in program.Handlers)
+                foreach (var action in program.Actions)
                 {
-                    routeMap[handler.Route] = (program, handler);
+                    routeMap[action.Route] = (program, action);
                 }
             }
         }
@@ -37,7 +37,7 @@ internal class ProgramManager(ITopicManager topicManager) : IProgramManager
 
     public async Task<ActionResponse> Execute(ActionRequest request)
     {
-        (ProgramConfig Program, ProgramConfig.Handler Handler) routeData;
+        (ProgramConfig Program, ProgramConfig.Action Action) routeData;
 
         lock (routeMap)
         {
@@ -61,7 +61,7 @@ internal class ProgramManager(ITopicManager topicManager) : IProgramManager
             }
         }
 
-        var response = await runner.Execute(routeData.Handler, request);
+        var response = await runner.Execute(routeData.Action, request);
         var topicMessage = new TopicMessage(request.Route, response, Previous: request);
         if (topicManager.Exists(request.Route))
             _ = topicManager.Publish(request.Route, topicMessage);
