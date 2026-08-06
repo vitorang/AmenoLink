@@ -18,15 +18,15 @@ $theme: mat.m2-define-dark-theme((color: (primary: mat.m2-define-palette(mat.$m2
     --primary-color: #ff9800;
     --primary-color-light: #ffb74d;
     --danger-color: #f44336;
-    --danger-color-bg: rgba(244, 67, 54, 0.12);
+    --danger-color-background: rgba(244, 67, 54, 0.12);
 
-    --surface-bg: #121212;
-    --surface-panel-bg: rgba(255, 255, 255, 0.03);
-    --surface-panel-bg-hover: rgba(255, 255, 255, 0.07);
-    --surface-card-bg: rgba(255, 255, 255, 0.02);
+    --surface-background: #121212;
+    --surface-panel-background: rgba(255, 255, 255, 0.03);
+    --surface-panel-background-hover: rgba(255, 255, 255, 0.07);
+    --surface-card-background: rgba(255, 255, 255, 0.02);
     --surface-item-hover: rgba(255, 255, 255, 0.05);
     --surface-item-selected: rgba(255, 255, 255, 0.1);
-    --surface-badge-bg: rgba(255, 255, 255, 0.08);
+    --surface-badge-background: rgba(255, 255, 255, 0.08);
 
     --border-color-subtle: rgba(255, 255, 255, 0.06);
     --border-color-medium: rgba(255, 255, 255, 0.08);
@@ -41,11 +41,12 @@ html {
 html,
 body {
     height: 100%;
-    margin: 0;
+    margin: 0 auto;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
-    background-color: var(--surface-bg);
+    background-color: var(--surface-background);
     color: var(--mat-app-text-color, #ffffff);
     user-select: none;
+    max-width: 1200px;
 }
 
 input,
@@ -57,6 +58,16 @@ textarea,
     user-select: text;
 }
 
+* {
+    scrollbar-color: rgba(255, 255, 255, 0.30) transparent;
+}
+
+*::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
 .compact-tabs {
     display: flex;
     flex-direction: column;
@@ -66,10 +77,20 @@ textarea,
         justify-content: flex-start;
     }
 
+    .mdc-tab-indicator {
+        display: none !important;
+    }
+
     .mat-mdc-tab {
         min-width: 0 !important;
         flex-grow: 0 !important;
         padding: 0 16px !important;
+        box-sizing: border-box;
+        border-top: 2px solid transparent;
+
+        &.mdc-tab--active {
+            border-top-color: var(--primary-color);
+        }
 
         .mdc-tab__text-label {
             text-transform: uppercase;
@@ -101,4 +122,25 @@ textarea,
         font-weight: 600;
         line-height: 1;
     }
+}
+
+.mat-mdc-form-field {
+
+    .mat-mdc-form-field-icon-suffix,
+    [matSuffix] {
+        opacity: 0.65;
+    }
+
+    &:hover,
+    &.mat-focused {
+
+        .mat-mdc-form-field-icon-suffix,
+        [matSuffix] {
+            opacity: 0.85;
+        }
+    }
+}
+
+.mat-mdc-dialog-actions.mat-mdc-dialog-actions {
+    padding: 8px 24px 18px 24px;
 }

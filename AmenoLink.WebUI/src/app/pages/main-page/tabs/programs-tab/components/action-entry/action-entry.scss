@@ -4,19 +4,23 @@
     gap: 12px;
     padding: 8px 12px;
     border-radius: 8px;
-    background-color: var(--surface-panel-bg);
+    background-color: var(--surface-panel-background);
     border: 1px solid var(--border-color-subtle);
     cursor: pointer;
     user-select: none;
     transition: all 0.15s ease;
 
     &:hover {
-        background-color: var(--surface-panel-bg-hover);
+        background-color: var(--surface-panel-background-hover);
         border-color: var(--border-color-hover);
 
         .action-icon {
             opacity: 1;
             color: var(--primary-color);
+        }
+
+        .action-route {
+            opacity: 1;
         }
 
         .time-badge {
@@ -29,7 +33,7 @@
             }
         }
 
-        .remove-btn {
+        .remove-button {
             opacity: 0.8;
         }
     }
@@ -38,7 +42,7 @@
         font-size: 20px;
         width: 20px;
         height: 20px;
-        opacity: 0.7;
+        opacity: 0.6;
         transition:
             color 0.15s ease,
             opacity 0.15s ease;
@@ -51,13 +55,15 @@
         overflow: hidden;
         text-overflow: ellipsis;
         flex: 1;
+        opacity: 0.85;
+        transition: opacity 0.15s ease;
     }
 
     .time-badge {
         margin-left: auto;
     }
 
-    .remove-btn {
+    .remove-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -72,7 +78,7 @@
         &:hover {
             opacity: 1;
             color: var(--danger-color);
-            background-color: var(--danger-color-bg);
+            background-color: var(--danger-color-background);
         }
 
         .close-icon {

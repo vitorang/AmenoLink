@@ -1,0 +1,21 @@
+.tab-layout-container,
+.programs-tab-container,
+.cache-tab-container {
+    display: flex;
+    gap: 24px;
+    height: 100%;
+    box-sizing: border-box;
+
+    .left-column {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .right-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+    }
+}

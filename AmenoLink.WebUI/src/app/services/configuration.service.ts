@@ -27,7 +27,11 @@ export class ConfigurationService {
         return this.http.post<void>(`${this.baseUrl}/cache`, configs);
     }
 
-    selectExecutable(): Observable<string | null> {
-        return this.http.get<string | null>(`${this.baseUrl}/select-executable`);
+    selectExecutable(currentPath?: string): Observable<string | null> {
+        let url = `${this.baseUrl}/select-executable`;
+        if (currentPath)
+            url += `?currentPath=${encodeURIComponent(currentPath)}`;
+
+        return this.http.get<string | null>(url);
     }
 }

@@ -1,9 +1,9 @@
-<div class="program-details-container">
+<div class="details-card">
     <div class="details-header">
         <mat-icon class="header-icon">terminal</mat-icon>
         <div class="header-titles">
-            <h2 class="program-title">{{ programName }}</h2>
-            <span class="program-path">{{ program().path }}</span>
+            <h2 class="details-title">{{ programName }}</h2>
+            <span class="details-subtitle">{{ program().path }}</span>
         </div>
         <button mat-icon-button (click)="onChangeExecutable()" title="Alterar executável">
             <mat-icon>folder_open</mat-icon>
@@ -14,15 +14,8 @@
     <div class="fields-grid">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Máximo de Instâncias</mat-label>
-            <input
-                matInput
-                type="number"
-                min="1"
-                step="1"
-                [ngModel]="program().maxInstances"
-                (ngModelChange)="onMaxInstancesChange($event)"
-                (blur)="onBlur($event)"
-            />
+            <input matInput type="number" min="1" step="1" [ngModel]="program().maxInstances"
+                (ngModelChange)="onMaxInstancesChange($event)" (blur)="onBlur($event)" />
             <mat-icon matSuffix>stack</mat-icon>
         </mat-form-field>
     </div>
@@ -31,40 +24,26 @@
     <div class="fields-grid">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Inicialização</mat-label>
-            <input
-                matInput
-                type="number"
-                min="1"
-                step="1"
-                [ngModel]="program().startupTimeoutInSeconds"
-                (ngModelChange)="onStartupTimeoutChange($event)"
-                (blur)="onBlur($event)"
-            />
+            <input matInput type="number" min="1" step="1" [ngModel]="program().startupTimeoutInSeconds"
+                (ngModelChange)="onStartupTimeoutChange($event)" (blur)="onBlur($event)" />
             <mat-icon matSuffix>timer</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Inatividade</mat-label>
-            <input
-                matInput
-                type="number"
-                min="1"
-                step="1"
-                [ngModel]="program().slidingExpirationInSeconds"
-                (ngModelChange)="onSlidingExpirationChange($event)"
-                (blur)="onBlur($event)"
-            />
+            <input matInput type="number" min="1" step="1" [ngModel]="program().slidingExpirationInSeconds"
+                (ngModelChange)="onSlidingExpirationChange($event)" (blur)="onBlur($event)" />
             <mat-icon matSuffix>timer</mat-icon>
         </mat-form-field>
     </div>
 
-    <div class="time-note">
+    <div class="info-note">
         <mat-icon class="note-icon">info</mat-icon>
         <span>Tempo em segundos</span>
     </div>
 </div>
 
-<div class="program-details-container">
+<div class="details-card">
     <div class="section-header">
         <div class="section-title">
             <mat-icon class="section-icon">bolt</mat-icon>
@@ -77,14 +56,10 @@
     </div>
 
     <div class="actions-list">
-        @for (action of program().actions; track $index) {
-            <app-action-entry
-                [action]="action"
-                (click)="onEditAction($index)"
-                (remove)="onRemoveAction($index)"
-            />
+        @for (action of sortedActions(); track action.route) {
+        <app-action-entry [action]="action" (click)="onEditAction(action)" (remove)="onRemoveAction(action)" />
         } @empty {
-            <div class="empty-actions">Nenhuma ação cadastrada para este programa.</div>
+        <div class="empty-values">Nenhuma ação cadastrada para este programa.</div>
         }
     </div>
 </div>

@@ -75,30 +75,6 @@ export class CacheService {
         this.selectedCacheConfig.set(config);
     }
 
-    renameCacheConfig(oldGroupName: string, newGroupName: string): void {
-        const newKey = newGroupName.trim();
-        if (!newKey || oldGroupName === newKey)
-            return;
-
-        const exists = this.cacheConfigs().some((c) => c.groupName === newKey);
-        if (exists) {
-            this.showErrorDialog('Grupo Existente', `O grupo de cache '${newKey}' já existe.`);
-            return;
-        }
-
-        this.cacheConfigs.update((prev) =>
-            prev.map((c) => (c.groupName === oldGroupName ? { ...c, groupName: newKey } : c)),
-        );
-
-        const currentSelected = this.selectedCacheConfig();
-        if (currentSelected?.groupName === oldGroupName) {
-            this.selectedCacheConfig.set({
-                ...currentSelected,
-                groupName: newKey,
-            });
-        }
-    }
-
     updateSelectedCacheConfig(updated: CacheConfig): void {
         const current = this.selectedCacheConfig();
         if (!current)

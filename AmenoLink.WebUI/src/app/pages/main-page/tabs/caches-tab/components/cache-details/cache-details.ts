@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { forkJoin, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { CacheConfig } from '../../../../../../models/cache-config.model';
 import { CacheDataService, CacheEntryItem } from '../../../../../../services/cache-data.service';
@@ -30,7 +30,6 @@ export class CacheDetails {
 
     readonly config = input.required<CacheConfig>();
     readonly configChange = output<CacheConfig>();
-    readonly rename = output<void>();
 
     readonly cacheEntries = signal<CacheEntryItem[] | null>(null);
     readonly loadingEntries = signal<boolean>(false);
@@ -46,10 +45,6 @@ export class CacheDetails {
                 this.cacheEntries.set(null);
             }
         });
-    }
-
-    onRenameGroup(): void {
-        this.rename.emit();
     }
 
     onRefreshValues(): void {

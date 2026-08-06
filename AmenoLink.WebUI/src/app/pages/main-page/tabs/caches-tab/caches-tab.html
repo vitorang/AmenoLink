@@ -1,9 +1,8 @@
-<div class="cache-tab-container">
+<div class="tab-layout-container">
     <div class="left-column">
         <app-group-manager
             [items]="cacheItems()"
             [selectedId]="cacheService.selectedCacheConfig()?.groupName ?? null"
-            itemIcon="hourglass_empty"
             badgeIcon="folder"
             emptyText="Nenhum grupo de cache cadastrado."
             (add)="onAdd()"
@@ -17,7 +16,6 @@
             <app-cache-details
                 [config]="selected"
                 (configChange)="cacheService.updateSelectedCacheConfig($event)"
-                (rename)="onRename()"
             />
         } @else {
             <app-empty-state

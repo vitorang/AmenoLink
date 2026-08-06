@@ -3,7 +3,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CacheService } from '../../../../services/cache.service';
 import { GroupManager, GroupManagerItem } from '../../components/group-manager/group-manager';
 import { CacheDetails } from './components/cache-details/cache-details';
-import { CacheGroupRegisterModal } from './components/cache-group-register-modal/cache-group-register-modal';
+import { TextPromptModal, TextPromptModalData } from '../../../../components/text-prompt-modal/text-prompt-modal';
 import { EmptyState } from '../../../../components/empty-state/empty-state';
 
 @Component({
@@ -28,8 +28,16 @@ export class CachesTab implements OnInit {
     }
 
     onAdd(): void {
-        const dialogRef = this.dialog.open<CacheGroupRegisterModal, void, string>(
-            CacheGroupRegisterModal,
+        const dialogRef = this.dialog.open<TextPromptModal, TextPromptModalData, string>(
+            TextPromptModal,
+            {
+                data: {
+                    title: 'Novo Grupo de Cache',
+                    label: 'Grupo',
+                    icon: 'hourglass_empty',
+                    confirmButtonText: 'Criar Grupo',
+                },
+            },
         );
 
         dialogRef.afterClosed().subscribe((groupName) => {
@@ -50,23 +58,5 @@ export class CachesTab implements OnInit {
         const config = this.cacheService.cacheConfigs().find((c) => c.groupName === item.id);
         if (config)
             this.cacheService.selectCacheConfig(config);
-    }
-
-    onRename(): void {
-        const current = this.cacheService.selectedCacheConfig();
-        if (!current)
-            return;
-
-        const dialogRef = this.dialog.open<CacheGroupRegisterModal, { groupName?: string }, string>(
-            CacheGroupRegisterModal,
-            { data: { groupName: current.groupName } },
-        );
-
-        dialogRef.afterClosed().subscribe((newGroupName) => {
-            if (!newGroupName)
-                return;
-
-            this.cacheService.renameCacheConfig(current.groupName, newGroupName);
-        });
     }
 }

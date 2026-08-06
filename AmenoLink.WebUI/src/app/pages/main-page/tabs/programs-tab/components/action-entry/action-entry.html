@@ -1,5 +1,4 @@
 <div class="action-item">
-    <mat-icon class="action-icon">label</mat-icon>
     <span class="action-route" [title]="action().route">{{ action().route }}</span>
 
     <div class="pill-badge time-badge" [title]="'Tempo limite: ' + action().timeoutInSeconds + 's'">
@@ -7,7 +6,7 @@
         <mat-icon class="time-icon">schedule</mat-icon>
     </div>
 
-    <button mat-icon-button class="remove-btn" (click)="onRemoveClick($event)" title="Remover ação">
+    <button mat-icon-button class="remove-button" (click)="onRemoveClick($event)" title="Remover ação">
         <mat-icon class="close-icon">close</mat-icon>
     </button>
 </div>

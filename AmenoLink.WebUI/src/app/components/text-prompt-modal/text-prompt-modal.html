@@ -1,22 +1,24 @@
-<h2 mat-dialog-title>{{ isEditing ? 'Editar Grupo' : 'Novo Grupo de Cache' }}</h2>
+<h2 mat-dialog-title>{{ title }}</h2>
 
 <mat-dialog-content class="modal-content">
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Grupo</mat-label>
+        <mat-label>{{ label }}</mat-label>
         <input
             matInput
-            [ngModel]="groupName()"
-            (ngModelChange)="groupName.set($event)"
+            [ngModel]="value()"
+            (ngModelChange)="value.set($event)"
             (keyup.enter)="onConfirm()"
             cdkFocusInitial
         />
-        <mat-icon matSuffix>key</mat-icon>
+        @if (icon) {
+            <mat-icon matSuffix>{{ icon }}</mat-icon>
+        }
     </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
     <button mat-button (click)="onCancel()">Cancelar</button>
     <button mat-flat-button color="primary" (click)="onConfirm()" [disabled]="!isValid">
-        {{ isEditing ? 'Salvar' : 'Criar Grupo' }}
+        {{ confirmButtonText }}
     </button>
 </mat-dialog-actions>

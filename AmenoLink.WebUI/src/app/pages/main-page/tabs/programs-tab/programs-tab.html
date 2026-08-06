@@ -1,9 +1,8 @@
-<div class="programs-tab-container">
+<div class="tab-layout-container">
     <div class="left-column">
         <app-group-manager
             [items]="programItems()"
             [selectedId]="programsService.selectedProgram()?.id ?? null"
-            itemIcon="terminal"
             badgeIcon="bolt"
             emptyText="Nenhum programa cadastrado."
             (add)="onAdd()"

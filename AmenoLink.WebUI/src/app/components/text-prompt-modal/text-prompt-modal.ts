@@ -6,12 +6,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface CacheGroupRegisterModalData {
-    groupName?: string;
+export interface TextPromptModalData {
+    title: string;
+    label?: string;
+    value?: string;
+    icon?: string;
+    confirmButtonText?: string;
 }
 
 @Component({
-    selector: 'app-cache-group-register-modal',
+    selector: 'app-text-prompt-modal',
     imports: [
         FormsModule,
         MatDialogModule,
@@ -20,24 +24,27 @@ export interface CacheGroupRegisterModalData {
         MatButtonModule,
         MatIconModule,
     ],
-    templateUrl: './cache-group-register-modal.html',
-    styleUrl: './cache-group-register-modal.scss',
+    templateUrl: './text-prompt-modal.html',
+    styleUrl: './text-prompt-modal.scss',
 })
-export class CacheGroupRegisterModal {
-    private readonly dialogRef = inject(MatDialogRef<CacheGroupRegisterModal>);
-    private readonly data: CacheGroupRegisterModalData =
-        inject(MAT_DIALOG_DATA, { optional: true }) || {};
+export class TextPromptModal {
+    private readonly dialogRef = inject(MatDialogRef<TextPromptModal>);
+    readonly data: TextPromptModalData = inject(MAT_DIALOG_DATA);
 
-    readonly isEditing = !!this.data.groupName;
-    readonly groupName = signal<string>(this.data.groupName || '');
+    readonly title = this.data.title;
+    readonly label = this.data.label || 'Nome';
+    readonly icon = this.data.icon || '';
+    readonly confirmButtonText = this.data.confirmButtonText || 'Salvar';
+
+    readonly value = signal<string>(this.data.value || '');
 
     get isValid(): boolean {
-        const value = this.groupName();
-        if (!value)
+        const val = this.value();
+        if (!val)
             return false;
-        if (value.trim() !== value)
+        if (val.trim() !== val)
             return false;
-        if (value.trim().length === 0)
+        if (val.trim().length === 0)
             return false;
 
         return true;
@@ -51,6 +58,6 @@ export class CacheGroupRegisterModal {
         if (!this.isValid)
             return;
 
-        this.dialogRef.close(this.groupName());
+        this.dialogRef.close(this.value().trim());
     }
 }

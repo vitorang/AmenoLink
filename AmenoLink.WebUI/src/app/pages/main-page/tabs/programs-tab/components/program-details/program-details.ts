@@ -1,4 +1,4 @@
-import { Component, input, output, inject } from '@angular/core';
+import { Component, input, output, inject, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import {
     ActionRegisterModal,
     ActionRegisterModalData,
 } from '../action-register-modal/action-register-modal';
+import { AlertDialogComponent } from '../../../../../../components/alert-dialog/alert-dialog.component';
 
 @Component({
     selector: 'app-program-details',
@@ -34,6 +35,15 @@ export class ProgramDetails {
     readonly program = input.required<ProgramConfig>();
     readonly programChange = output<ProgramConfig>();
 
+    readonly sortedActions = computed<ProgramConfigAction[]>(() =>
+        [...(this.program().actions || [])].sort((a, b) =>
+            (a.route || '').localeCompare(b.route || '', undefined, {
+                numeric: true,
+                sensitivity: 'base',
+            }),
+        ),
+    );
+
     get programName(): string {
         const path = this.program().path;
         if (!path)
@@ -44,7 +54,7 @@ export class ProgramDetails {
     }
 
     onChangeExecutable(): void {
-        this.configService.selectExecutable().subscribe({
+        this.configService.selectExecutable(this.program().path).subscribe({
             next: (selectedPath) => {
                 if (!selectedPath)
                     return;
@@ -69,6 +79,15 @@ export class ProgramDetails {
                 return;
 
             const currentActions = this.program().actions || [];
+            const exists = currentActions.some(
+                (a) => a.route === result.route,
+            );
+
+            if (exists) {
+                this.showActionExistsDialog(result.route);
+                return;
+            }
+
             const updatedActions = [...currentActions, result];
 
             this.programChange.emit({
@@ -78,11 +97,7 @@ export class ProgramDetails {
         });
     }
 
-    onEditAction(actionIndex: number): void {
-        const targetAction = this.program().actions[actionIndex];
-        if (!targetAction)
-            return;
-
+    onEditAction(targetAction: ProgramConfigAction): void {
         const dialogRef = this.dialog.open<
             ActionRegisterModal,
             ActionRegisterModalData,
@@ -95,8 +110,17 @@ export class ProgramDetails {
             if (!result)
                 return;
 
-            const updatedActions = [...this.program().actions];
-            updatedActions[actionIndex] = result;
+            const currentActions = this.program().actions || [];
+            const exists = currentActions.some(
+                (a) => a !== targetAction && a.route === result.route,
+            );
+
+            if (exists) {
+                this.showActionExistsDialog(result.route);
+                return;
+            }
+
+            const updatedActions = currentActions.map((a) => (a === targetAction ? result : a));
 
             this.programChange.emit({
                 ...this.program(),
@@ -105,8 +129,8 @@ export class ProgramDetails {
         });
     }
 
-    onRemoveAction(actionIndex: number): void {
-        const updatedActions = this.program().actions.filter((_, i) => i !== actionIndex);
+    onRemoveAction(targetAction: ProgramConfigAction): void {
+        const updatedActions = (this.program().actions || []).filter((a) => a !== targetAction);
         this.programChange.emit({
             ...this.program(),
             actions: updatedActions,
@@ -140,6 +164,15 @@ export class ProgramDetails {
             inputElement.value = '1';
 
         this.programChange.emit({ ...this.program() });
+    }
+
+    private showActionExistsDialog(route: string): void {
+        this.dialog.open(AlertDialogComponent, {
+            data: {
+                title: 'Ação Existente',
+                message: `Já existe uma ação cadastrada com a rota '${route}'.`,
+            },
+        });
     }
 
     private sanitizePositiveInteger(value: number | null): number {

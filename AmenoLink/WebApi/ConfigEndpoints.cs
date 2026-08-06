@@ -39,7 +39,7 @@ internal static class ConfigEndpoints
             return Results.Ok();
         });
 
-        group.MapGet("/select-executable", () =>
+        group.MapGet("/select-executable", (string? currentPath) =>
         {
             string? selectedFile = null;
 
@@ -50,6 +50,15 @@ internal static class ConfigEndpoints
                     Filter = "Executáveis e Scripts (*.exe;*.py)|*.exe;*.py|Todos os Arquivos (*.*)|*.*",
                     Title = "Selecionar Executável ou Script"
                 };
+
+                if (!string.IsNullOrWhiteSpace(currentPath))
+                {
+                    string? directory = Path.GetDirectoryName(currentPath);
+                    if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
+                        openFileDialog.InitialDirectory = directory;
+                    else if (Directory.Exists(currentPath))
+                        openFileDialog.InitialDirectory = currentPath;
+                }
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                     selectedFile = openFileDialog.FileName?.Replace('\\', '/');

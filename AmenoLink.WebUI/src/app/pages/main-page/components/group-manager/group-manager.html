@@ -10,14 +10,14 @@
         </button>
     </div>
 
-    <div class="entries-scroll-list">
-        @for (item of items(); track item.id) {
+    <div class="entries-scroll-list" #scrollList>
+        @for (item of sortedItems(); track item.id) {
             <div
                 class="entry-item"
+                [attr.data-id]="item.id"
                 [class.selected]="item.id === selectedId()"
                 (click)="onSelect(item)"
             >
-                <mat-icon class="entry-icon">{{ itemIcon() }}</mat-icon>
                 <div class="entry-info">
                     <span class="entry-name">{{ item.name }}</span>
                 </div>

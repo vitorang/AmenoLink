@@ -4,27 +4,15 @@
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Rota</mat-label>
         <input matInput type="text" [ngModel]="route()" (ngModelChange)="route.set($event)" />
-        <mat-icon matSuffix>label</mat-icon>
+        <mat-icon matSuffix>bolt</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Limite de Execução</mat-label>
-        <input
-            matInput
-            type="number"
-            min="1"
-            step="1"
-            [ngModel]="timeoutInSeconds()"
-            (ngModelChange)="onTimeoutChange($event)"
-            (blur)="onTimeoutBlur($event)"
-        />
+        <mat-label>Limite de Execução (Segundos)</mat-label>
+        <input matInput type="number" min="1" step="1" [ngModel]="timeoutInSeconds()"
+            (ngModelChange)="onTimeoutChange($event)" (blur)="onTimeoutBlur($event)" />
         <mat-icon matSuffix>timer</mat-icon>
     </mat-form-field>
-
-    <div class="time-note">
-        <mat-icon class="note-icon">info</mat-icon>
-        <span>Tempo em segundos</span>
-    </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
