@@ -28,12 +28,18 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="dist\**" />
+    <EmbeddedResource Remove="dist\**" />
+    <None Remove="dist\**" />
+  </ItemGroup>
+
   <Target Name="BuildFrontendOnPublish" BeforeTargets="ComputeFilesToPublish;Publish">
     <Exec WorkingDirectory="../AmenoLink.WebUI" Command="npm run build" />
   </Target>
 
   <Target Name="CleanWwwrootOnClean" AfterTargets="Clean">
-    <RemoveDir Directories="$(TargetDir)wwwroot" />
+    <RemoveDir Directories="$(ProjectDir)bin;$(ProjectDir)dist" />
   </Target>
 
 </Project>
