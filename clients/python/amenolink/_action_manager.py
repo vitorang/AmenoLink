@@ -1,16 +1,16 @@
 import inspect
 from dataclasses import is_dataclass
-from typing import Callable, Any
+from typing import Callable, Any, get_origin
 import sys
 import base64
 import json
 from ._shared import _parse_data
-from ._action_dtos import ActionRequest
+from .dtos import ActionRequest
 
-ON_STARTUP_SUCCESS = "[AmenoLink.StartupSuccess]"
-ON_ACTION_SUCCESS = "[AmenoLink.ActionSuccess]"
-ON_ACTION_ERROR = "[AmenoLink.ActionError]"
-ON_ACTION_LOGGED = "[AmenoLink.ActionLog]"
+ON_STARTUP_SUCCESS = '[AmenoLink.StartupSuccess]'
+ON_ACTION_SUCCESS = '[AmenoLink.ActionSuccess]'
+ON_ACTION_ERROR = '[AmenoLink.ActionError]'
+ON_ACTION_LOGGED = '[AmenoLink.ActionLog]'
 
 type ActionHandler = Callable[..., str]
 type ActionRoute = tuple[str, ActionHandler]
@@ -33,10 +33,20 @@ class ActionRouter:
         parameters = list(signature.parameters.values())
 
         if not parameters or parameters[0].annotation == inspect.Parameter.empty:
-            raise TypeError(f"A função da rota '{route}' deve declarar o tipo do parâmetro de entrada.")
+            raise TypeError('Declare o tipo de entrada da ação.')
 
         if signature.return_annotation == inspect.Signature.empty:
-            raise TypeError(f"A função da rota '{route}' deve declarar o tipo de retorno.")
+            raise TypeError('Declare o tipo de retorno da ação.')
+
+        input_type = parameters[0].annotation
+        target_input_type = get_origin(input_type) or input_type
+        if target_input_type in (list, tuple, set, dict):
+            raise TypeError('Não use coleções ou dicionários brutos no parâmetro de entrada da ação.')
+
+        return_type = signature.return_annotation
+        target_return_type = get_origin(return_type) or return_type
+        if target_return_type in (list, tuple, set, dict):
+            raise TypeError('Não use coleções ou dicionários brutos no retorno da ação.')
 
         self.routes.append((route, handler))
 
@@ -88,10 +98,10 @@ current_action: ActionContext | None = None
 
 def action() -> ActionContext:
     if current_action is None:
-        raise RuntimeError("Nenhuma ação está em execução no momento.")
+        raise RuntimeError('Nenhuma ação está em execução no momento.')
     return current_action
 
 
 def send_message(prefix: str, message: str):
     payload = base64.b64encode(message.encode('utf-8')).decode('utf-8')
-    print(f"{prefix}{payload}", flush=True)
+    print(f'{prefix}{payload}', flush=True)

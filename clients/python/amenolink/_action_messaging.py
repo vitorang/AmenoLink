@@ -3,7 +3,7 @@ from typing import Any
 from ulid import ULID
 from ._shared import AmenoException, T, _parse_data
 from ._http_requests import origin_url, _post_json
-from ._action_dtos import ActionRequest
+from .dtos import ActionRequest
 
 
 def request(route: str, payload: Any, response_type: type[T]) -> T:
@@ -18,7 +18,7 @@ def request(route: str, payload: Any, response_type: type[T]) -> T:
         route=route,
         payload=payload,
     )
-    url = f"{origin_url.get()}/api/request"
+    url = f'{origin_url.get()}/api/request'
     response_data = _post_json(url, request_dto.to_dict())
 
     if not response_data.get('success', False):
@@ -41,5 +41,5 @@ def queue(route: str, payload: Any = None) -> None:
         route=route,
         payload=payload,
     )
-    url = f"{origin_url.get()}/api/queue"
+    url = f'{origin_url.get()}/api/queue'
     _post_json(url, request_dto.to_dict())
