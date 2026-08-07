@@ -1,0 +1,15 @@
+:host {
+    --stripe-color: rgba(127, 127, 127, 0.02);
+    --stripe-size: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background: repeating-linear-gradient(-45deg,
+            var(--stripe-color),
+            var(--stripe-color) var(--stripe-size),
+            transparent var(--stripe-size),
+            transparent calc(var(--stripe-size) * 2));
+}
