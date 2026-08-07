@@ -8,8 +8,9 @@ public record ActionResponse(
     string Id = "",
     Message? Previous = null,
     string Type = "ActionResponse",
-    DateTimeOffset CreatedAt = default
-) : Message(Id, Previous, Type, CreatedAt)
+    DateTimeOffset CreatedAt = default,
+    string AppName = ""
+) : Message(Id, Previous, Type, CreatedAt, AppName)
 {
     public string[] Logs { get; init; } = Logs ?? [];
 }

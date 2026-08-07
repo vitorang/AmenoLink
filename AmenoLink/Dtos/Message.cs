@@ -4,7 +4,8 @@ public record Message(
     string Id = "",
     Message? Previous = null,
     string Type = "Message",
-    DateTimeOffset CreatedAt = default
+    DateTimeOffset CreatedAt = default,
+    string AppName = ""
 )
 {
     public string Id { get; init; } = string.IsNullOrEmpty(Id) ? System.Ulid.NewUlid().ToString() : Id;

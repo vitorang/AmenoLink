@@ -4,7 +4,7 @@ from typing import Callable, Any, get_origin
 import sys
 import base64
 import json
-from ._shared import _parse_data
+from ._shared import _parse_data, client_config
 from .dtos import ActionRequest
 
 ON_STARTUP_SUCCESS = '[AmenoLink.StartupSuccess]'
@@ -73,7 +73,7 @@ class ActionRouter:
 
     def serve(self):
         global current_action
-        send_message(ON_STARTUP_SUCCESS, '')
+        send_message(ON_STARTUP_SUCCESS, client_config.app_name)
 
         while True:
             raw_input = sys.stdin.readline()

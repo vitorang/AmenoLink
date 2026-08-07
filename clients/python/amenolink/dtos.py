@@ -18,6 +18,7 @@ class Message:
     previous: Any = None
     type: str = 'Message'
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    app_name: str = ''
 
     @classmethod
     def from_dict(cls, data: dict) -> Self:
@@ -29,6 +30,7 @@ class Message:
             previous=previous_message,
             type=data.get('type', 'Message'),
             created_at=_parse_datetime(data.get('createdAt')),
+            app_name=data.get('appName', ''),
         )
 
     def to_dict(self) -> dict:
@@ -38,6 +40,7 @@ class Message:
             'previous': previous_dict,
             'type': self.type,
             'createdAt': self.created_at.isoformat() if self.created_at else '',
+            'appName': self.app_name,
         }
 
 
@@ -55,6 +58,7 @@ class ActionRequest(Message):
             previous=base_message.previous,
             type=data.get('type', 'ActionRequest'),
             created_at=base_message.created_at,
+            app_name=base_message.app_name,
             route=data.get('route', ''),
             payload=data.get('payload'),
         )
@@ -106,6 +110,7 @@ class ActionResponse(Message):
             previous=base_message.previous,
             type=data.get('type', 'ActionResponse'),
             created_at=base_message.created_at,
+            app_name=base_message.app_name,
             success=data.get('success', False),
             logs=data.get('logs') or [],
             result=data.get('result'),
@@ -138,6 +143,7 @@ class TopicMessage(Message):
             previous=base_message.previous,
             type=data.get('type', 'TopicMessage'),
             created_at=base_message.created_at,
+            app_name=base_message.app_name,
             topic=data.get('topic', ''),
             payload=data.get('payload'),
         )

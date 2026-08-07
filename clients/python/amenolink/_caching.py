@@ -3,8 +3,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 from typing import Any, Callable
-from ._shared import AmenoException, T, _parse_data
-from ._http_requests import origin_url
+from ._shared import AmenoException, T, _parse_data, client_config
 
 
 class Cache:
@@ -41,10 +40,10 @@ class Cache:
         self._request('DELETE', self._cache_url(key))
 
     def _cache_url(self, key: str) -> str:
-        return f'{origin_url.get()}/api/cache?' + urllib.parse.urlencode({'groupName': self.group, 'key': key})
+        return f'{client_config.origin_url}/api/cache?' + urllib.parse.urlencode({'groupName': self.group, 'key': key})
 
     def _cache_all_url(self) -> str:
-        return f'{origin_url.get()}/api/cache/all?' + urllib.parse.urlencode({'groupName': self.group})
+        return f'{client_config.origin_url}/api/cache/all?' + urllib.parse.urlencode({'groupName': self.group})
 
     def _request(self, method: str, url: str, data: Any = None) -> Any:
         try:

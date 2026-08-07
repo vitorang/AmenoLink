@@ -6,5 +6,6 @@ public record ActionRequest(
     string Id = "",
     Message? Previous = null,
     string Type = "ActionRequest",
-    DateTimeOffset CreatedAt = default
-) : Message(Id, Previous, Type, CreatedAt);
+    DateTimeOffset CreatedAt = default,
+    string AppName = ""
+) : Message(Id, Previous, Type, CreatedAt, AppName);

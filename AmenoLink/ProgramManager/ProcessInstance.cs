@@ -18,22 +18,16 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
     private AutoResetEvent? currentResponseEvent;
     private AutoResetEvent? currentStartupEvent;
     private readonly List<string> Logs = [];
+    private string appName = string.Empty;
 
     public ActionResponse Execute(ProgramConfig.Action action, ActionRequest request)
     {
-        lock (Logs)
-        {
-            Logs.Clear();
-        }
+        Logs.Clear();
 
         var response = ExecuteInternal(action, request);
 
-        string[] capturedLogs;
-        lock (Logs)
-        {
-            capturedLogs = [.. Logs];
-            Logs.Clear();
-        }
+        string[] capturedLogs = [.. Logs];
+        Logs.Clear();
 
         return response with { Logs = capturedLogs };
     }
@@ -91,67 +85,57 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
     private void HandleOutputData(DataReceivedEventArgs e, ActionRequest request, AutoResetEvent responseEvent, ref ActionResponse? response)
     {
-        if (e.Data == null)
+        if (string.IsNullOrEmpty(e.Data))
             return;
 
-        if (e.Data.StartsWith(Constants.OnActionLogged))
+        if (IsMessage(e.Data, Constants.OnActionLogged))
         {
-            string rawLog = e.Data[Constants.OnActionLogged.Length..].Trim();
-            string? logMessage = DecodeBase64(rawLog);
-            if (logMessage != null)
+            try
             {
-                lock (Logs)
-                {
-                    Logs.Add(logMessage);
-                }
+                string logMessage = ExtractPayload(e.Data, Constants.OnActionLogged);
+                Logs.Add(logMessage);
             }
-        }
-        else if (e.Data.StartsWith(Constants.OnActionSuccess))
-        {
-            string rawValue = e.Data[Constants.OnActionSuccess.Length..].Trim();
-            string? decodedJson = DecodeBase64(rawValue);
-            if (decodedJson == null)
+            catch (Exception ex)
             {
-                Logs.Add($"[Erro] Valor retornado não é um Base64 válido: '{rawValue}'");
+                Logs.Add($"[Erro] Falha ao decodificar log: '{e.Data}' - {ex.Message}");
+            }
+            return;
+        }
 
+        try
+        {
+            if (IsMessage(e.Data, Constants.OnActionSuccess))
+            {
+                string decodedJsonPayload = ExtractPayload(e.Data, Constants.OnActionSuccess);
+                var parsedResult = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.Nodes.JsonNode>(decodedJsonPayload, JsonDefaults.Options);
+                response = new ActionResponse(
+                    Previous: request,
+                    Success: true,
+                    Result: parsedResult,
+                    AppName: appName
+                );
+                responseEvent.Set();
+            }
+            else if (IsMessage(e.Data, Constants.OnActionError))
+            {
+                string errorMessageText = ExtractPayload(e.Data, Constants.OnActionError);
                 response = new ActionResponse(
                     Previous: request,
                     Success: false,
-                    Error: new ActionError(Constants.ActionInvalidResponse, "Falha ao decodificar a resposta base64 do processo.")
+                    Error: new ActionError(Constants.ActionFailed, errorMessageText),
+                    AppName: appName
                 );
+                responseEvent.Set();
             }
-            else
-            {
-                try
-                {
-                    var parsedResponse = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.Nodes.JsonNode>(decodedJson, JsonDefaults.Options);
-                    response = new ActionResponse(
-                        Previous: request,
-                        Success: true,
-                        Result: parsedResponse
-                    );
-                }
-                catch (Exception ex)
-                {
-                    Logs.Add($"[Erro] JSON inválido recebido do processo: '{decodedJson}'");
-
-                    response = new ActionResponse(
-                        Previous: request,
-                        Success: false,
-                        Error: new ActionError(Constants.ActionInvalidResponse, $"Resposta do processo não é um JSON válido: {ex.Message}")
-                    );
-                }
-            }
-            responseEvent.Set();
         }
-        else if (e.Data.StartsWith(Constants.OnActionError))
+        catch (Exception ex)
         {
-            string rawMsg = e.Data[Constants.OnActionError.Length..].Trim();
-            string? errorMsg = DecodeBase64(rawMsg);
+            Logs.Add($"[Erro] Falha ao processar mensagem do protocolo: '{e.Data}' - {ex.Message}");
             response = new ActionResponse(
                 Previous: request,
                 Success: false,
-                Error: new ActionError(Constants.ActionFailed, errorMsg ?? string.Empty)
+                Error: new ActionError(Constants.ActionInvalidResponse, $"Falha no protocolo: {ex.Message}"),
+                AppName: appName
             );
             responseEvent.Set();
         }
@@ -215,14 +199,25 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
             void startupOutputHandler(object sender, DataReceivedEventArgs e)
             {
-                if (e.Data == null)
+                if (string.IsNullOrEmpty(e.Data))
                     return;
 
-                if (e.Data.StartsWith(Constants.OnStartupSuccess))
-                    startupEvent.Set();
-                else if (e.Data.StartsWith(Constants.OnStartupError))
+                try
                 {
-                    startupErrorMessage = e.Data[Constants.OnStartupError.Length..].Trim();
+                    if (IsMessage(e.Data, Constants.OnStartupSuccess))
+                    {
+                        appName = ExtractPayload(e.Data, Constants.OnStartupSuccess);
+                        startupEvent.Set();
+                    }
+                    else if (IsMessage(e.Data, Constants.OnStartupError))
+                    {
+                        startupErrorMessage = ExtractPayload(e.Data, Constants.OnStartupError);
+                        startupEvent.Set();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    startupErrorMessage = $"Falha ao decodificar mensagem de inicialização: {ex.Message}";
                     startupEvent.Set();
                 }
             }
@@ -291,20 +286,22 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         return ("", "", $"Formato de arquivo '{extension}' não suportado. Apenas arquivos '{Constants.ExeExtension}' e '{Constants.PyExtension}' são permitidos.");
     }
 
-    private static string? DecodeBase64(string rawBase64)
+    private static bool IsMessage(string? data, string prefixConstant)
     {
-        if (string.IsNullOrWhiteSpace(rawBase64))
-            return null;
+        return !string.IsNullOrEmpty(data) && data.StartsWith(prefixConstant);
+    }
 
-        try
-        {
-            byte[] bytes = Convert.FromBase64String(rawBase64);
-            return System.Text.Encoding.UTF8.GetString(bytes);
-        }
-        catch
-        {
-            return rawBase64;
-        }
+    private static string ExtractPayload(string? data, string prefixConstant)
+    {
+        if (string.IsNullOrEmpty(data) || !data.StartsWith(prefixConstant))
+            throw new InvalidOperationException($"A mensagem não inicia com o prefixo esperado '{prefixConstant}'.");
+
+        string rawBase64Payload = data[prefixConstant.Length..].Trim();
+        if (string.IsNullOrWhiteSpace(rawBase64Payload))
+            return string.Empty;
+
+        byte[] bytes = Convert.FromBase64String(rawBase64Payload);
+        return System.Text.Encoding.UTF8.GetString(bytes);
     }
 
     private ActionResponse FailAndDispose(ActionRequest request, string errorType, string errorMessage)
@@ -313,7 +310,8 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         return new ActionResponse(
             Previous: request,
             Success: false,
-            Error: new ActionError(errorType, errorMessage)
+            Error: new ActionError(errorType, errorMessage),
+            AppName: appName
         );
     }
 

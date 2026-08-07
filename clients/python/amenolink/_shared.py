@@ -4,6 +4,20 @@ from dataclasses import is_dataclass
 T = TypeVar('T')
 
 
+class ClientConfig:
+    def __init__(self, origin_url: str = 'http://localhost:13545', app_name: str = ''):
+        self.origin_url: str = origin_url.rstrip('/')
+        self.app_name: str = app_name
+
+
+client_config = ClientConfig()
+
+
+def config_client(origin_url: str = 'http://localhost:13545', app_name: str = '') -> None:
+    global client_config
+    client_config = ClientConfig(origin_url=origin_url, app_name=app_name)
+
+
 class AmenoException(Exception):
     def __init__(self, message: str):
         super().__init__(message)
