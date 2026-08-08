@@ -14,8 +14,8 @@ client_config = ClientConfig()
 
 
 def config_client(origin_url: str = 'http://localhost:13545', app_name: str = '') -> None:
-    global client_config
-    client_config = ClientConfig(origin_url=origin_url, app_name=app_name)
+    client_config.origin_url = origin_url.rstrip('/')
+    client_config.app_name = app_name
 
 
 class AmenoException(Exception):

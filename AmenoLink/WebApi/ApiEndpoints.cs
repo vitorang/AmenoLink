@@ -3,6 +3,7 @@ using AmenoLink.Configurations;
 using AmenoLink.Dtos;
 using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.ProgramManager;
+using AmenoLink.Interfaces.TopicManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -90,6 +91,19 @@ internal static class ApiEndpoints
                 return Results.Ok();
             }
             catch (KeyNotFoundException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        });
+
+        group.MapPost("/topic/publish", async (TopicMessage message, ITopicManager topicManager) =>
+        {
+            try
+            {
+                await topicManager.Publish(message.Topic, message);
+                return Results.Ok();
+            }
+            catch (InvalidOperationException ex)
             {
                 return Results.BadRequest(ex.Message);
             }
