@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ProgramConfig, ProgramConfigAction } from '../../../../../../models/program-config.model';
 import { ConfigurationService } from '../../../../../../services/configuration.service';
+import { ProgramsService } from '../../../../../../services/programs.service';
 import { ActionEntry } from '../action-entry/action-entry';
 import {
     ActionRegisterModal,
@@ -31,13 +32,14 @@ import { AlertDialogComponent } from '../../../../../../components/alert-dialog/
 export class ProgramDetails {
     private readonly configService = inject(ConfigurationService);
     private readonly dialog = inject(MatDialog);
+    private readonly programsService = inject(ProgramsService);
 
     readonly program = input.required<ProgramConfig>();
     readonly programChange = output<ProgramConfig>();
 
     readonly sortedActions = computed<ProgramConfigAction[]>(() =>
-        [...(this.program().actions || [])].sort((a, b) =>
-            (a.route || '').localeCompare(b.route || '', undefined, {
+        [...(this.program().actions || [])].sort((actionA, actionB) =>
+            (actionA.route || '').localeCompare(actionB.route || '', undefined, {
                 numeric: true,
                 sensitivity: 'base',
             }),
@@ -45,12 +47,7 @@ export class ProgramDetails {
     );
 
     get programName(): string {
-        const path = this.program().path;
-        if (!path)
-            return '';
-
-        const parts = path.split(/[/\\]/);
-        return parts[parts.length - 1] || path;
+        return this.getFileName(this.program().path);
     }
 
     onChangeExecutable(): void {
@@ -78,16 +75,18 @@ export class ProgramDetails {
             if (!result)
                 return;
 
-            const currentActions = this.program().actions || [];
-            const exists = currentActions.some(
-                (a) => a.route === result.route,
-            );
-
-            if (exists) {
-                this.showActionExistsDialog(result.route);
-                return;
+            for (const program of this.programsService.programs()) {
+                const hasRoute = (program.actions || []).some(
+                    (action) => action.route === result.route,
+                );
+                if (hasRoute) {
+                    const programName = this.getFileName(program.path);
+                    this.showActionExistsDialog(result.route, programName);
+                    return;
+                }
             }
 
+            const currentActions = this.program().actions || [];
             const updatedActions = [...currentActions, result];
 
             this.programChange.emit({
@@ -110,17 +109,19 @@ export class ProgramDetails {
             if (!result)
                 return;
 
-            const currentActions = this.program().actions || [];
-            const exists = currentActions.some(
-                (a) => a !== targetAction && a.route === result.route,
-            );
-
-            if (exists) {
-                this.showActionExistsDialog(result.route);
-                return;
+            for (const program of this.programsService.programs()) {
+                const hasRoute = (program.actions || []).some(
+                    (action) => action !== targetAction && action.route === result.route,
+                );
+                if (hasRoute) {
+                    const programName = this.getFileName(program.path);
+                    this.showActionExistsDialog(result.route, programName);
+                    return;
+                }
             }
 
-            const updatedActions = currentActions.map((a) => (a === targetAction ? result : a));
+            const currentActions = this.program().actions || [];
+            const updatedActions = currentActions.map((action) => (action === targetAction ? result : action));
 
             this.programChange.emit({
                 ...this.program(),
@@ -130,7 +131,7 @@ export class ProgramDetails {
     }
 
     onRemoveAction(targetAction: ProgramConfigAction): void {
-        const updatedActions = (this.program().actions || []).filter((a) => a !== targetAction);
+        const updatedActions = (this.program().actions || []).filter((action) => action !== targetAction);
         this.programChange.emit({
             ...this.program(),
             actions: updatedActions,
@@ -166,11 +167,19 @@ export class ProgramDetails {
         this.programChange.emit({ ...this.program() });
     }
 
-    private showActionExistsDialog(route: string): void {
+    private getFileName(path: string): string {
+        if (!path)
+            return '';
+
+        const parts = path.split(/[/\\]/);
+        return parts[parts.length - 1] || path;
+    }
+
+    private showActionExistsDialog(route: string, programName: string): void {
         this.dialog.open(AlertDialogComponent, {
             data: {
-                title: 'Ação Existente',
-                message: `Já existe uma ação cadastrada com a rota '${route}'.`,
+                title: 'Conflito de Ações',
+                message: `A ação "${route}" está configurada em "${programName}".`,
             },
         });
     }

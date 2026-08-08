@@ -95,7 +95,7 @@ export class ProgramsService {
     }
 
     save(): void {
-        const sortedPrograms = [...this.programs()]
+        const sortedPrograms = this.programs()
             .map((program) => {
                 const sortedActions = [...(program.actions || [])].sort((a, b) =>
                     (a.route || '').localeCompare(b.route || '', undefined, {
