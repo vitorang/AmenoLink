@@ -1,6 +1,8 @@
 using AmenoLink.Configurations;
+using AmenoLink.Dtos;
 using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.ProgramManager;
+using AmenoLink.Interfaces.TopicManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -37,6 +39,27 @@ internal static class ConfigEndpoints
             ConfigPathProvider.Cache.SaveConfigs(configs);
             cacheManager.LoadConfigurations();
             return Results.Ok();
+        });
+
+        group.MapGet("/topics", () =>
+        {
+            var configs = ConfigPathProvider.Topic.LoadConfigs();
+            return Results.Ok(configs);
+        });
+
+        group.MapPost("/topics", (TopicConfig[] configs, ITopicManager topicManager) =>
+        {
+            ConfigPathProvider.Topic.SaveConfigs(configs);
+            topicManager.LoadConfigurations();
+            return Results.Ok();
+        });
+
+        group.MapGet("/topic/subscribers", (string topicName, ITopicManager topicManager) =>
+        {
+            var subscribers = topicManager.ListSubscribers(topicName)
+                .Select(client => new SubscribedClient(client.ConnectionId, client.AppName))
+                .ToArray();
+            return Results.Ok(subscribers);
         });
 
         group.MapGet("/select-executable", (string? currentPath) =>

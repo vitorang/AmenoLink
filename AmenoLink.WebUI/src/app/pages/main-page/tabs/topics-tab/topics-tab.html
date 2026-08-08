@@ -1,1 +1,27 @@
-<app-not-implemented></app-not-implemented>
+<div class="tab-layout-container">
+    <div class="left-column">
+        <app-group-manager
+            [items]="topicItems()"
+            [selectedId]="topicService.selectedTopicConfig()?.name ?? null"
+            badgeIcon="campaign"
+            emptyText="Nenhum tópico cadastrado."
+            (add)="onAdd()"
+            (remove)="onRemove($event)"
+            (select)="onSelect($event)"
+        />
+    </div>
+
+    <div class="right-column">
+        @if (topicService.selectedTopicConfig(); as selected) {
+            <app-topic-details
+                [config]="selected"
+                (configChange)="topicService.updateSelectedTopicConfig($event)"
+            />
+        } @else {
+            <app-empty-state
+                icon="mouse"
+                message="Selecione ou adicione um tópico para ver os detalhes."
+            />
+        }
+    </div>
+</div>

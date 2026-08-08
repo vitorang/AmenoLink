@@ -9,6 +9,7 @@ import { TopicsTab } from './tabs/topics-tab/topics-tab';
 import { StoresTab } from './tabs/stores-tab/stores-tab';
 import { ProgramsService } from '../../services/programs.service';
 import { CacheService } from '../../services/cache.service';
+import { TopicService } from '../../services/topic.service';
 
 export type TabAlias = 'general' | 'programs' | 'caches' | 'topics' | 'stores';
 
@@ -21,6 +22,7 @@ export type TabAlias = 'general' | 'programs' | 'caches' | 'topics' | 'stores';
 export class MainPage implements OnInit {
     protected readonly programsService = inject(ProgramsService);
     protected readonly cacheService = inject(CacheService);
+    protected readonly topicService = inject(TopicService);
 
     activeTab: TabAlias = 'general';
 
@@ -51,6 +53,8 @@ export class MainPage implements OnInit {
             this.programsService.load();
         else if (this.activeTab === 'caches')
             this.cacheService.load();
+        else if (this.activeTab === 'topics')
+            this.topicService.load();
     }
 
     onSave(): void {
@@ -58,5 +62,7 @@ export class MainPage implements OnInit {
             this.programsService.save();
         else if (this.activeTab === 'caches')
             this.cacheService.save();
+        else if (this.activeTab === 'topics')
+            this.topicService.save();
     }
 }

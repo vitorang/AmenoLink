@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProgramConfig } from '../models/program-config.model';
 import { CacheConfig } from '../models/cache-config.model';
+import { TopicConfig } from '../models/topic-config.model';
+import { SubscribedClient } from '../models/subscribed-client.model';
 
 @Injectable({
     providedIn: 'root',
@@ -25,6 +27,20 @@ export class ConfigurationService {
 
     saveCacheConfigs(configs: CacheConfig[]): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/cache`, configs);
+    }
+
+    getTopicConfigs(): Observable<TopicConfig[]> {
+        return this.http.get<TopicConfig[]>(`${this.baseUrl}/topics`);
+    }
+
+    saveTopicConfigs(configs: TopicConfig[]): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/topics`, configs);
+    }
+
+    getTopicSubscribers(topicName: string): Observable<SubscribedClient[]> {
+        return this.http.get<SubscribedClient[]>(`${this.baseUrl}/topic/subscribers`, {
+            params: { topicName },
+        });
     }
 
     selectExecutable(currentPath?: string): Observable<string | null> {
