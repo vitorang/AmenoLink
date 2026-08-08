@@ -7,6 +7,7 @@ import { ProgramsTab } from './tabs/programs-tab/programs-tab';
 import { CachesTab } from './tabs/caches-tab/caches-tab';
 import { TopicsTab } from './tabs/topics-tab/topics-tab';
 import { StoresTab } from './tabs/stores-tab/stores-tab';
+import { GeneralService } from '../../services/general.service';
 import { ProgramsService } from '../../services/programs.service';
 import { CacheService } from '../../services/cache.service';
 import { TopicService } from '../../services/topic.service';
@@ -20,6 +21,7 @@ export type TabAlias = 'general' | 'programs' | 'caches' | 'topics' | 'stores';
     styleUrl: './main-page.scss',
 })
 export class MainPage implements OnInit {
+    protected readonly generalService = inject(GeneralService);
     protected readonly programsService = inject(ProgramsService);
     protected readonly cacheService = inject(CacheService);
     protected readonly topicService = inject(TopicService);
@@ -45,11 +47,14 @@ export class MainPage implements OnInit {
     }
 
     ngOnInit(): void {
+        this.generalService.load();
         this.programsService.load();
     }
 
     onUndo(): void {
-        if (this.activeTab === 'programs')
+        if (this.activeTab === 'general')
+            this.generalService.load();
+        else if (this.activeTab === 'programs')
             this.programsService.load();
         else if (this.activeTab === 'caches')
             this.cacheService.load();
@@ -58,7 +63,9 @@ export class MainPage implements OnInit {
     }
 
     onSave(): void {
-        if (this.activeTab === 'programs')
+        if (this.activeTab === 'general')
+            this.generalService.save();
+        else if (this.activeTab === 'programs')
             this.programsService.save();
         else if (this.activeTab === 'caches')
             this.cacheService.save();

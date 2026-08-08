@@ -10,6 +10,7 @@ import { of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { CacheConfig } from '../../../../../../models/cache-config.model';
 import { CacheDataService, CacheEntryItem } from '../../../../../../services/cache-data.service';
+import { handleInputBlur, sanitizeInteger } from '../../../../../../utils/number.utils';
 
 @Component({
     selector: 'app-cache-details',
@@ -99,29 +100,19 @@ export class CacheDetails {
     onInactivityExpirationChange(value: number | null): void {
         this.configChange.emit({
             ...this.config(),
-            inactivityExpirationInSeconds: this.sanitizeNonNegativeInteger(value),
+            inactivityExpirationInSeconds: sanitizeInteger(value, 0),
         });
     }
 
     onTotalExpirationChange(value: number | null): void {
         this.configChange.emit({
             ...this.config(),
-            totalExpirationInSeconds: this.sanitizeNonNegativeInteger(value),
+            totalExpirationInSeconds: sanitizeInteger(value, 0),
         });
     }
 
     onBlur(event: FocusEvent): void {
-        const inputElement = event.target as HTMLInputElement;
-        if (inputElement && (!inputElement.value || Number(inputElement.value) < 0))
-            inputElement.value = '0';
-
+        handleInputBlur(event, 0);
         this.configChange.emit({ ...this.config() });
-    }
-
-    private sanitizeNonNegativeInteger(value: number | null): number {
-        if (value === null || value === undefined || value < 0)
-            return 0;
-
-        return Math.floor(value);
     }
 }

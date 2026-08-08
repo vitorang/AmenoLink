@@ -1,15 +1,4 @@
 <div class="group-manager-container">
-    <div class="column-actions">
-        <button mat-stroked-button (click)="onAdd()">
-            <mat-icon>add</mat-icon>
-            Adicionar
-        </button>
-        <button mat-stroked-button color="warn" (click)="onRemove()" [disabled]="!selectedId()">
-            <mat-icon>delete</mat-icon>
-            Excluir
-        </button>
-    </div>
-
     <div class="entries-scroll-list" #scrollList>
         @for (item of sortedItems(); track item.id) {
             <div
@@ -31,5 +20,16 @@
         } @empty {
             <div class="empty-state">{{ emptyText() }}</div>
         }
+    </div>
+
+    <div class="column-actions">
+        <button mat-stroked-button (click)="onAdd()">
+            <mat-icon>add</mat-icon>
+            Adicionar
+        </button>
+        <button mat-stroked-button color="warn" (click)="onRemove()" [disabled]="!selectedId()">
+            <mat-icon>delete</mat-icon>
+            Excluir
+        </button>
     </div>
 </div>

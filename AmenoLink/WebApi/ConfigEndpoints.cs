@@ -1,6 +1,7 @@
 using AmenoLink.Configurations;
 using AmenoLink.Dtos;
 using AmenoLink.Interfaces.Caching;
+using AmenoLink.Interfaces.Configurations;
 using AmenoLink.Interfaces.ProgramManager;
 using AmenoLink.Interfaces.TopicManager;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,18 @@ internal static class ConfigEndpoints
         {
             ConfigPathProvider.Topic.SaveConfigs(configs);
             topicManager.LoadConfigurations();
+            return Results.Ok();
+        });
+
+        group.MapGet("/general", (IConfigurationManager configurationManager) =>
+        {
+            return Results.Ok(configurationManager.General);
+        });
+
+        group.MapPost("/general", (GeneralConfig config, IConfigurationManager configurationManager) =>
+        {
+            configurationManager.SaveGeneralConfig(config);
+            configurationManager.LoadConfigurations();
             return Results.Ok();
         });
 

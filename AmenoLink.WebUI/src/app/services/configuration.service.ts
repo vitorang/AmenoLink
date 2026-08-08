@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ProgramConfig } from '../models/program-config.model';
 import { CacheConfig } from '../models/cache-config.model';
 import { TopicConfig } from '../models/topic-config.model';
+import { GeneralConfig } from '../models/general-config.model';
 import { SubscribedClient } from '../models/subscribed-client.model';
 
 @Injectable({
@@ -35,6 +36,14 @@ export class ConfigurationService {
 
     saveTopicConfigs(configs: TopicConfig[]): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/topics`, configs);
+    }
+
+    getGeneralConfig(): Observable<GeneralConfig> {
+        return this.http.get<GeneralConfig>(`${this.baseUrl}/general`);
+    }
+
+    saveGeneralConfig(config: GeneralConfig): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/general`, config);
     }
 
     getTopicSubscribers(topicName: string): Observable<SubscribedClient[]> {
