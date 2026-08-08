@@ -75,6 +75,12 @@ internal static class ConfigEndpoints
             return Results.Ok(subscribers);
         });
 
+        group.MapGet("/topic/recent", (string topicName, ITopicManager topicManager) =>
+        {
+            var recentMessages = topicManager.GetRecentMessages(topicName);
+            return Results.Ok(recentMessages);
+        });
+
         group.MapGet("/select-executable", (string? currentPath) =>
         {
             string? selectedFile = null;

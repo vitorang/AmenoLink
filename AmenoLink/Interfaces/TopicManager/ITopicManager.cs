@@ -9,4 +9,5 @@ internal interface ITopicManager
     bool Exists(string topicName);
     HubClient[] ListSubscribers(string topicName);
     Task Publish(string topicName, TopicMessage message);
+    TopicMessage[] GetRecentMessages(string topicName);
 }

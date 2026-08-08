@@ -4,6 +4,7 @@ import { Observable, finalize } from 'rxjs';
 import { ConfigurationService } from './configuration.service';
 import { TopicConfig } from '../models/topic-config.model';
 import { SubscribedClient } from '../models/subscribed-client.model';
+import { TopicMessage } from '../models/topic-message.model';
 import { AlertDialogComponent } from '../components/alert-dialog/alert-dialog.component';
 
 @Injectable({
@@ -108,6 +109,10 @@ export class TopicService {
 
     getSubscribers(topicName: string): Observable<SubscribedClient[]> {
         return this.configService.getTopicSubscribers(topicName);
+    }
+
+    getRecentMessages(topicName: string): Observable<TopicMessage[]> {
+        return this.configService.getTopicRecentMessages(topicName);
     }
 
     private showErrorDialog(title: string, message: string): void {

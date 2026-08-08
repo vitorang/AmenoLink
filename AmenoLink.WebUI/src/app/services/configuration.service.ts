@@ -6,6 +6,7 @@ import { CacheConfig } from '../models/cache-config.model';
 import { TopicConfig } from '../models/topic-config.model';
 import { GeneralConfig } from '../models/general-config.model';
 import { SubscribedClient } from '../models/subscribed-client.model';
+import { TopicMessage } from '../models/topic-message.model';
 
 @Injectable({
     providedIn: 'root',
@@ -48,6 +49,12 @@ export class ConfigurationService {
 
     getTopicSubscribers(topicName: string): Observable<SubscribedClient[]> {
         return this.http.get<SubscribedClient[]>(`${this.baseUrl}/topic/subscribers`, {
+            params: { topicName },
+        });
+    }
+
+    getTopicRecentMessages(topicName: string): Observable<TopicMessage[]> {
+        return this.http.get<TopicMessage[]>(`${this.baseUrl}/topic/recent`, {
             params: { topicName },
         });
     }

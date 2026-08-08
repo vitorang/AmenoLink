@@ -40,3 +40,38 @@
         </div>
     }
 </div>
+
+<div class="details-card">
+    <div class="section-header">
+        <div class="section-title">Mensagens Recentes</div>
+        <button mat-stroked-button (click)="onRefreshRecentMessages()" [disabled]="loadingRecentMessages()">
+            <mat-icon>refresh</mat-icon>
+            Atualizar
+        </button>
+    </div>
+
+    @if (recentMessages() === null) {
+        <div class="empty-values">Clique em "Atualizar" para carregar as mensagens recentes.</div>
+    } @else if (recentMessages()!.length === 0) {
+        <div class="empty-values">Nenhuma mensagem recente publicada neste tópico.</div>
+    } @else {
+        <mat-accordion class="messages-accordion" multi>
+            @for (element of recentMessages()!; track element.id) {
+                <mat-expansion-panel class="message-panel">
+                    <mat-expansion-panel-header collapsedHeight="48px" expandedHeight="48px">
+                        <mat-panel-title class="app-name-title">
+                            {{ element.appName }}
+                        </mat-panel-title>
+                        <mat-panel-description class="time-description">
+                            {{ formatTime(element.createdAt) }}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <div class="json-container">
+                        <pre class="json-code"><code>{{ formatFormattedJson(element) }}</code></pre>
+                    </div>
+                </mat-expansion-panel>
+            }
+        </mat-accordion>
+    }
+</div>

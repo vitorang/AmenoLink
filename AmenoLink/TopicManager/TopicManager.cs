@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using AmenoLink.Configurations;
 using AmenoLink.Dtos;
 using AmenoLink.Hubs;
@@ -14,6 +15,7 @@ internal class TopicManager(
 ) : ITopicManager
 {
     private TopicConfig[] topicConfigs = [];
+    private readonly ConcurrentDictionary<string, ConcurrentQueue<TopicMessage>> recentMessagesByTopic = new(StringComparer.Ordinal);
 
     public void LoadConfigurations()
     {
@@ -38,7 +40,30 @@ internal class TopicManager(
         if (depth > configurationManager.General.MaxMessageDepth)
             throw new InvalidOperationException($"A profundidade da mensagem ({depth}) excedeu o limite máximo configurado ({configurationManager.General.MaxMessageDepth}).");
 
+        AddRecentMessage(topicName, message);
+
         await hubService.PublishToTopic(topicName, message);
+    }
+
+    public TopicMessage[] GetRecentMessages(string topicName)
+    {
+        if (!recentMessagesByTopic.TryGetValue(topicName, out var queue))
+            return [];
+
+        return queue.Reverse().ToArray();
+    }
+
+    private void AddRecentMessage(string topicName, TopicMessage message)
+    {
+        var queue = recentMessagesByTopic.GetOrAdd(topicName, _ => new ConcurrentQueue<TopicMessage>());
+        queue.Enqueue(message);
+
+        int maxHistorySize = configurationManager.General.MaxTopicHistorySize;
+        for (int itemsToRemove = queue.Count - maxHistorySize; itemsToRemove > 0; itemsToRemove--)
+        {
+            if (!queue.TryDequeue(out _))
+                break;
+        }
     }
 
     private void RemoveUnusedTopics(TopicConfig[] newConfigs)
@@ -47,7 +72,10 @@ internal class TopicManager(
         foreach (var oldConfig in topicConfigs)
         {
             if (!newNames.Contains(oldConfig.Name))
+            {
                 _ = hubService.RemoveTopicSubscribers(oldConfig.Name);
+                recentMessagesByTopic.TryRemove(oldConfig.Name, out _);
+            }
         }
     }
 

@@ -62,7 +62,7 @@ internal class ProgramManager(ITopicManager topicManager) : IProgramManager
         }
 
         var response = await runner.Execute(routeData.Action, request);
-        var topicMessage = new TopicMessage(request.Route, response, Previous: request);
+        var topicMessage = new TopicMessage(request.Route, response, Previous: request, AppName: response.AppName);
         if (topicManager.Exists(request.Route))
             _ = topicManager.Publish(request.Route, topicMessage);
 
