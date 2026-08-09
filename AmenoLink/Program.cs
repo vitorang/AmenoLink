@@ -21,6 +21,16 @@ internal static class Program
     [STAThread]
     static void Main()
     {
+        try
+        {
+            using var client = new HttpClient { Timeout = TimeSpan.FromMilliseconds(500) };
+            _ = client.GetAsync("http://localhost:13545/api/config/show-app").GetAwaiter().GetResult();
+            return;
+        }
+        catch
+        {
+        }
+
         ApplicationConfiguration.Initialize();
 
         var builder = WebApplication.CreateBuilder();
@@ -118,7 +128,7 @@ internal static class Program
         services.AddSingleton<IProgramManager, ProgramManager.ProgramManager>();
         services.AddSingleton<ICacheManager, Caching.CacheManager>();
         services.AddSingleton<ITopicManager, TopicManager.TopicManager>();
-        services.AddTransient<MainWindow>();
+        services.AddSingleton<MainWindow>();
     }
 
     private static string ResolveStaticPath(IWebHostEnvironment env)

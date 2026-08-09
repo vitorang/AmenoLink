@@ -26,7 +26,8 @@ internal partial class MainWindow : Form
         this.configurationManager = configurationManager;
         InitializeComponent();
         EnableDarkModeTitleBar();
-        InitializeWebView();
+        if (!configurationManager.General.StartMinimizedToTray)
+            InitializeWebView();
         InitializeTrayIcon();
     }
 
@@ -57,6 +58,9 @@ internal partial class MainWindow : Form
 
     private void InitializeWebView()
     {
+        if (webView != null)
+            return;
+
         webView = new WebView2
         {
             Dock = DockStyle.Fill,
@@ -64,6 +68,16 @@ internal partial class MainWindow : Form
         };
 
         Controls.Add(webView);
+    }
+
+    private void DestroyWebView()
+    {
+        if (webView == null)
+            return;
+
+        Controls.Remove(webView);
+        webView.Dispose();
+        webView = null;
     }
 
     private void InitializeTrayIcon()
@@ -103,10 +117,12 @@ internal partial class MainWindow : Form
     {
         Hide();
         ShowInTaskbar = false;
+        DestroyWebView();
     }
 
-    private void RestoreFromTray()
+    public void RestoreFromTray()
     {
+        InitializeWebView();
         Show();
         ShowInTaskbar = true;
         WindowState = FormWindowState.Normal;
@@ -118,13 +134,6 @@ internal partial class MainWindow : Form
         isExiting = true;
         trayIcon?.Dispose();
         Application.Exit();
-    }
-
-    protected override void OnResize(EventArgs e)
-    {
-        base.OnResize(e);
-        if (WindowState == FormWindowState.Minimized)
-            HideToTray();
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)

@@ -16,6 +16,12 @@ internal static class ConfigEndpoints
     {
         var group = routes.MapGroup("/api/config");
 
+        group.MapGet("/show-app", (MainWindow mainWindow) =>
+        {
+            mainWindow.Invoke(mainWindow.RestoreFromTray);
+            return Results.Ok();
+        });
+
         group.MapGet("/programs", () =>
         {
             var configs = ConfigPathProvider.Program.LoadConfigs();
