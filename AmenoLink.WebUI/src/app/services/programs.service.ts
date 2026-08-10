@@ -15,6 +15,8 @@ export class ProgramsService {
 
     readonly programs = signal<ProgramConfig[]>([]);
     readonly selectedProgram = signal<ProgramConfig | null>(null);
+    private originalProgramsJson: string = '[]';
+    readonly isModified = signal<boolean>(false);
     readonly loading = signal<boolean>(false);
 
     load(): void {
@@ -25,7 +27,9 @@ export class ProgramsService {
             .subscribe({
                 next: (data) => {
                     const list = data ?? [];
+                    this.originalProgramsJson = JSON.stringify(list);
                     this.programs.set(list);
+                    this.isModified.set(false);
 
                     const currentSelected = this.selectedProgram();
                     if (currentSelected?.id) {
@@ -64,6 +68,7 @@ export class ProgramsService {
 
                     this.programs.update((prev) => [...prev, newProgram]);
                     this.selectedProgram.set(newProgram);
+                    this.checkModified();
                 },
                 error: (err) =>
                     this.showErrorDialog(
@@ -79,6 +84,7 @@ export class ProgramsService {
             const remaining = this.programs();
             this.selectedProgram.set(remaining.length > 0 ? remaining[0] : null);
         }
+        this.checkModified();
     }
 
     selectProgram(program: ProgramConfig): void {
@@ -92,6 +98,12 @@ export class ProgramsService {
 
         this.programs.update((prev) => prev.map((item) => (item === current ? updated : item)));
         this.selectedProgram.set(updated);
+        this.checkModified();
+    }
+
+    private checkModified(): void {
+        const currentJson = JSON.stringify(this.programs());
+        this.isModified.set(currentJson !== this.originalProgramsJson);
     }
 
     save(): void {
@@ -130,6 +142,10 @@ export class ProgramsService {
             .saveProgramConfigs(sortedPrograms)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
+                next: () => {
+                    this.originalProgramsJson = JSON.stringify(sortedPrograms);
+                    this.isModified.set(false);
+                },
                 error: (err) =>
                     this.showErrorDialog(
                         'Erro ao Salvar',
@@ -137,6 +153,7 @@ export class ProgramsService {
                     ),
             });
     }
+
 
     private getFileName(path: string): string {
         if (!path)

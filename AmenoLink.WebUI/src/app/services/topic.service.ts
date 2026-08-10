@@ -16,6 +16,8 @@ export class TopicService {
 
     readonly topicConfigs = signal<TopicConfig[]>([]);
     readonly selectedTopicConfig = signal<TopicConfig | null>(null);
+    private originalTopicJson: string = '[]';
+    readonly isModified = signal<boolean>(false);
     readonly loading = signal<boolean>(false);
 
     load(): void {
@@ -26,7 +28,9 @@ export class TopicService {
             .subscribe({
                 next: (data) => {
                     const list = data ?? [];
+                    this.originalTopicJson = JSON.stringify(list);
                     this.topicConfigs.set(list);
+                    this.isModified.set(false);
 
                     const currentSelected = this.selectedTopicConfig();
                     if (currentSelected?.name) {
@@ -61,6 +65,7 @@ export class TopicService {
 
         this.topicConfigs.update((prev) => [...prev, newConfig]);
         this.selectedTopicConfig.set(newConfig);
+        this.checkModified();
     }
 
     removeTopicConfig(config: TopicConfig): void {
@@ -69,6 +74,7 @@ export class TopicService {
             const remaining = this.topicConfigs();
             this.selectedTopicConfig.set(remaining.length > 0 ? remaining[0] : null);
         }
+        this.checkModified();
     }
 
     selectTopicConfig(config: TopicConfig): void {
@@ -82,6 +88,12 @@ export class TopicService {
 
         this.topicConfigs.update((prev) => prev.map((item) => (item === current ? updated : item)));
         this.selectedTopicConfig.set(updated);
+        this.checkModified();
+    }
+
+    private checkModified(): void {
+        const currentJson = JSON.stringify(this.topicConfigs());
+        this.isModified.set(currentJson !== this.originalTopicJson);
     }
 
     save(): void {
@@ -99,6 +111,10 @@ export class TopicService {
             .saveTopicConfigs(sortedConfigs)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
+                next: () => {
+                    this.originalTopicJson = JSON.stringify(sortedConfigs);
+                    this.isModified.set(false);
+                },
                 error: (err) =>
                     this.showErrorDialog(
                         'Erro ao Salvar',

@@ -10,13 +10,24 @@
     <div class="section-title">Comportamento</div>
     <div class="setting-item" (click)="onToggleStartMinimizedToTray()">
         <div class="setting-info">
-            <span class="setting-title">Minimizar ao iniciar</span>
+            <span class="setting-title">Iniciar minimizado</span>
             <span class="setting-description">Inicia a aplicação ocultada na bandeja do sistema (Tray)</span>
         </div>
         <mat-slide-toggle [ngModel]="generalService.generalConfig().startMinimizedToTray"
             (ngModelChange)="onStartMinimizedToTrayChange($event)" color="primary" (click)="$event.stopPropagation()">
         </mat-slide-toggle>
     </div>
+
+    <div class="setting-item" (click)="onToggleMinimizeToTrayOnClose()">
+        <div class="setting-info">
+            <span class="setting-title">Minimizar ao fechar</span>
+            <span class="setting-description">Oculta a aplicação na bandeja do sistema ao clicar no botão de fechar</span>
+        </div>
+        <mat-slide-toggle [ngModel]="generalService.generalConfig().minimizeToTrayOnClose"
+            (ngModelChange)="onMinimizeToTrayOnCloseChange($event)" color="primary" (click)="$event.stopPropagation()">
+        </mat-slide-toggle>
+    </div>
+
 
     <div class="section-title">Limitação de Mensageria</div>
     <div class="fields-grid">

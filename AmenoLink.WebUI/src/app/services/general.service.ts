@@ -14,9 +14,12 @@ export class GeneralService {
 
     readonly generalConfig = signal<GeneralConfig>({
         startMinimizedToTray: false,
+        minimizeToTrayOnClose: true,
         maxMessageDepth: 5,
         maxTopicHistorySize: 20,
     });
+    private originalConfig: GeneralConfig | null = null;
+    readonly isModified = signal<boolean>(false);
     readonly loading = signal<boolean>(false);
 
     load(): void {
@@ -26,8 +29,11 @@ export class GeneralService {
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: (data) => {
-                    if (data)
+                    if (data) {
+                        this.originalConfig = JSON.parse(JSON.stringify(data));
                         this.generalConfig.set(data);
+                        this.isModified.set(false);
+                    }
                 },
                 error: (err) =>
                     this.showErrorDialog(
@@ -42,14 +48,31 @@ export class GeneralService {
             ...prev,
             ...updated,
         }));
+        this.checkModified();
     }
 
+    private checkModified(): void {
+        if (!this.originalConfig) {
+            this.isModified.set(false);
+            return;
+        }
+        const currentJson = JSON.stringify(this.generalConfig());
+        const originalJson = JSON.stringify(this.originalConfig);
+        this.isModified.set(currentJson !== originalJson);
+    }
+
+
     save(): void {
+        const payload = this.generalConfig();
         this.loading.set(true);
         this.configService
-            .saveGeneralConfig(this.generalConfig())
+            .saveGeneralConfig(payload)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
+                next: () => {
+                    this.originalConfig = JSON.parse(JSON.stringify(payload));
+                    this.isModified.set(false);
+                },
                 error: (err) =>
                     this.showErrorDialog(
                         'Erro ao Salvar',

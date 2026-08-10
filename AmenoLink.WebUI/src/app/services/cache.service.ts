@@ -14,6 +14,8 @@ export class CacheService {
 
     readonly cacheConfigs = signal<CacheConfig[]>([]);
     readonly selectedCacheConfig = signal<CacheConfig | null>(null);
+    private originalCacheJson: string = '[]';
+    readonly isModified = signal<boolean>(false);
     readonly loading = signal<boolean>(false);
 
     load(): void {
@@ -24,7 +26,9 @@ export class CacheService {
             .subscribe({
                 next: (data) => {
                     const list = data ?? [];
+                    this.originalCacheJson = JSON.stringify(list);
                     this.cacheConfigs.set(list);
+                    this.isModified.set(false);
 
                     const currentSelected = this.selectedCacheConfig();
                     if (currentSelected?.groupName) {
@@ -61,6 +65,7 @@ export class CacheService {
 
         this.cacheConfigs.update((prev) => [...prev, newConfig]);
         this.selectedCacheConfig.set(newConfig);
+        this.checkModified();
     }
 
     removeCacheConfig(config: CacheConfig): void {
@@ -69,6 +74,7 @@ export class CacheService {
             const remaining = this.cacheConfigs();
             this.selectedCacheConfig.set(remaining.length > 0 ? remaining[0] : null);
         }
+        this.checkModified();
     }
 
     selectCacheConfig(config: CacheConfig): void {
@@ -82,6 +88,12 @@ export class CacheService {
 
         this.cacheConfigs.update((prev) => prev.map((item) => (item === current ? updated : item)));
         this.selectedCacheConfig.set(updated);
+        this.checkModified();
+    }
+
+    private checkModified(): void {
+        const currentJson = JSON.stringify(this.cacheConfigs());
+        this.isModified.set(currentJson !== this.originalCacheJson);
     }
 
     save(): void {
@@ -99,6 +111,10 @@ export class CacheService {
             .saveCacheConfigs(sortedConfigs)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
+                next: () => {
+                    this.originalCacheJson = JSON.stringify(sortedConfigs);
+                    this.isModified.set(false);
+                },
                 error: (err) =>
                     this.showErrorDialog(
                         'Erro ao Salvar',
@@ -106,6 +122,7 @@ export class CacheService {
                     ),
             });
     }
+
 
     private showErrorDialog(title: string, message: string): void {
         this.dialog.open(AlertDialogComponent, {

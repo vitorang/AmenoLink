@@ -38,6 +38,18 @@ export class MainPage implements OnInit {
 
     readonly tabAliases: TabAlias[] = ['general', 'programs', 'caches', 'topics', 'stores'];
 
+    get isCurrentTabModified(): boolean {
+        if (this.activeTab === 'general')
+            return this.generalService.isModified();
+        if (this.activeTab === 'programs')
+            return this.programsService.isModified();
+        if (this.activeTab === 'caches')
+            return this.cacheService.isModified();
+        if (this.activeTab === 'topics')
+            return this.topicService.isModified();
+        return false;
+    }
+
     get activeTabIndex(): number {
         return this.tabIndexMap[this.activeTab];
     }

@@ -138,7 +138,7 @@ internal partial class MainWindow : Form
 
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
-        if (!isExiting && e.CloseReason == CloseReason.UserClosing)
+        if (!isExiting && e.CloseReason == CloseReason.UserClosing && configurationManager.General.MinimizeToTrayOnClose)
         {
             e.Cancel = true;
             HideToTray();

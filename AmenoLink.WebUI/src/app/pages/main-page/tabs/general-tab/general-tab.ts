@@ -31,6 +31,16 @@ export class GeneralTab {
         this.generalService.updateGeneralConfig({ startMinimizedToTray });
     }
 
+    onToggleMinimizeToTrayOnClose(): void {
+        const currentValue = this.generalService.generalConfig().minimizeToTrayOnClose;
+        this.generalService.updateGeneralConfig({ minimizeToTrayOnClose: !currentValue });
+    }
+
+    onMinimizeToTrayOnCloseChange(minimizeToTrayOnClose: boolean): void {
+        this.generalService.updateGeneralConfig({ minimizeToTrayOnClose });
+    }
+
+
     onMaxMessageDepthChange(value: number | null): void {
         const sanitizedValue = sanitizeInteger(value, 1);
         this.generalService.updateGeneralConfig({ maxMessageDepth: sanitizedValue });
