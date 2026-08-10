@@ -61,4 +61,13 @@ if (Test-Path $packageJsonFile) {
     Write-Host "  [WebUI] package.json -> $version" -ForegroundColor Green
 }
 
+# 5. Python Example Requirements (requirements.txt)
+$reqFile = Join-Path $rootDir "examples\python\requirements.txt"
+if (Test-Path $reqFile) {
+    $reqContent = Get-Content $reqFile -Raw
+    $reqContent = $reqContent -replace 'amenolink-[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?-py3', "amenolink-$version-py3"
+    Set-Content -Path $reqFile -Value $reqContent -NoNewline
+    Write-Host "  [Python Example] requirements.txt -> amenolink-$version" -ForegroundColor Green
+}
+
 Write-Host "Versao $version aplicada com sucesso a todos os projetos!" -ForegroundColor Cyan

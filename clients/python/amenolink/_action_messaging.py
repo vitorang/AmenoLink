@@ -1,7 +1,7 @@
 from dataclasses import is_dataclass
 from typing import Any
 from ulid import ULID
-from ._shared import AmenoException, T, _parse_data, client_config
+from ._shared import AmenoException, T, _parse_data, client_setup
 from ._http_requests import _post_json
 from .dtos import ActionRequest
 
@@ -17,9 +17,9 @@ def request(route: str, payload: Any, response_type: type[T]) -> T:
         id=str(ULID()),
         route=route,
         payload=payload,
-        app_name=client_config.app_name,
+        app_name=client_setup.app_name,
     )
-    url = f'{client_config.origin_url}/api/request'
+    url = f'{client_setup.origin_url}/api/request'
     response_data = _post_json(url, request_dto.to_dict())
 
     if not response_data.get('success', False):
@@ -46,7 +46,7 @@ def queue(route: str, payload: Any = None) -> None:
         id=str(ULID()),
         route=route,
         payload=payload,
-        app_name=client_config.app_name,
+        app_name=client_setup.app_name,
     )
-    url = f'{client_config.origin_url}/api/queue'
+    url = f'{client_setup.origin_url}/api/queue'
     _post_json(url, request_dto.to_dict())

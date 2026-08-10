@@ -2,8 +2,10 @@ import json
 import urllib.request
 import urllib.parse
 import urllib.error
+from dataclasses import is_dataclass, asdict
 from typing import Any, Callable
-from ._shared import AmenoException, T, _parse_data, client_config
+from ._shared import AmenoException, T, _parse_data, client_setup
+
 
 
 class Cache:
@@ -17,15 +19,24 @@ class Cache:
         return _parse_data(raw_value, response_type)
 
     def set(self, key: str, value: Any) -> None:
-        self._request('POST', self._cache_url(key), data=value)
+        serialized_value = value
+        if hasattr(value, 'to_dict'):
+            serialized_value = value.to_dict()
+        elif is_dataclass(value):
+            serialized_value = asdict(value)
 
-    def get_or_create(self, key: str, response_type: type[T], creator: Callable[[], T]) -> T:
-        value = self.get(key, response_type)
-        if value is not None:
-            return value
-        value = creator()
-        self.set(key, value)
-        return value
+        self._request('POST', self._cache_url(key), data=serialized_value)
+
+    def get_or_create(self, key: str, creator: Callable[[], T]) -> T:
+        created_value = creator()
+        target_type = type(created_value)
+
+        cached_value = self.get(key, target_type)
+        if cached_value is not None:
+            return cached_value
+
+        self.set(key, created_value)
+        return created_value
 
     def all(self) -> dict[str, Any]:
         response_data = self._request('GET', self._cache_all_url())
@@ -40,10 +51,10 @@ class Cache:
         self._request('DELETE', self._cache_url(key))
 
     def _cache_url(self, key: str) -> str:
-        return f'{client_config.origin_url}/api/cache?' + urllib.parse.urlencode({'groupName': self.group, 'key': key})
+        return f'{client_setup.origin_url}/api/cache?' + urllib.parse.urlencode({'groupName': self.group, 'key': key})
 
     def _cache_all_url(self) -> str:
-        return f'{client_config.origin_url}/api/cache/all?' + urllib.parse.urlencode({'groupName': self.group})
+        return f'{client_setup.origin_url}/api/cache/all?' + urllib.parse.urlencode({'groupName': self.group})
 
     def _request(self, method: str, url: str, data: Any = None) -> Any:
         try:

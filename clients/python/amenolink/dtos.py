@@ -1,7 +1,10 @@
+from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Self
+from typing import Any, Generic, TypeVar, Self
 from ulid import ULID
+
+T = TypeVar('T')
 
 
 def _parse_datetime(value: Any) -> datetime:
@@ -45,9 +48,9 @@ class Message:
 
 
 @dataclass(frozen=True)
-class ActionRequest(Message):
+class ActionRequest(Message, Generic[T]):
     route: str = ''
-    payload: Any = None
+    payload: T = None  # type: ignore
     type: str = 'ActionRequest'
 
     @classmethod
@@ -92,18 +95,24 @@ class ActionError:
 
 
 @dataclass(frozen=True)
-class ActionResponse(Message):
+class ActionResponse(Message, Generic[T]):
     success: bool = False
     logs: list[str] = field(default_factory=list)
-    result: Any = None
+    result: T | None = None
     error: ActionError | None = None
     type: str = 'ActionResponse'
 
     @classmethod
-    def from_dict(cls, data: dict) -> Self:
+    def from_dict(cls, data: dict, item_type: type[T] | type | None = None) -> Self:
+        from ._shared import _parse_data
         base_message = super().from_dict(data)
         error_data = data.get('error')
         error_object = ActionError.from_dict(error_data) if isinstance(error_data, dict) else None
+
+        raw_result = data.get('result')
+        parsed_result = raw_result
+        if item_type is not None and raw_result is not None:
+            parsed_result = _parse_data(raw_result, item_type)
 
         return cls(
             id=base_message.id,
@@ -113,7 +122,7 @@ class ActionResponse(Message):
             app_name=base_message.app_name,
             success=data.get('success', False),
             logs=data.get('logs') or [],
-            result=data.get('result'),
+            result=parsed_result,
             error=error_object,
         )
 
@@ -130,14 +139,21 @@ class ActionResponse(Message):
 
 
 @dataclass(frozen=True)
-class TopicMessage(Message):
+class TopicMessage(Message, Generic[T]):
     topic: str = ''
-    payload: Any = None
+    payload: T = None  # type: ignore
     type: str = 'TopicMessage'
 
     @classmethod
-    def from_dict(cls, data: dict) -> Self:
+    def from_dict(cls, data: dict, item_type: type[T] | type | None = None) -> Self:
+
+        from ._shared import _parse_data
         base_message = super().from_dict(data)
+        raw_payload = data.get('payload')
+        parsed_payload = raw_payload
+        if item_type is not None and raw_payload is not None:
+            parsed_payload = _parse_data(raw_payload, item_type)
+
         return cls(
             id=base_message.id,
             previous=base_message.previous,
@@ -145,13 +161,20 @@ class TopicMessage(Message):
             created_at=base_message.created_at,
             app_name=base_message.app_name,
             topic=data.get('topic', ''),
-            payload=data.get('payload'),
+            payload=parsed_payload,
         )
 
     def to_dict(self) -> dict:
+        from dataclasses import is_dataclass, asdict
         result_dictionary = super().to_dict()
+        serialized_payload = self.payload
+        if hasattr(self.payload, 'to_dict'):
+            serialized_payload = self.payload.to_dict()
+        elif is_dataclass(self.payload):
+            serialized_payload = asdict(self.payload)
+
         result_dictionary.update({
             'topic': self.topic,
-            'payload': self.payload,
+            'payload': serialized_payload,
         })
         return result_dictionary
