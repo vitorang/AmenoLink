@@ -1,9 +1,9 @@
 $ErrorActionPreference = "Stop"
 
 $rootDir = Get-Location
-$distDir = Join-Path $rootDir "dist"
-$amenoLinkDistDir = Join-Path $distDir "AmenoLink"
+$distDir = Join-Path $rootDir "dist\AmenoLink"
 $pythonDistDir = Join-Path $distDir "clients\python"
+$dartDistDir = Join-Path $distDir "clients\dart"
 
 Write-Host "Iniciando processo de publicacao..."
 
@@ -13,14 +13,15 @@ if (Test-Path $distDir) {
     Remove-Item -Path $distDir -Recurse -Force
 }
 
-New-Item -ItemType Directory -Path $amenoLinkDistDir -Force | Out-Null
+New-Item -ItemType Directory -Path $distDir -Force | Out-Null
 New-Item -ItemType Directory -Path $pythonDistDir -Force | Out-Null
+New-Item -ItemType Directory -Path $dartDistDir -Force | Out-Null
 
 # 2. Compila e publica o projeto C# (Desktop/Host)
 Write-Host "Publicando aplicacao C# (AmenoLink)..."
 $csharpProject = Join-Path $rootDir "AmenoLink\AmenoLink.csproj"
 
-dotnet publish $csharpProject -c Release -o $amenoLinkDistDir
+dotnet publish $csharpProject -c Release -o $distDir
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "C# (AmenoLink) publicado com sucesso." -ForegroundColor Green
@@ -51,3 +52,16 @@ try {
 finally {
     Pop-Location
 }
+
+# 4. Copia a biblioteca cliente Dart
+Write-Host "Copiando biblioteca cliente Dart..."
+$dartClientDir = Join-Path $rootDir "clients\dart\amenolink"
+
+if (Test-Path $dartClientDir) {
+    Copy-Item -Path $dartClientDir -Destination $dartDistDir -Recurse -Force
+    Write-Host "Cliente Dart copiado com sucesso." -ForegroundColor Green
+} else {
+    Write-Host "ERRO: Diretorio do cliente Dart nao encontrado em $dartClientDir." -ForegroundColor Red
+    exit 1
+}
+
