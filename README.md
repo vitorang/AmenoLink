@@ -127,7 +127,7 @@ Em breve!
 - [x] Actions: execução de processos sob demanda
 - [x] Cache em memória
 - [x] Topics: Pub/Sub
-- [ ] Store: Estado distribuído reativo
+- [ ] Store: estado compartilhado reativo
 
 ### Bibliotecas de Clientes
 - [ ] Python (em desenvolvimento)
