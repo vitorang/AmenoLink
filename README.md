@@ -1,17 +1,19 @@
 # AmenoLink
 
-Nos estudos de ferramentas *cloud*, me interessei nos conceitos de arquitetura Serverless, FaaS (*Function as a Service*) e mensageria, porém para uso local é necessário usar contêineres e configurações complexas, que para compreender à fundo é necessário pesquisar bastante ou recorrer à IA. Além disso, certos serviços possuem validações online de licenças, o que torna inadequado para funcionar numa rede local.
+Durante meus estudos sobre arquiteturas *cloud*, me interessei bastante pelos conceitos de Serverless, FaaS (*Function as a Service*) e mensageria. No entanto, percebi que para reproduzir esses padrões em ambiente de desenvolvimento é frequentemente necessário lidar com contêineres e configurações complexas — algo que exige bastante pesquisa ou o uso de IA. Além disso, muitos serviços dependem de validação de licenças online, inviabilizando o funcionamento em redes privadas ou isoladas.
 
-Com essas necessidades em mente, criei o **AmenoLink**, um projeto inspirado em serviços *cloud* que funciona local, sem necessidade de internet, fácil configuração e que não usa isolamento por conteiner ou necessita de programas externos.
+Com essas necessidades em mente, criei o **AmenoLink**: um projeto inspirado em serviços *cloud* que opera de forma nativa na própria máquina, totalmente offline, com configuração simplificada e sem a necessidade de contêineres ou dependências externas.
 
-O programa foi desenvolvido em .NET + Angular e funciona somente no Windows. Adicionalmente, criei biblioteca em diferentes linguagens para usar as funcionalidades do AmenoLink.
+O programa foi desenvolvido em .NET + Angular (compatível com Windows). Adicionalmente, criei bibliotecas em diferentes linguagens para facilitar a integração com o AmenoLink.
+
 
 
 ## Recursos
 Todos os recursos do AmenoLink são configuráveis por interface gráfica de forma simplificada, priorizando a Experiência do Desenvolvedor (DX - *Developer Experience*). Os exemplos completos de funcionalidade estão no diretório `/examples` em diferentes linguagens.
 
 ### Action
-É a forma de atender requisições e filas, inspirado no padrão *Lambdalith* (ou *Monolithic Lambda*). Ao registrar um programa executável ou script Python, define todas as rotas que o programa atenderá. Quando uma requisição para rota for feita, o AmenoLink iniciará o programa automaticamente, reaproveitará a mesma instância para requisições seguintes evitando a penalidade do *cold-start* e encerrará o processo quando ele ficar em desuso.
+É a forma de atender requisições e filas, inspirado no padrão *Lambdalith* (ou *Monolithic Lambda*). Ao registrar um programa executável ou script Python, define todas as rotas que o programa atenderá. Quando uma requisição para a rota for feita, o AmenoLink iniciará o programa automaticamente, reaproveitará a mesma instância para requisições seguintes evitando a penalidade do *cold-start* e encerrará o processo quando ele ficar em desuso.
+
 
 O número de instâncias do programa, tempos limites de inicialização e inatividade são configuráveis. O tempo limite de execução para cada *Action* é configurável individualmente por rotas.
 
@@ -41,10 +43,12 @@ print(greeting)
 queue('example.bye', 'Gary Stu')
 ```
 
-Os dados enviados podem ser tipos primitivos ou instâncias de classes, mas não pode enviar listas ou outras coleções diretamente. Essa decisão foi tomada para garantir portabilidade entre linguagens. Note que no Python é necessário indicar o tipo de dado!
+Os dados enviados podem ser tipos primitivos ou instâncias de classes, mas não é possível enviar listas ou outras coleções diretamente. Essa decisão foi tomada para garantir portabilidade entre linguagens. Note que no Python é necessário indicar o tipo de dado!
+
 
 ### Cache
-O *cache* é em memória, mas se diferencia dos programas por valores ser inseridos em grupos que possuem configurações pré-definidas. As configurações são tempo de expiração por desuso e tempo de vida total.
+O *cache* é em memória, mas se diferencia dos programas por valores serem inseridos em grupos que possuem configurações pré-definidas. As configurações são tempo de expiração por desuso e tempo de vida total.
+
 
 Exemplo de uso de *Cache*:
 ```python
@@ -66,7 +70,7 @@ Ao contrário do uso de filas, nenhum programa será iniciado automaticamente. A
 
 Use o método `connect` para iniciar a comunicação em tempo real com AmenoLink. Use `dispose` para destruir todas as inscrições daquela instância de `Topic`.
 
-Toda mensagem é do tipo `TopicMessage<T>`, onde terá outras informações como todas as mensagens anteriores que originaram essa. A quantidade de chamadas anteriores é limitada por configuração para evitar problemas de loops infinitos acidentais. Quando uma atingir o limite, não haverá envio para os tópicos.
+Toda mensagem é do tipo `TopicMessage<T>`, que conterá outras informações como todas as mensagens anteriores que originaram essa. A quantidade de chamadas anteriores é limitada por configuração para evitar problemas de loops infinitos acidentais. Quando uma atingir o limite, não haverá envio para os tópicos.
 
 Exemplo de envio e recebimento de mensagem:
 ```python
@@ -88,7 +92,8 @@ sleep(1)
 chat.dispose()
 ```
 
-As mensagens vindas de `Action` serão `TopicMessage<ActionResponse<T>>`, porém é necessário que o identificador de ambos sejam os mesmos!
+As mensagens vindas de `Action` serão `TopicMessage<ActionResponse<T>>`, porém é necessário que os nomes de ambos sejam os mesmos!
+
 ```python
 from amenolink import connect, queue, topic
 from amenolink.dtos import ActionResponse, TopicMessage
