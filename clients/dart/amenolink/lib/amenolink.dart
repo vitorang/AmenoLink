@@ -1,6 +1,9 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library;
 
-// TODO: Export any libraries intended for clients of this package.
+export 'src/shared.dart' show setup, registerType, AmenoException;
+export 'src/dtos.dart';
+export 'src/action_manager.dart' show action, actions;
+export 'src/action_messaging.dart' show request, queue;
+export 'src/caching.dart' show cache;
+export 'src/topic.dart' show topic, Topic;
+export 'src/connection_manager.dart' show connect, disconnect, ConnectionStatus;

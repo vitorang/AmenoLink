@@ -1,0 +1,15 @@
+name: dart_examples
+description: Exemplos em Dart do AmenoLink.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  amenolink:
+    path: ../../clients/dart/amenolink
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6
