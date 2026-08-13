@@ -79,8 +79,8 @@ export class ProgramsService {
     }
 
     removeProgram(program: ProgramConfig): void {
-        this.programs.update((prev) => prev.filter((p) => p !== program));
-        if (this.selectedProgram() === program) {
+        this.programs.update((prev) => prev.filter((p) => p.id !== program.id));
+        if (this.selectedProgram()?.id === program.id) {
             const remaining = this.programs();
             this.selectedProgram.set(remaining.length > 0 ? remaining[0] : null);
         }
@@ -88,7 +88,8 @@ export class ProgramsService {
     }
 
     selectProgram(program: ProgramConfig): void {
-        this.selectedProgram.set(program);
+        const matched = this.programs().find((p) => p.id === program.id);
+        this.selectedProgram.set(matched || program);
     }
 
     updateSelectedProgram(updated: ProgramConfig): void {
@@ -96,7 +97,7 @@ export class ProgramsService {
         if (!current)
             return;
 
-        this.programs.update((prev) => prev.map((item) => (item === current ? updated : item)));
+        this.programs.update((prev) => prev.map((item) => (item.id === current.id ? updated : item)));
         this.selectedProgram.set(updated);
         this.checkModified();
     }

@@ -111,7 +111,7 @@ export class ProgramDetails {
 
             for (const program of this.programsService.programs()) {
                 const hasRoute = (program.actions || []).some(
-                    (action) => action !== targetAction && action.route === result.route,
+                    (action) => action.route !== targetAction.route && action.route === result.route,
                 );
                 if (hasRoute) {
                     const programName = this.getFileName(program.path);
@@ -121,7 +121,7 @@ export class ProgramDetails {
             }
 
             const currentActions = this.program().actions || [];
-            const updatedActions = currentActions.map((action) => (action === targetAction ? result : action));
+            const updatedActions = currentActions.map((action) => (action.route === targetAction.route ? result : action));
 
             this.programChange.emit({
                 ...this.program(),
@@ -131,7 +131,7 @@ export class ProgramDetails {
     }
 
     onRemoveAction(targetAction: ProgramConfigAction): void {
-        const updatedActions = (this.program().actions || []).filter((action) => action !== targetAction);
+        const updatedActions = (this.program().actions || []).filter((action) => action.route !== targetAction.route);
         this.programChange.emit({
             ...this.program(),
             actions: updatedActions,
