@@ -1,5 +1,5 @@
 '''
-    Servidor de Action que será executado no modo serverless.
+    Servidor de Action que será executado pelo AmenoLink.
     NÃO execute-o manualmente. Ele é usado pelo action_example.py.
 '''
 
@@ -11,7 +11,7 @@ from amenolink import actions, action, setup
 # Configuração inicial do programa. É recomendado definir app_name,
 # porém, se o AmenoLink está rodando localmente, não é necessário definir origin_url.
 setup(
-    app_name='Action Example (Python)',
+    app_name='Action Server (Python)',
     origin_url='http://localhost:13545' # Valor padrão
 )
 

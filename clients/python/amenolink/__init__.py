@@ -3,7 +3,7 @@ from ._caching import cache
 from ._shared import AmenoException, setup
 from ._action_messaging import request, queue
 from ._topic import topic, Topic
-from ._connection_manager import connect, ConnectionStatus
+from ._connection_manager import connect, disconnect, ConnectionStatus
 
 
 __all__ = [
@@ -17,5 +17,6 @@ __all__ = [
     'topic',
     'Topic',
     'connect',
+    'disconnect',
     'ConnectionStatus',
 ]

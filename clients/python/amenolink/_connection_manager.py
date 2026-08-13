@@ -47,9 +47,10 @@ class ConnectionManager:
         if client_setup.app_name:
             url = f'{url}?appName={quote(client_setup.app_name)}'
 
+        import logging
         builder = HubConnectionBuilder().with_url(
             url
-        ).with_automatic_reconnect({
+        ).configure_logging(logging.CRITICAL).with_automatic_reconnect({
             'type': 'raw',
             'keep_alive_interval': 10,
             'reconnect_interval': 5,
@@ -106,6 +107,17 @@ class ConnectionManager:
 
         self.topic_manager.dispatch_message(topic_name, topic_message)
 
+    def disconnect(self) -> None:
+        conn = self._connection
+        if conn is not None:
+            self._connection = None
+
+            try:
+                conn.stop()
+            except Exception:
+                pass
+
+        self._connected_event.clear()
 
 connection_manager = ConnectionManager()
 
@@ -116,3 +128,7 @@ def connect(
     timeout_seconds: float = 5.0,
 ) -> None:
     connection_manager.connect(on_status_change=on_status_change, max_attempts=max_attempts, timeout_seconds=timeout_seconds)
+
+
+def disconnect() -> None:
+    connection_manager.disconnect()

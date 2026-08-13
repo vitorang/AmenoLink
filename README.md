@@ -118,12 +118,13 @@ bye_topic.dispose()
 Note: você pode chamar `connect` após chamar o `subscribe`. A inscrição com tópicos é feita também quando ocorre a reconexão com AmenoLink. Mas uma vez feito `dispose`, a reconexão daquela instância não será refeita.
 
 ### Store
-Este recurso não foi implementado!
-
+Em breve!
 
 ## Instruções de instalação
 Em breve!
 
+### Execução de exemplos
+Em breve!
 
 ## Roadmap & Status do Projeto
 
@@ -136,7 +137,7 @@ Em breve!
 
 ### Bibliotecas de Clientes
 - [ ] Python (em desenvolvimento)
-- [ ] Dart
+- [ ] Dart (em desenvolvimento)
 - [ ] TypeScript
 - [ ] C#
 

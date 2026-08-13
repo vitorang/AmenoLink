@@ -11,7 +11,7 @@
     - Na aba TÓPICOS, adicione "example.action".
 '''
 
-from amenolink import connect
+from amenolink import connect, disconnect, setup
 from amenolink.dtos import ActionResponse
 from datetime import date
 from amenolink import request, queue, topic, ConnectionStatus
@@ -23,10 +23,12 @@ ACTION_ROUTE = 'example.action'
 
 
 def main():
+    setup(app_name='Action Example (Python)')
+
     gary_stu = User(name='Gary Stu', birth_date=date(2001, 1, 20))
     mary_sue = User(name='Mary Sue', birth_date=date(1988, 8, 19))
   
-    # Abra uma conexão persistente
+    # Abre uma conexão persistente
     connect(on_status_change=on_status_change)
 
     # Os resultados são publicados no tópico com mesmo nome da ação
@@ -47,12 +49,15 @@ def main():
     # Desativa conexão do tópico. Após isso, ele não poderá ser usado
     t.dispose()
 
+    # Fecha a conexão
+    disconnect()
+
 
 def on_status_change(status: ConnectionStatus):
     print(f'Estado da conexão: {status}')
 
 
-# A mensagem retornada de Action pela fila terá mensagem de resposta dentro da mensagem de tópico
+# Actions adicionam ActionResponse no payload de TopicMessage
 def on_message_received(message: TopicMessage[ActionResponse[UserAstrology]]):
     sleep(0.1)
     response = message.payload

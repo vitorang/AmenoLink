@@ -5,12 +5,14 @@
     - Execute o programa AmenoLink, vá na aba CACHES e adicione "example.cache" (sem aspas).
 '''
 
-from amenolink import cache
+from amenolink import cache, setup
 from datetime import date
 from dtos import User
 
 
 def main():
+    setup(app_name='Cache Example (Python)')
+
     gary_stu = User(name='Gary Stu', birth_date=date(2001, 1, 20))
     mary_sue = User(name='Mary Sue', birth_date=date(1988, 8, 19))
 

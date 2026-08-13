@@ -8,7 +8,7 @@
 
 from amenolink.dtos import TopicMessage
 from dtos import Talk
-from amenolink import connect, setup, topic
+from amenolink import connect, disconnect, setup, topic
 from time import sleep
 
 # Duas interfaces para conectar ao mesmo tópico
@@ -40,6 +40,7 @@ def main():
     sender.publish(talk)
     sleep(0.5)
     sender.dispose()
+    disconnect()
 
 
 def show_talk(message: TopicMessage[Talk]):

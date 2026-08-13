@@ -35,7 +35,7 @@ def request(route: str, payload: Any, response_type: type[T]) -> T:
     return _parse_data(response_value, response_type)
 
 
-def queue(route: str, payload: Any = None) -> None:
+def queue(route: str, payload: Any) -> None:
     if hasattr(payload, 'to_dict'):
         payload = payload.to_dict()
     elif is_dataclass(payload):

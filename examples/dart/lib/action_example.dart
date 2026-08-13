@@ -54,7 +54,7 @@ void onStatusChange(dynamic status) {
   print('Estado da conexão: $status');
 }
 
-// Actions retornam mensagens de tópico com resposta dentro
+// Actions adicionam ActionResponse no payload de TopicMessage
 void onMessageReceived(TopicMessage<ActionResponse<UserAstrology>> message) async {
   await Future.delayed(const Duration(milliseconds: 100));
   final response = message.payload!;
