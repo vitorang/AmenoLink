@@ -26,11 +26,43 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
         var response = ExecuteInternal(action, request);
 
-        string[] capturedLogs = [.. Logs];
+        string[] capturedLogs = ProcessLogs(Logs);
         Logs.Clear();
 
         return response with { Logs = capturedLogs };
     }
+
+    private static string[] ProcessLogs(List<string> rawLogs)
+    {
+        if (rawLogs.Count == 0) return [];
+
+        var processed = new List<string>();
+        var currentStderrLines = new List<string>();
+
+        foreach (string entry in rawLogs)
+        {
+            if (entry.StartsWith(Constants.OnActionStderr))
+            {
+                string line = entry[Constants.OnActionStderr.Length..].TrimStart();
+                currentStderrLines.Add(line);
+            }
+            else
+            {
+                if (currentStderrLines.Count > 0)
+                {
+                    processed.Add($"{Constants.OnActionStderr} {string.Join("\n", currentStderrLines)}");
+                    currentStderrLines.Clear();
+                }
+                processed.Add(entry);
+            }
+        }
+
+        if (currentStderrLines.Count > 0)
+            processed.Add($"{Constants.OnActionStderr} {string.Join("\n", currentStderrLines)}");
+
+        return [.. processed];
+    }
+
 
     private ActionResponse ExecuteInternal(ProgramConfig.Action action, ActionRequest request)
     {
@@ -69,8 +101,11 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
         actionTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
-        if (actionTimedOut || response == null)
+        if (actionTimedOut)
             return FailAndDispose(request, Constants.ActionTimeout, "A execução da ação excedeu o tempo limite.");
+
+        if (response == null || proccess == null || proccess.HasExited)
+            return FailAndDispose(request, Constants.ActionFailed, "O processo finalizou inesperadamente durante a execução da ação.");
 
         if (config.SlidingExpirationInSeconds > 0)
         {
@@ -222,10 +257,18 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
                 }
             }
 
+            proccess.ErrorDataReceived += (sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                    Logs.Add($"{Constants.OnActionStderr} {e.Data}");
+            };
+
+
             proccess.OutputDataReceived += startupOutputHandler;
             proccess.Start();
             ChildProcessTracker.AddProcess(proccess);
             proccess.BeginOutputReadLine();
+            proccess.BeginErrorReadLine();
 
             startupEvent.WaitOne();
 
@@ -260,30 +303,38 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         string extension = Path.GetExtension(path).ToLowerInvariant();
 
         if (extension == Constants.ExeExtension)
-            return (path, "", null);
+            return ResolveExe(path);
 
         if (extension == Constants.PyExtension)
-        {
-            string? scriptDir = Path.GetDirectoryName(path);
-            if (string.IsNullOrEmpty(scriptDir))
-                scriptDir = Directory.GetCurrentDirectory();
-
-            string venvPythonPath = Path.Combine(scriptDir, ".venv", "Scripts", $"python{Constants.ExeExtension}");
-            string altVenvPythonPath = Path.Combine(scriptDir, "venv", "Scripts", $"python{Constants.ExeExtension}");
-
-            string? selectedPython = null;
-            if (File.Exists(venvPythonPath))
-                selectedPython = venvPythonPath;
-            else if (File.Exists(altVenvPythonPath))
-                selectedPython = altVenvPythonPath;
-
-            if (selectedPython == null)
-                return ("", "", $"Ambiente virtual Python (.venv ou venv) não encontrado no diretório '{scriptDir}'.");
-
-            return (selectedPython, $"\"{path}\"", null);
-        }
+            return ResolvePython(path);
 
         return ("", "", $"Formato de arquivo '{extension}' não suportado. Apenas arquivos '{Constants.ExeExtension}' e '{Constants.PyExtension}' são permitidos.");
+    }
+
+    private static (string fileName, string arguments, string? errorMessage) ResolveExe(string path)
+    {
+        return (path, "", null);
+    }
+
+    private static (string fileName, string arguments, string? errorMessage) ResolvePython(string path)
+    {
+        string? scriptDir = Path.GetDirectoryName(path);
+        if (string.IsNullOrEmpty(scriptDir))
+            scriptDir = Directory.GetCurrentDirectory();
+
+        string venvPythonPath = Path.Combine(scriptDir, ".venv", "Scripts", $"python{Constants.ExeExtension}");
+        string altVenvPythonPath = Path.Combine(scriptDir, "venv", "Scripts", $"python{Constants.ExeExtension}");
+
+        string? selectedPython = null;
+        if (File.Exists(venvPythonPath))
+            selectedPython = venvPythonPath;
+        else if (File.Exists(altVenvPythonPath))
+            selectedPython = altVenvPythonPath;
+
+        if (selectedPython == null)
+            return ("", "", $"Ambiente virtual Python (.venv ou venv) não encontrado no diretório '{scriptDir}'.");
+
+        return (selectedPython, $"\"{path}\"", null);
     }
 
     private static bool IsMessage(string? data, string prefixConstant)

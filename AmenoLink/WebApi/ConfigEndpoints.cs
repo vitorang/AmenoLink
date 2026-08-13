@@ -4,6 +4,7 @@ using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.Configurations;
 using AmenoLink.Interfaces.ProgramManager;
 using AmenoLink.Interfaces.TopicManager;
+using AmenoLink.ProgramManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -93,9 +94,12 @@ internal static class ConfigEndpoints
 
             var thread = new Thread(() =>
             {
+                string extensionsPattern = string.Join(";", Constants.SupportedExtensions.Select(ext => $"*{ext}"));
+                string extensionsLabels = string.Join(", ", Constants.SupportedExtensions.Select(ext => ext.TrimStart('.').ToUpperInvariant()));
+
                 using var openFileDialog = new OpenFileDialog
                 {
-                    Filter = "Executáveis e Scripts (*.exe;*.py)|*.exe;*.py|Todos os Arquivos (*.*)|*.*",
+                    Filter = $"Programas e Scripts ({extensionsLabels})|{extensionsPattern}|Todos os Arquivos (*.*)|*.*",
                     Title = "Selecionar Executável ou Script"
                 };
 

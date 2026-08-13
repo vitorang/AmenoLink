@@ -23,12 +23,14 @@
                 font-weight: 600;
                 width: 35%;
                 word-break: break-all;
+                user-select: text;
             }
 
             .value-cell {
                 font-family: monospace;
                 word-break: break-all;
                 opacity: 0.85;
+                user-select: text;
             }
 
             .actions-header {
