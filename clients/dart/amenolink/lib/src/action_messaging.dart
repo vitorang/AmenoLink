@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ulid/ulid.dart';
 import 'dtos.dart';
 import 'http_requests.dart';
 import 'shared.dart';
@@ -14,7 +15,7 @@ Future<T> request<T>(String route, dynamic payload) async {
   }
 
   final requestDto = ActionRequest(
-    id: DateTime.now().microsecondsSinceEpoch.toString(),
+    id: Ulid().toString(),
     createdAt: DateTime.now().toUtc(),
     route: route,
     payload: serializedPayload,
@@ -51,7 +52,7 @@ Future<void> queue(String route, dynamic payload) async {
   }
 
   final requestDto = ActionRequest(
-    id: DateTime.now().microsecondsSinceEpoch.toString(),
+    id: Ulid().toString(),
     createdAt: DateTime.now().toUtc(),
     route: route,
     payload: serializedPayload,

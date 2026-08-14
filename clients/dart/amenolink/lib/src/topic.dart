@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:ulid/ulid.dart';
 import 'connection_manager.dart';
 import 'dtos.dart';
 import 'http_requests.dart';
@@ -34,7 +35,7 @@ class Topic<T> implements ITopic {
     }
 
     final topicMessage = TopicMessage<dynamic>(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      id: Ulid().toString(),
       previous: previous,
       createdAt: DateTime.now().toUtc(),
       topic: name,
