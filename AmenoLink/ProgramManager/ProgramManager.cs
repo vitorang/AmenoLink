@@ -7,7 +7,7 @@ namespace AmenoLink.ProgramManager;
 
 internal class ProgramManager(ITopicManager topicManager) : IProgramManager
 {
-    private readonly Dictionary<ProgramConfig, IProgramRunner> runners = [];
+    private readonly Dictionary<string, IProgramRunner> runners = [];
     private readonly Dictionary<string, (ProgramConfig Program, ProgramConfig.Action Action)> routeMap = [];
 
     public void LoadConfigurations()
@@ -54,10 +54,10 @@ internal class ProgramManager(ITopicManager topicManager) : IProgramManager
         IProgramRunner runner;
         lock (runners)
         {
-            if (!runners.TryGetValue(routeData.Program, out runner!))
+            if (!runners.TryGetValue(routeData.Program.Id, out runner!))
             {
                 runner = new ProgramRunner(routeData.Program);
-                runners[routeData.Program] = runner;
+                runners[routeData.Program.Id] = runner;
             }
         }
 

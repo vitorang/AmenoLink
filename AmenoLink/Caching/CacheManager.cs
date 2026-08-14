@@ -12,7 +12,7 @@ internal class CacheManager : ICacheManager
 
     private class CacheGroupEntry(CacheConfig config)
     {
-        public MemoryCache Cache { get; set; } = new MemoryCache(new MemoryCacheOptions());
+        public MemoryCache Cache { get; } = new MemoryCache(new MemoryCacheOptions());
         public CacheConfig Config { get; set; } = config;
         public ConcurrentDictionary<string, byte> Keys { get; } = new();
     }
@@ -98,9 +98,11 @@ internal class CacheManager : ICacheManager
     public void Clear(string groupName)
     {
         var entry = GetGroupEntry(groupName);
-        entry.Cache.Dispose();
-        entry.Cache = new MemoryCache(new MemoryCacheOptions());
-        entry.Keys.Clear();
+        foreach (var key in entry.Keys.Keys)
+        {
+            entry.Cache.Remove(key);
+            entry.Keys.TryRemove(key, out _);
+        }
     }
 
     private CacheGroupEntry GetGroupEntry(string groupName)

@@ -37,7 +37,7 @@ internal class AppHub(IHubService hubService, ITopicManager topicManager) : Hub
 
         await Groups.AddToGroupAsync(Context.ConnectionId, hubService.TopicChannel(name));
         var client = hubService.Get(Context.ConnectionId);
-        client.Topics.Add(name);
+        client.Topics.TryAdd(name, 0);
         return true;
     }
 
@@ -46,6 +46,6 @@ internal class AppHub(IHubService hubService, ITopicManager topicManager) : Hub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, hubService.TopicChannel(name));
         var client = hubService.Get(Context.ConnectionId);
-        client.Topics.Remove(name);
+        client.Topics.TryRemove(name, out _);
     }
 }

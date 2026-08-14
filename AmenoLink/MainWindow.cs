@@ -7,7 +7,7 @@ namespace AmenoLink;
 
 internal partial class MainWindow : Form
 {
-    private readonly IProgramManager processManager;
+    private readonly IProgramManager programManager;
     private readonly IConfigurationManager configurationManager;
     private WebView2? webView;
     private NotifyIcon? trayIcon;
@@ -20,9 +20,9 @@ internal partial class MainWindow : Form
 
     private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-    public MainWindow(IProgramManager processManager, IConfigurationManager configurationManager)
+    public MainWindow(IProgramManager programManager, IConfigurationManager configurationManager)
     {
-        this.processManager = processManager;
+        this.programManager = programManager;
         this.configurationManager = configurationManager;
         InitializeComponent();
         EnableDarkModeTitleBar();

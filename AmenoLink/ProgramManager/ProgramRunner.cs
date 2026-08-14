@@ -32,11 +32,14 @@ internal class ProgramRunner(ProgramConfig config) : IProgramRunner
     {
         lock (instances)
         {
-            var freeInstance = instances.FirstOrDefault(i => !i.InUse);
-            if (freeInstance != null)
-                return freeInstance;
+            foreach (var instance in instances)
+            {
+                if (instance.TryAcquire())
+                    return instance;
+            }
 
             var newInstance = new ProcessInstance(this, config);
+            newInstance.TryAcquire();
             instances.Add(newInstance);
             return newInstance;
         }

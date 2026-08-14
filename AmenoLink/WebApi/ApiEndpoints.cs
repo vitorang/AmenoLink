@@ -19,15 +19,15 @@ internal static class ApiEndpoints
 
         group.MapGet("/", () => "AmenoLink");
 
-        group.MapPost("/request", async (ActionRequest request, IProgramManager processManager) =>
+        group.MapPost("/request", async (ActionRequest request, IProgramManager programManager) =>
         {
-            var response = await processManager.Execute(request);
+            var response = await programManager.Execute(request);
             return Results.Ok(response);
         });
 
-        group.MapPost("/queue", (ActionRequest request, IProgramManager processManager) =>
+        group.MapPost("/queue", (ActionRequest request, IProgramManager programManager) =>
         {
-            _ = Task.Run(() => processManager.Execute(request));
+            _ = Task.Run(() => programManager.Execute(request));
             return Results.Ok();
         });
 

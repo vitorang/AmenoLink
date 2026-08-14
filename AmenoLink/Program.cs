@@ -78,8 +78,8 @@ internal static class Program
         var configManager = ServiceProvider.GetRequiredService<IConfigurationManager>();
         configManager.LoadConfigurations();
 
-        var processManager = ServiceProvider.GetRequiredService<IProgramManager>();
-        processManager.LoadConfigurations();
+        var programManager = ServiceProvider.GetRequiredService<IProgramManager>();
+        programManager.LoadConfigurations();
 
         var cacheManager = ServiceProvider.GetRequiredService<ICacheManager>();
         cacheManager.LoadConfigurations();
@@ -94,7 +94,7 @@ internal static class Program
         }
         finally
         {
-            processManager.Dispose();
+            programManager.Dispose();
         }
     }
 

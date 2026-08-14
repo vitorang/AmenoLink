@@ -27,7 +27,7 @@ internal class HubService(IHubContext<AppHub> hubContext) : IHubService
 
     public HubClient[] ListSubscribers(string topicName)
     {
-        return clients.Values.Where(c => c.Topics.Contains(topicName)).ToArray();
+        return clients.Values.Where(c => c.Topics.ContainsKey(topicName)).ToArray();
     }
 
     public Task PublishToTopic(string name, TopicMessage message)
@@ -40,7 +40,7 @@ internal class HubService(IHubContext<AppHub> hubContext) : IHubService
         var subscribers = ListSubscribers(name);
         foreach (var client in subscribers)
         {
-            client.Topics.Remove(name);
+            client.Topics.TryRemove(name, out _);
             await hubContext.Groups.RemoveFromGroupAsync(client.ConnectionId, TopicChannel(name));
         }
     }

@@ -2,6 +2,7 @@ using AmenoLink.Configurations;
 using AmenoLink.Dtos;
 using AmenoLink.Interfaces.ProgramManager;
 using AmenoLink.Shared;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using Timer = System.Threading.Timer;
 
@@ -11,30 +12,58 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 {
     public bool InUse => inUse;
     private bool inUse = false;
-    private Process? proccess;
+    private readonly object lockObject = new();
+    private int isDisposed = 0;
+    private Process? process;
     private Timer? idleTimer;
     private Timer? startupTimer;
     private Timer? actionTimer;
     private AutoResetEvent? currentResponseEvent;
     private AutoResetEvent? currentStartupEvent;
-    private readonly List<string> Logs = [];
+    private readonly ConcurrentQueue<string> Logs = [];
     private string appName = string.Empty;
+
+    public bool TryAcquire()
+    {
+        lock (lockObject)
+        {
+            if (isDisposed != 0 || inUse)
+                return false;
+
+            inUse = true;
+            return true;
+        }
+    }
+
+    public void Release()
+    {
+        lock (lockObject)
+            inUse = false;
+    }
 
     public ActionResponse Execute(ProgramConfig.Action action, ActionRequest request)
     {
-        Logs.Clear();
+        try
+        {
+            Logs.Clear();
 
-        var response = ExecuteInternal(action, request);
+            var response = ExecuteInternal(action, request);
 
-        string[] capturedLogs = ProcessLogs(Logs);
-        Logs.Clear();
+            string[] capturedLogs = ProcessLogs(Logs);
+            Logs.Clear();
 
-        return response with { Logs = capturedLogs };
+            return response with { Logs = capturedLogs };
+        }
+        finally
+        {
+            Release();
+        }
     }
 
-    private static string[] ProcessLogs(List<string> rawLogs)
+    private static string[] ProcessLogs(ConcurrentQueue<string> rawLogs)
     {
-        if (rawLogs.Count == 0) return [];
+        if (rawLogs.IsEmpty)
+            return [];
 
         var processed = new List<string>();
         var currentStderrLines = new List<string>();
@@ -63,14 +92,11 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         return [.. processed];
     }
 
-
     private ActionResponse ExecuteInternal(ProgramConfig.Action action, ActionRequest request)
     {
-        var errorResponse = StartProccess(request);
+        var errorResponse = StartProcess(request);
         if (errorResponse != null)
             return errorResponse;
-
-        inUse = true;
 
         idleTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
@@ -88,15 +114,21 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
         void outputHandler(object sender, DataReceivedEventArgs e) => HandleOutputData(e, request, responseEvent, ref response);
 
-        proccess!.OutputDataReceived += outputHandler;
+        process!.OutputDataReceived += outputHandler;
 
         string jsonPayload = System.Text.Json.JsonSerializer.Serialize(request, JsonDefaults.CompactOptions);
         string base64Payload = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(jsonPayload));
-        proccess.StandardInput.WriteLine(base64Payload);
+        process.StandardInput.WriteLine(base64Payload);
 
         responseEvent.WaitOne();
 
-        proccess.OutputDataReceived -= outputHandler;
+        try
+        {
+            if (process != null)
+                process.OutputDataReceived -= outputHandler;
+        }
+        catch { }
+
         currentResponseEvent = null;
 
         actionTimer?.Change(Timeout.Infinite, Timeout.Infinite);
@@ -104,7 +136,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         if (actionTimedOut)
             return FailAndDispose(request, Constants.ActionTimeout, "A execução da ação excedeu o tempo limite.");
 
-        if (response == null || proccess == null || proccess.HasExited)
+        if (response == null || process == null || process.HasExited)
             return FailAndDispose(request, Constants.ActionFailed, "O processo finalizou inesperadamente durante a execução da ação.");
 
         if (config.SlidingExpirationInSeconds > 0)
@@ -112,8 +144,6 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             idleTimer?.Dispose();
             idleTimer = new Timer(_ => Dispose(), null, TimeSpan.FromSeconds(config.SlidingExpirationInSeconds), Timeout.InfiniteTimeSpan);
         }
-
-        inUse = false;
 
         return response;
     }
@@ -128,11 +158,11 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             try
             {
                 string logMessage = ExtractPayload(e.Data, Constants.OnActionLogged);
-                Logs.Add(logMessage);
+                Logs.Enqueue(logMessage);
             }
             catch (Exception ex)
             {
-                Logs.Add($"[Erro] Falha ao decodificar log: '{e.Data}' - {ex.Message}");
+                Logs.Enqueue($"[Erro] Falha ao decodificar log: '{e.Data}' - {ex.Message}");
             }
             return;
         }
@@ -165,7 +195,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         }
         catch (Exception ex)
         {
-            Logs.Add($"[Erro] Falha ao processar mensagem do protocolo: '{e.Data}' - {ex.Message}");
+            Logs.Enqueue($"[Erro] Falha ao processar mensagem do protocolo: '{e.Data}' - {ex.Message}");
             response = new ActionResponse(
                 Previous: request,
                 Success: false,
@@ -176,12 +206,10 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         }
     }
 
-    private ActionResponse? StartProccess(ActionRequest request)
+    private ActionResponse? StartProcess(ActionRequest request)
     {
-        if (proccess != null)
+        if (process != null)
             return null;
-
-        inUse = true;
 
         using var startupEvent = new AutoResetEvent(false);
         currentStartupEvent = startupEvent;
@@ -217,13 +245,13 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
             startInfo.EnvironmentVariables["PYTHONIOENCODING"] = "utf-8";
 
-            proccess = new Process
+            process = new Process
             {
                 StartInfo = startInfo,
                 EnableRaisingEvents = true
             };
 
-            proccess.Exited += (sender, e) =>
+            process.Exited += (sender, e) =>
             {
                 currentStartupEvent?.Set();
                 currentResponseEvent?.Set();
@@ -257,22 +285,27 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
                 }
             }
 
-            proccess.ErrorDataReceived += (sender, e) =>
+            process.ErrorDataReceived += (sender, e) =>
             {
                 if (!string.IsNullOrEmpty(e.Data))
-                    Logs.Add($"{Constants.OnActionStderr} {e.Data}");
+                    Logs.Enqueue($"{Constants.OnActionStderr} {e.Data}");
             };
 
-
-            proccess.OutputDataReceived += startupOutputHandler;
-            proccess.Start();
-            ChildProcessTracker.AddProcess(proccess);
-            proccess.BeginOutputReadLine();
-            proccess.BeginErrorReadLine();
+            process.OutputDataReceived += startupOutputHandler;
+            process.Start();
+            ChildProcessTracker.AddProcess(process);
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             startupEvent.WaitOne();
 
-            proccess.OutputDataReceived -= startupOutputHandler;
+            try
+            {
+                if (process != null)
+                    process.OutputDataReceived -= startupOutputHandler;
+            }
+            catch { }
+
             currentStartupEvent = null;
 
             if (startupTimedOut)
@@ -281,11 +314,10 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             if (startupErrorMessage != null)
                 return FailAndDispose(request, Constants.StartupFailed, startupErrorMessage);
 
-            if (proccess.HasExited)
+            if (process == null || process.HasExited)
                 return FailAndDispose(request, Constants.StartupFailed, "O processo finalizou inesperadamente durante a inicialização.");
 
             startupTimer?.Change(Timeout.Infinite, Timeout.Infinite);
-            inUse = false;
 
             return null;
         }
@@ -368,6 +400,9 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
     public void Dispose()
     {
+        if (Interlocked.Exchange(ref isDisposed, 1) != 0)
+            return;
+
         idleTimer?.Dispose();
         startupTimer?.Dispose();
         actionTimer?.Dispose();
@@ -378,15 +413,21 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
         try
         {
-            if (proccess is { HasExited: false })
-                proccess.Kill(entireProcessTree: true);
+            if (process is { HasExited: false })
+                process.Kill(entireProcessTree: true);
         }
         catch { }
 
-        proccess?.Dispose();
-        proccess = null;
+        try
+        {
+            process?.Dispose();
+        }
+        catch { }
+        process = null;
 
-        inUse = false;
+        lock (lockObject)
+            inUse = false;
+
         runner.RemoveInstance(this);
     }
 }
