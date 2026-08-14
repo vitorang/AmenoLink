@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Version>0.0.1</Version>
@@ -17,10 +17,6 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <FrameworkReference Include="Microsoft.WindowsDesktop.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Messaging\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,7 +12,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 {
     public bool InUse => inUse;
     private bool inUse = false;
-    private readonly object lockObject = new();
+    private readonly Lock lockObject = new();
     private int isDisposed = 0;
     private Process? process;
     private Timer? idleTimer;
@@ -124,8 +124,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
         try
         {
-            if (process != null)
-                process.OutputDataReceived -= outputHandler;
+            process?.OutputDataReceived -= outputHandler;
         }
         catch { }
 
@@ -301,8 +300,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
 
             try
             {
-                if (process != null)
-                    process.OutputDataReceived -= startupOutputHandler;
+                process?.OutputDataReceived -= startupOutputHandler;
             }
             catch { }
 
