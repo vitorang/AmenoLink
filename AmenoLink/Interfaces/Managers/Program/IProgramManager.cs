@@ -1,6 +1,6 @@
 using AmenoLink.Dtos;
 
-namespace AmenoLink.Interfaces.ProgramManager;
+namespace AmenoLink.Interfaces.Managers.Program;
 
 internal interface IProgramManager : IDisposable
 {

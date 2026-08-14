@@ -1,13 +1,13 @@
 using System.Collections.Concurrent;
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
 using AmenoLink.Hubs;
-using AmenoLink.Interfaces.Configurations;
 using AmenoLink.Interfaces.Hub;
-using AmenoLink.Interfaces.TopicManager;
+using AmenoLink.Interfaces.Managers.Configuration;
+using AmenoLink.Interfaces.Managers.Topic;
+using AmenoLink.Managers.Configuration;
 using Message = AmenoLink.Dtos.Message;
 
-namespace AmenoLink.TopicManager;
+namespace AmenoLink.Managers.Topic;
 
 internal class TopicManager(IHubService hubService, IConfigurationManager configurationManager) : ITopicManager
 {

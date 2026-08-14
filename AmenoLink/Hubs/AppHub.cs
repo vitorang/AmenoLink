@@ -1,6 +1,6 @@
-using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.Hub;
-using AmenoLink.Interfaces.TopicManager;
+using AmenoLink.Interfaces.Managers.Cache;
+using AmenoLink.Interfaces.Managers.Topic;
 using Microsoft.AspNetCore.SignalR;
 
 namespace AmenoLink.Hubs;

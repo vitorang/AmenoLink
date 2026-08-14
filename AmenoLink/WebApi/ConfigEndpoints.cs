@@ -1,10 +1,10 @@
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
-using AmenoLink.Interfaces.Caching;
-using AmenoLink.Interfaces.Configurations;
-using AmenoLink.Interfaces.ProgramManager;
-using AmenoLink.Interfaces.TopicManager;
-using AmenoLink.ProgramManager;
+using AmenoLink.Interfaces.Managers.Cache;
+using AmenoLink.Interfaces.Managers.Configuration;
+using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Interfaces.Managers.Topic;
+using AmenoLink.Managers.Configuration;
+using AmenoLink.Managers.Program;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

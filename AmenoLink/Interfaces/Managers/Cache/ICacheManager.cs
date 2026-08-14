@@ -1,7 +1,7 @@
 using AmenoLink.Hubs;
 using System.Text.Json;
 
-namespace AmenoLink.Interfaces.Caching;
+namespace AmenoLink.Interfaces.Managers.Cache;
 
 internal interface ICacheManager
 {

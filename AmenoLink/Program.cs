@@ -1,9 +1,13 @@
 using AmenoLink.Hubs;
-using AmenoLink.Interfaces.Caching;
-using AmenoLink.Interfaces.Configurations;
 using AmenoLink.Interfaces.Hub;
-using AmenoLink.Interfaces.ProgramManager;
-using AmenoLink.Interfaces.TopicManager;
+using AmenoLink.Interfaces.Managers.Cache;
+using AmenoLink.Interfaces.Managers.Configuration;
+using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Interfaces.Managers.Topic;
+using AmenoLink.Managers.Cache;
+using AmenoLink.Managers.Configuration;
+using AmenoLink.Managers.Program;
+using AmenoLink.Managers.Topic;
 using AmenoLink.WebApi;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -123,11 +127,11 @@ internal static class Program
             options.SerializerOptions.TypeInfoResolver = Shared.JsonDefaults.Options.TypeInfoResolver;
         });
 
-        services.AddSingleton<IConfigurationManager, Configurations.ConfigurationManager>();
+        services.AddSingleton<IConfigurationManager, ConfigurationManager>();
         services.AddSingleton<IHubService, HubService>();
-        services.AddSingleton<IProgramManager, ProgramManager.ProgramManager>();
-        services.AddSingleton<ICacheManager, Caching.CacheManager>();
-        services.AddSingleton<ITopicManager, TopicManager.TopicManager>();
+        services.AddSingleton<IProgramManager, ProgramManager>();
+        services.AddSingleton<ICacheManager, CacheManager>();
+        services.AddSingleton<ITopicManager, TopicManager>();
         services.AddSingleton<MainWindow>();
     }
 

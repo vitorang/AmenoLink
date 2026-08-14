@@ -1,8 +1,8 @@
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
-using AmenoLink.Interfaces.ProgramManager;
+using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Managers.Configuration;
 
-namespace AmenoLink.ProgramManager;
+namespace AmenoLink.Managers.Program;
 
 internal class ProgramRunner(ProgramConfig config) : IProgramRunner
 {

@@ -1,12 +1,12 @@
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
-using AmenoLink.Interfaces.ProgramManager;
+using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Managers.Configuration;
 using AmenoLink.Shared;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Timer = System.Threading.Timer;
 
-namespace AmenoLink.ProgramManager;
+namespace AmenoLink.Managers.Program;
 
 internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig config) : IDisposable
 {

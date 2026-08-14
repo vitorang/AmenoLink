@@ -1,9 +1,9 @@
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
-using AmenoLink.Interfaces.ProgramManager;
-using AmenoLink.Interfaces.TopicManager;
+using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Interfaces.Managers.Topic;
+using AmenoLink.Managers.Configuration;
 
-namespace AmenoLink.ProgramManager;
+namespace AmenoLink.Managers.Program;
 
 internal class ProgramManager(ITopicManager topicManager) : IProgramManager
 {

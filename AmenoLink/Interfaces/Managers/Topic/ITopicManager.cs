@@ -1,7 +1,7 @@
 using AmenoLink.Dtos;
 using AmenoLink.Hubs;
 
-namespace AmenoLink.Interfaces.TopicManager;
+namespace AmenoLink.Interfaces.Managers.Topic;
 
 internal interface ITopicManager
 {

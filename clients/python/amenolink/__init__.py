@@ -1,5 +1,5 @@
 from ._action_manager import action, actions
-from ._caching import cache
+from ._cache import cache
 from ._shared import AmenoException, setup
 from ._action_messaging import request, queue
 from ._topic import topic, Topic

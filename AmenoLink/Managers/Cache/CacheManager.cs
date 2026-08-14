@@ -1,12 +1,12 @@
-using AmenoLink.Configurations;
 using AmenoLink.Hubs;
-using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.Hub;
+using AmenoLink.Interfaces.Managers.Cache;
+using AmenoLink.Managers.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
-namespace AmenoLink.Caching;
+namespace AmenoLink.Managers.Cache;
 
 internal class CacheManager(IHubService hubService) : ICacheManager
 {

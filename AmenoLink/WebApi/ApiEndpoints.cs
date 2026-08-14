@@ -1,13 +1,12 @@
-using System.Text.Json;
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
-using AmenoLink.Interfaces.Caching;
-using AmenoLink.Interfaces.ProgramManager;
-using AmenoLink.Interfaces.TopicManager;
+using AmenoLink.Interfaces.Managers.Cache;
+using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Interfaces.Managers.Topic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using System.Text.Json;
 
 namespace AmenoLink.WebApi;
 

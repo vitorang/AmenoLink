@@ -1,6 +1,6 @@
-using AmenoLink.Configurations;
+using AmenoLink.Managers.Configuration;
 
-namespace AmenoLink.Interfaces.Configurations;
+namespace AmenoLink.Interfaces.Managers.Configuration;
 
 internal interface IConfigurationManager
 {

@@ -1,4 +1,4 @@
-namespace AmenoLink.Configurations;
+namespace AmenoLink.Managers.Configuration;
 
 internal record CacheConfig(
     string GroupName,

@@ -1,8 +1,8 @@
-using AmenoLink.Configurations;
 using AmenoLink.Dtos;
-using AmenoLink.ProgramManager;
+using AmenoLink.Managers.Configuration;
+using AmenoLink.Managers.Program;
 
-namespace AmenoLink.Interfaces.ProgramManager;
+namespace AmenoLink.Interfaces.Managers.Program;
 
 internal interface IProgramRunner : IDisposable
 {

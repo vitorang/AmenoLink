@@ -1,7 +1,7 @@
 using AmenoLink.Shared;
 using System.Text.Json;
 
-namespace AmenoLink.Configurations;
+namespace AmenoLink.Managers.Configuration;
 
 internal static class ConfigPathProvider
 {

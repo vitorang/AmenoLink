@@ -1,4 +1,4 @@
-namespace AmenoLink.ProgramManager;
+namespace AmenoLink.Managers.Program;
 
 internal static class Constants
 {

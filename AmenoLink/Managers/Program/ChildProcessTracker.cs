@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace AmenoLink.ProgramManager;
+namespace AmenoLink.Managers.Program;
 
 #pragma warning disable SYSLIB1054
 internal static class JobObjectPInvoke
