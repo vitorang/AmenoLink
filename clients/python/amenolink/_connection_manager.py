@@ -5,6 +5,7 @@ from urllib.parse import quote
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 from ._shared import client_setup, AmenoException
 from ._topic_manager import TopicManager
+from ._cache_manager import CacheManager
 from .dtos import TopicMessage
 
 
@@ -20,6 +21,7 @@ class ConnectionManager:
         self.status: ConnectionStatus = ConnectionStatus.Disconnected
         self._connected_event = threading.Event()
         self.topic_manager = TopicManager(self)
+        self.cache_manager = CacheManager(self)
         self._status_listeners: set[Callable[[ConnectionStatus], None]] = set()
 
     @property
@@ -62,6 +64,7 @@ class ConnectionManager:
         self._connection.on_reconnect(self._on_connection_reconnected)
         self._connection.on_close(self._on_connection_closed)
         self._connection.on('Topic.Message', self._on_topic_message_received)
+        self._connection.on('Cache.ValueChanged', self._on_cache_value_changed)
 
         self._connection.start()
         self._connected_event.wait(timeout=timeout_seconds)
@@ -70,10 +73,12 @@ class ConnectionManager:
         self._update_status(ConnectionStatus.Connected)
         self._connected_event.set()
         self.topic_manager.resubscribe_all()
+        self.cache_manager.resubscribe_all()
 
     def _on_connection_reconnected(self) -> None:
         self._update_status(ConnectionStatus.Connected)
         self.topic_manager.resubscribe_all()
+        self.cache_manager.resubscribe_all()
 
     def _on_connection_closed(self) -> None:
         self._update_status(ConnectionStatus.Disconnected)
@@ -106,6 +111,16 @@ class ConnectionManager:
             topic_message = raw_message
 
         self.topic_manager.dispatch_message(topic_name, topic_message)
+
+    def _on_cache_value_changed(self, arguments: list[Any]) -> None:
+        if not arguments or len(arguments) < 3:
+            return
+
+        group_name = arguments[0]
+        key = arguments[1]
+        raw_value = arguments[2]
+
+        self.cache_manager.dispatch_value_changed(group_name, key, raw_value)
 
     def disconnect(self) -> None:
         conn = self._connection

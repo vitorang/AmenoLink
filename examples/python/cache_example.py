@@ -5,14 +5,13 @@
     - Execute o programa AmenoLink, vá na aba CACHES e adicione "example.cache" (sem aspas).
 '''
 
-from amenolink import cache, setup
 from datetime import date
+from time import sleep
+from amenolink import cache, connect, disconnect, setup
 from dtos import User
 
 
-def main():
-    setup(app_name='Cache Example (Python)')
-
+def basic_example():
     gary_stu = User(name='Gary Stu', birth_date=date(2001, 1, 20))
     mary_sue = User(name='Mary Sue', birth_date=date(1988, 8, 19))
 
@@ -49,6 +48,46 @@ def main():
     print(f'clear: {map}\n')
 
 
-if __name__ == '__main__':
-    main()
+def watcher_example():
+    def value_changed(key, value):
+        print(f'[{key}]: {value}')
+    
+    def user_changed(user: User):
+        print(f'> User: {user}')
 
+    joe = User(name='Average Joe', birth_date=date(2010, 7, 12))
+    jane = User(name='Average Jane', birth_date=date(2010, 12, 7))
+    c = cache('example.cache')
+    
+    connect()
+
+    # Esse é o observador de alterações
+    w = c.watch()
+    
+    # Pode monitorar todas as alterações
+    w.all(value_changed)
+    c.set('total', 5)
+    c.set('checked', False)
+
+    # Ou monitorar uma chave específica
+    w.key('user', user_changed)
+    c.set('user', joe)
+    c.set('user', jane)
+
+    # Ao excluir valores, eles virão nulos
+    c.delete('user')
+    c.clear()
+    sleep(1)
+
+    # No fim, descarte o watcher para encerrar as inscrições
+    w.dispose()
+    c.set('total', 9)
+    sleep(1)
+    c.clear()
+    disconnect()
+
+
+if __name__ == '__main__':
+    setup(app_name='Cache Example (Python)')
+    basic_example()
+    watcher_example()

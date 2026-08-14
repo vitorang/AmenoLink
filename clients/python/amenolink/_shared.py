@@ -1,3 +1,5 @@
+import types
+import typing
 from typing import Any, TypeVar, get_origin, get_args
 from dataclasses import is_dataclass
 
@@ -29,6 +31,12 @@ def _parse_data(data: Any, response_type: type[T]) -> T:
         return None
 
     origin = get_origin(response_type)
+    if origin in (types.UnionType, typing.Union):
+        union_arguments = [arg for arg in get_args(response_type) if arg is not type(None)]
+        if union_arguments:
+            response_type = union_arguments[0]
+            origin = get_origin(response_type)
+
     actual_type = origin if origin is not None else response_type
 
     if isinstance(actual_type, type) and isinstance(data, actual_type):

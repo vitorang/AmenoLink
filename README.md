@@ -9,7 +9,7 @@ O programa foi desenvolvido em .NET + Angular (compatível com Windows). Adicion
 
 
 ## Recursos
-Todos os recursos do AmenoLink são configuráveis por interface gráfica de forma simplificada, priorizando a Experiência do Desenvolvedor (DX - *Developer Experience*). Os exemplos completos de funcionalidade estão no diretório `/examples` em diferentes linguagens.
+Todos os recursos do AmenoLink são configuráveis por interface gráfica de forma simplificada, priorizando a Experiência do Desenvolvedor (DX - *Developer Experience*). Os exemplos completos das funcionalidades estão no diretório `/examples` em diferentes linguagens.
 
 ### Action
 É a forma de atender requisições e filas, inspirado no padrão *Lambdalith* (ou *Monolithic Lambda*). Ao registrar um programa executável ou script Python, define todas as rotas que o programa atenderá. Quando uma requisição para a rota for feita, o AmenoLink iniciará o programa automaticamente, reaproveitará a mesma instância para requisições seguintes evitando a penalidade do *cold-start* e encerrará o processo quando ele ficar em desuso.
@@ -128,12 +128,11 @@ Em breve!
 ### AmenoLink
 - [x] Interface gráfica
 - [x] Actions: execução de processos sob demanda
-- [x] Cache em memória
+- [x] Cache em memória + eventos
 - [x] Topics: Pub/Sub
-- [ ] Cache: Pub/Sub
 
 ### Bibliotecas de Clientes
-- [ ] Python (em desenvolvimento)
+- [x] Python
 - [ ] Dart (em desenvolvimento)
 - [ ] TypeScript
 - [ ] C#

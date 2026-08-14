@@ -6,6 +6,7 @@ import inspect
 from dataclasses import is_dataclass, asdict
 from typing import Any, Callable
 from ._shared import AmenoException, T, _parse_data, client_setup
+from ._cache_watcher import CacheWatcher
 
 
 class Cache:
@@ -51,6 +52,9 @@ class Cache:
 
     def delete(self, key: str) -> None:
         self._request('DELETE', self._cache_url(key))
+
+    def watch(self) -> CacheWatcher:
+        return CacheWatcher(group=self.group)
 
     def _cache_url(self, key: str) -> str:
         return f'{client_setup.origin_url}/api/cache?' + urllib.parse.urlencode({'groupName': self.group, 'key': key})
