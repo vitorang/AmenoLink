@@ -1,4 +1,4 @@
-import { Component, input, output, inject, signal, effect } from '@angular/core';
+import { Component, input, output, inject, signal, effect, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -9,6 +9,7 @@ import { TopicConfig } from '../../../../../../models/topic-config.model';
 import { SubscribedClient } from '../../../../../../models/subscribed-client.model';
 import { TopicMessage } from '../../../../../../models/topic-message.model';
 import { TopicService } from '../../../../../../services/topic.service';
+import { ProgramsService } from '../../../../../../services/programs.service';
 
 @Component({
     selector: 'app-topic-details',
@@ -18,9 +19,20 @@ import { TopicService } from '../../../../../../services/topic.service';
 })
 export class TopicDetails {
     private readonly topicService = inject(TopicService);
+    private readonly programsService = inject(ProgramsService);
 
     readonly config = input.required<TopicConfig>();
     readonly configChange = output<TopicConfig>();
+
+    readonly isActionMatch = computed<boolean>(() => {
+        const topicName = this.config().name;
+        if (!topicName)
+            return false;
+
+        return this.programsService
+            .programs()
+            .some((program) => (program.actions || []).some((action) => action.route === topicName));
+    });
 
     readonly subscribers = signal<SubscribedClient[] | null>(null);
     readonly loadingSubscribers = signal<boolean>(false);

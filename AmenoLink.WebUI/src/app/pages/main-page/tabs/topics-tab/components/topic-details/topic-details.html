@@ -6,6 +6,13 @@
             <span class="details-subtitle">Tópico</span>
         </div>
     </div>
+
+    @if (isActionMatch()) {
+        <div class="info-note action-match-note">
+            <mat-icon class="note-icon icon-16">bolt</mat-icon>
+            <span>Recebe o resultado de uma ação de mesmo nome</span>
+        </div>
+    }
 </div>
 
 <div class="details-card">

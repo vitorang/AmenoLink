@@ -23,6 +23,7 @@
             opacity: 1;
         }
 
+        .topic-badge,
         .time-badge {
             opacity: 1;
             background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
@@ -79,13 +80,6 @@
             opacity: 1;
             color: var(--danger-color);
             background-color: var(--danger-color-background);
-        }
-
-        .close-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
         }
     }
 }

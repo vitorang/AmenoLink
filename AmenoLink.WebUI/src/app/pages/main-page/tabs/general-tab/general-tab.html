@@ -39,7 +39,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Histórico por tópico</mat-label>
+            <mat-label>Histórico por Tópico</mat-label>
             <input matInput type="number" min="1" step="1"
                 [ngModel]="generalService.generalConfig().maxTopicHistorySize"
                 (ngModelChange)="onMaxTopicHistorySizeChange($event)" (blur)="onMaxTopicHistorySizeBlur($event)" />

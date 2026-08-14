@@ -10,8 +10,13 @@
                 <div class="entry-info">
                     <span class="entry-name">{{ item.name }}</span>
                 </div>
+                @if (item.hasAction) {
+                    <div class="pill-badge actions-badge" title="Recebe o resultado de uma ação de mesmo nome">
+                        <mat-icon class="actions-icon">bolt</mat-icon>
+                    </div>
+                }
                 @if (item.count !== undefined) {
-                    <div class="pill-badge actions-badge">
+                    <div class="pill-badge actions-badge" [title]="item.count + (item.count === 1 ? ' ação' : ' ações')">
                         <span class="badge-value actions-count">{{ item.count }}</span>
                         <mat-icon class="actions-icon">{{ badgeIcon() }}</mat-icon>
                     </div>

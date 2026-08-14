@@ -1,6 +1,13 @@
 @use '../../../../details-panel';
 
 .details-card {
+    .action-match-note {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--primary-color-light);
+        opacity: 0.9;
+    }
+
     .table-container {
         overflow-x: auto;
         border-radius: 8px;
@@ -66,7 +73,7 @@
 
                 .json-code {
                     margin: 0;
-                    font-family: 'Consolas', 'Courier New', monospace;
+                    font-family: monospace;
                     font-size: 0.82rem;
                     line-height: 1.4;
                     opacity: 0.85;

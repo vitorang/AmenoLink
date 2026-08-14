@@ -59,6 +59,8 @@ export class MainPage implements OnInit {
     ngOnInit(): void {
         this.generalService.load();
         this.programsService.load();
+        this.cacheService.load();
+        this.topicService.load();
     }
 
     onUndo(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CacheService } from '../../../../services/cache.service';
 import { GroupManager, GroupManagerItem } from '../../components/group-manager/group-manager';
@@ -12,7 +12,7 @@ import { EmptyState } from '../../../../components/empty-state/empty-state';
     templateUrl: './caches-tab.html',
     styleUrl: './caches-tab.scss',
 })
-export class CachesTab implements OnInit {
+export class CachesTab {
     protected readonly cacheService = inject(CacheService);
     private readonly dialog = inject(MatDialog);
 
@@ -22,10 +22,6 @@ export class CachesTab implements OnInit {
             name: config.groupName,
         })),
     );
-
-    ngOnInit(): void {
-        this.cacheService.load();
-    }
 
     onAdd(): void {
         const dialogRef = this.dialog.open<TextPromptModal, TextPromptModalData, string>(

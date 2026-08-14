@@ -20,6 +20,9 @@ export class CacheService {
     readonly loading = signal<boolean>(false);
 
     load(): void {
+        if (this.loading())
+            return;
+
         this.loading.set(true);
         this.configService.cache
             .get()

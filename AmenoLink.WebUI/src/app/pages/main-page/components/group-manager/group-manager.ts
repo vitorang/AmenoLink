@@ -6,6 +6,7 @@ export interface GroupManagerItem {
     id: string;
     name: string;
     count?: number;
+    hasAction?: boolean;
 }
 
 @Component({

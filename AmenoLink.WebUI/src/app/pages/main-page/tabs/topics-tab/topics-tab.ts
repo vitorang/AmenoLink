@@ -1,6 +1,7 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TopicService } from '../../../../services/topic.service';
+import { ProgramsService } from '../../../../services/programs.service';
 import { GroupManager, GroupManagerItem } from '../../components/group-manager/group-manager';
 import { TopicDetails } from './components/topic-details/topic-details';
 import { TextPromptModal, TextPromptModalData } from '../../../../components/text-prompt-modal/text-prompt-modal';
@@ -12,20 +13,30 @@ import { EmptyState } from '../../../../components/empty-state/empty-state';
     templateUrl: './topics-tab.html',
     styleUrl: './topics-tab.scss',
 })
-export class TopicsTab implements OnInit {
+export class TopicsTab {
     protected readonly topicService = inject(TopicService);
+    protected readonly programsService = inject(ProgramsService);
     private readonly dialog = inject(MatDialog);
 
-    readonly topicItems = computed<GroupManagerItem[]>(() =>
-        this.topicService.topicConfigs().map((config) => ({
+    private readonly actionRoutes = computed<Set<string>>(() => {
+        const routes = new Set<string>();
+        for (const program of this.programsService.programs()) {
+            for (const action of program.actions || []) {
+                if (action.route)
+                    routes.add(action.route);
+            }
+        }
+        return routes;
+    });
+
+    readonly topicItems = computed<GroupManagerItem[]>(() => {
+        const routes = this.actionRoutes();
+        return this.topicService.topicConfigs().map((config) => ({
             id: config.name,
             name: config.name,
-        })),
-    );
-
-    ngOnInit(): void {
-        this.topicService.load();
-    }
+            hasAction: routes.has(config.name),
+        }));
+    });
 
     onAdd(): void {
         const dialogRef = this.dialog.open<TextPromptModal, TextPromptModalData, string>(
