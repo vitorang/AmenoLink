@@ -17,48 +17,11 @@ internal static class ConfigEndpoints
     {
         var group = routes.MapGroup("/api/config");
 
+        #region General
+
         group.MapGet("/show-app", (MainWindow mainWindow) =>
         {
             mainWindow.Invoke(mainWindow.RestoreFromTray);
-            return Results.Ok();
-        });
-
-        group.MapGet("/programs", () =>
-        {
-            var configs = ConfigPathProvider.Program.LoadConfigs();
-            return Results.Ok(configs);
-        });
-
-        group.MapPost("/programs", (ProgramConfig[] configs, IProgramManager programManager) =>
-        {
-            ConfigPathProvider.Program.SaveConfigs(configs);
-            programManager.LoadConfigurations();
-            return Results.Ok();
-        });
-
-        group.MapGet("/cache", () =>
-        {
-            var configs = ConfigPathProvider.Cache.LoadConfigs();
-            return Results.Ok(configs);
-        });
-
-        group.MapPost("/cache", (CacheConfig[] configs, ICacheManager cacheManager) =>
-        {
-            ConfigPathProvider.Cache.SaveConfigs(configs);
-            cacheManager.LoadConfigurations();
-            return Results.Ok();
-        });
-
-        group.MapGet("/topics", () =>
-        {
-            var configs = ConfigPathProvider.Topic.LoadConfigs();
-            return Results.Ok(configs);
-        });
-
-        group.MapPost("/topics", (TopicConfig[] configs, ITopicManager topicManager) =>
-        {
-            ConfigPathProvider.Topic.SaveConfigs(configs);
-            topicManager.LoadConfigurations();
             return Results.Ok();
         });
 
@@ -74,21 +37,24 @@ internal static class ConfigEndpoints
             return Results.Ok();
         });
 
-        group.MapGet("/topic/subscribers", (string topicName, ITopicManager topicManager) =>
+        #endregion
+
+        #region Programs
+
+        group.MapGet("/programs", () =>
         {
-            var subscribers = topicManager.ListSubscribers(topicName)
-                .Select(client => new SubscribedClient(client.ConnectionId, client.AppName))
-                .ToArray();
-            return Results.Ok(subscribers);
+            var configs = ConfigPathProvider.Program.LoadConfigs();
+            return Results.Ok(configs);
         });
 
-        group.MapGet("/topic/recent", (string topicName, ITopicManager topicManager) =>
+        group.MapPost("/programs", (ProgramConfig[] configs, IProgramManager programManager) =>
         {
-            var recentMessages = topicManager.GetRecentMessages(topicName);
-            return Results.Ok(recentMessages);
+            ConfigPathProvider.Program.SaveConfigs(configs);
+            programManager.LoadConfigurations();
+            return Results.Ok();
         });
 
-        group.MapGet("/select-executable", (string? currentPath) =>
+        group.MapGet("/programs/select-executable", (string? currentPath) =>
         {
             string? selectedFile = null;
 
@@ -122,6 +88,64 @@ internal static class ConfigEndpoints
 
             return Results.Ok(selectedFile);
         });
+
+        #endregion
+
+        #region Cache
+
+        group.MapGet("/cache", () =>
+        {
+            var configs = ConfigPathProvider.Cache.LoadConfigs();
+            return Results.Ok(configs);
+        });
+
+        group.MapPost("/cache", (CacheConfig[] configs, ICacheManager cacheManager) =>
+        {
+            ConfigPathProvider.Cache.SaveConfigs(configs);
+            cacheManager.LoadConfigurations();
+            return Results.Ok();
+        });
+
+        group.MapGet("/cache/subscribers", (string groupName, ICacheManager cacheManager) =>
+        {
+            var subscribers = cacheManager.ListSubscribers(groupName)
+                .Select(client => new SubscribedClient(client.ConnectionId, client.AppName))
+                .ToArray();
+            return Results.Ok(subscribers);
+        });
+
+        #endregion
+
+        #region Topics
+
+        group.MapGet("/topics", () =>
+        {
+            var configs = ConfigPathProvider.Topic.LoadConfigs();
+            return Results.Ok(configs);
+        });
+
+        group.MapPost("/topics", (TopicConfig[] configs, ITopicManager topicManager) =>
+        {
+            ConfigPathProvider.Topic.SaveConfigs(configs);
+            topicManager.LoadConfigurations();
+            return Results.Ok();
+        });
+
+        group.MapGet("/topic/subscribers", (string topicName, ITopicManager topicManager) =>
+        {
+            var subscribers = topicManager.ListSubscribers(topicName)
+                .Select(client => new SubscribedClient(client.ConnectionId, client.AppName))
+                .ToArray();
+            return Results.Ok(subscribers);
+        });
+
+        group.MapGet("/topic/recent", (string topicName, ITopicManager topicManager) =>
+        {
+            var recentMessages = topicManager.GetRecentMessages(topicName);
+            return Results.Ok(recentMessages);
+        });
+
+        #endregion
 
         return routes;
     }

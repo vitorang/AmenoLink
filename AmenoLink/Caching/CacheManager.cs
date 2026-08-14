@@ -1,12 +1,14 @@
 using AmenoLink.Configurations;
+using AmenoLink.Hubs;
 using AmenoLink.Interfaces.Caching;
+using AmenoLink.Interfaces.Hub;
 using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace AmenoLink.Caching;
 
-internal class CacheManager : ICacheManager
+internal class CacheManager(IHubService hubService) : ICacheManager
 {
     private readonly ConcurrentDictionary<string, CacheGroupEntry> CacheGroups = new();
 
@@ -28,7 +30,10 @@ internal class CacheManager : ICacheManager
             if (!newConfigMap.ContainsKey(groupName))
             {
                 if (CacheGroups.TryRemove(groupName, out var removedEntry))
+                {
                     removedEntry.Cache.Dispose();
+                    _ = hubService.RemoveCacheSubscribers(groupName);
+                }
             }
         }
 
@@ -40,6 +45,10 @@ internal class CacheManager : ICacheManager
                 CacheGroups[config.GroupName] = new CacheGroupEntry(config);
         }
     }
+
+    public bool Exists(string groupName) => CacheGroups.ContainsKey(groupName);
+
+    public HubClient[] ListSubscribers(string groupName) => hubService.ListCacheSubscribers(groupName);
 
     public JsonElement? Get(string groupName, string key)
     {
@@ -62,21 +71,28 @@ internal class CacheManager : ICacheManager
         if (entry.Config.TotalExpirationInSeconds > 0)
             options.SetAbsoluteExpiration(TimeSpan.FromSeconds(entry.Config.TotalExpirationInSeconds));
 
-        options.RegisterPostEvictionCallback((evictedKey, _, _, _) =>
+        options.RegisterPostEvictionCallback((evictedKey, _, reason, _) =>
         {
+            if (reason is EvictionReason.Replaced or EvictionReason.None)
+                return;
+
             if (evictedKey is string k)
+            {
                 entry.Keys.TryRemove(k, out _);
+                _ = hubService.PublishToCacheGroup(groupName, k, null);
+            }
         });
 
-        entry.Cache.Set(key, value.Clone(), options);
+        var clonedValue = value.Clone();
+        entry.Cache.Set(key, clonedValue, options);
         entry.Keys[key] = 0;
+        _ = hubService.PublishToCacheGroup(groupName, key, clonedValue);
     }
 
     public void Delete(string groupName, string key)
     {
         var entry = GetGroupEntry(groupName);
         entry.Cache.Remove(key);
-        entry.Keys.TryRemove(key, out _);
     }
 
     public Dictionary<string, JsonElement?> All(string groupName)
@@ -99,10 +115,7 @@ internal class CacheManager : ICacheManager
     {
         var entry = GetGroupEntry(groupName);
         foreach (var key in entry.Keys.Keys)
-        {
             entry.Cache.Remove(key);
-            entry.Keys.TryRemove(key, out _);
-        }
     }
 
     private CacheGroupEntry GetGroupEntry(string groupName)

@@ -21,8 +21,8 @@ export class ProgramsService {
 
     load(): void {
         this.loading.set(true);
-        this.configService
-            .getProgramConfigs()
+        this.configService.programs
+            .get()
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: (data) => {
@@ -49,7 +49,7 @@ export class ProgramsService {
 
     addProgram(): void {
         this.loading.set(true);
-        this.configService
+        this.configService.programs
             .selectExecutable()
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
@@ -139,8 +139,8 @@ export class ProgramsService {
         this.programs.set(sortedPrograms);
 
         this.loading.set(true);
-        this.configService
-            .saveProgramConfigs(sortedPrograms)
+        this.configService.programs
+            .save(sortedPrograms)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: () => {

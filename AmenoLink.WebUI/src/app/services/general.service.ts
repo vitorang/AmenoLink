@@ -24,8 +24,8 @@ export class GeneralService {
 
     load(): void {
         this.loading.set(true);
-        this.configService
-            .getGeneralConfig()
+        this.configService.general
+            .get()
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: (data) => {
@@ -65,8 +65,8 @@ export class GeneralService {
     save(): void {
         const payload = this.generalConfig();
         this.loading.set(true);
-        this.configService
-            .saveGeneralConfig(payload)
+        this.configService.general
+            .save(payload)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: () => {

@@ -1,8 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { finalize } from 'rxjs';
+import { Observable, finalize } from 'rxjs';
 import { ConfigurationService } from './configuration.service';
 import { CacheConfig } from '../models/cache-config.model';
+import { SubscribedClient } from '../models/subscribed-client.model';
 import { AlertDialogComponent } from '../components/alert-dialog/alert-dialog.component';
 
 @Injectable({
@@ -20,8 +21,8 @@ export class CacheService {
 
     load(): void {
         this.loading.set(true);
-        this.configService
-            .getCacheConfigs()
+        this.configService.cache
+            .get()
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: (data) => {
@@ -107,8 +108,8 @@ export class CacheService {
         this.cacheConfigs.set(sortedConfigs);
 
         this.loading.set(true);
-        this.configService
-            .saveCacheConfigs(sortedConfigs)
+        this.configService.cache
+            .save(sortedConfigs)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: () => {
@@ -123,6 +124,9 @@ export class CacheService {
             });
     }
 
+    getSubscribers(groupName: string): Observable<SubscribedClient[]> {
+        return this.configService.cache.getSubscribers(groupName);
+    }
 
     private showErrorDialog(title: string, message: string): void {
         this.dialog.open(AlertDialogComponent, {

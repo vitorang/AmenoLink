@@ -51,7 +51,7 @@ export class ProgramDetails {
     }
 
     onChangeExecutable(): void {
-        this.configService.selectExecutable(this.program().path).subscribe({
+        this.configService.programs.selectExecutable(this.program().path).subscribe({
             next: (selectedPath) => {
                 if (!selectedPath)
                     return;

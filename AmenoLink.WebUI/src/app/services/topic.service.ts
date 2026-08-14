@@ -22,8 +22,8 @@ export class TopicService {
 
     load(): void {
         this.loading.set(true);
-        this.configService
-            .getTopicConfigs()
+        this.configService.topics
+            .get()
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: (data) => {
@@ -107,8 +107,8 @@ export class TopicService {
         this.topicConfigs.set(sortedConfigs);
 
         this.loading.set(true);
-        this.configService
-            .saveTopicConfigs(sortedConfigs)
+        this.configService.topics
+            .save(sortedConfigs)
             .pipe(finalize(() => this.loading.set(false)))
             .subscribe({
                 next: () => {
@@ -124,11 +124,11 @@ export class TopicService {
     }
 
     getSubscribers(topicName: string): Observable<SubscribedClient[]> {
-        return this.configService.getTopicSubscribers(topicName);
+        return this.configService.topics.getSubscribers(topicName);
     }
 
     getRecentMessages(topicName: string): Observable<TopicMessage[]> {
-        return this.configService.getTopicRecentMessages(topicName);
+        return this.configService.topics.getRecentMessages(topicName);
     }
 
     private showErrorDialog(title: string, message: string): void {

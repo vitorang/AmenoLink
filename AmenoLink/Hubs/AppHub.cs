@@ -1,10 +1,15 @@
+using AmenoLink.Interfaces.Caching;
 using AmenoLink.Interfaces.Hub;
 using AmenoLink.Interfaces.TopicManager;
 using Microsoft.AspNetCore.SignalR;
 
 namespace AmenoLink.Hubs;
 
-internal class AppHub(IHubService hubService, ITopicManager topicManager) : Hub
+internal class AppHub(
+    IHubService hubService,
+    ITopicManager topicManager,
+    ICacheManager cacheManager
+) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -47,5 +52,25 @@ internal class AppHub(IHubService hubService, ITopicManager topicManager) : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, hubService.TopicChannel(name));
         var client = hubService.Get(Context.ConnectionId);
         client.Topics.TryRemove(name, out _);
+    }
+
+    [HubMethodName("Cache.Subscribe")]
+    public async Task<bool> SubscribeToCache(string groupName)
+    {
+        if (!cacheManager.Exists(groupName))
+            return false;
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, hubService.CacheChannel(groupName));
+        var client = hubService.Get(Context.ConnectionId);
+        client.CacheGroups.TryAdd(groupName, 0);
+        return true;
+    }
+
+    [HubMethodName("Cache.Unsubscribe")]
+    public async Task UnsubscribeFromCache(string groupName)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, hubService.CacheChannel(groupName));
+        var client = hubService.Get(Context.ConnectionId);
+        client.CacheGroups.TryRemove(groupName, out _);
     }
 }

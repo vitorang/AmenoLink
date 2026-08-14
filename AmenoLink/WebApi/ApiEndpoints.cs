@@ -46,6 +46,9 @@ internal static class ApiEndpoints
 
         group.MapPost("/cache", ([FromQuery] string groupName, [FromQuery] string key, [FromBody] JsonElement value, ICacheManager cacheManager) =>
         {
+            if (value.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined)
+                return Results.BadRequest("O valor do cache não pode ser nulo.");
+
             try
             {
                 cacheManager.Set(groupName, key, value);

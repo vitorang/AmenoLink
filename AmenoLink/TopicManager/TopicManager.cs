@@ -9,10 +9,7 @@ using Message = AmenoLink.Dtos.Message;
 
 namespace AmenoLink.TopicManager;
 
-internal class TopicManager(
-    IHubService hubService,
-    IConfigurationManager configurationManager
-) : ITopicManager
+internal class TopicManager(IHubService hubService, IConfigurationManager configurationManager) : ITopicManager
 {
     private TopicConfig[] topicConfigs = [];
     private readonly ConcurrentDictionary<string, ConcurrentQueue<TopicMessage>> recentMessagesByTopic = new(StringComparer.Ordinal);

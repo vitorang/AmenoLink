@@ -9,6 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { CacheConfig } from '../../../../../../models/cache-config.model';
+import { SubscribedClient } from '../../../../../../models/subscribed-client.model';
+import { CacheService } from '../../../../../../services/cache.service';
 import { CacheDataService, CacheEntryItem } from '../../../../../../services/cache-data.service';
 import { handleInputBlur, sanitizeInteger } from '../../../../../../utils/number.utils';
 
@@ -27,6 +29,7 @@ import { handleInputBlur, sanitizeInteger } from '../../../../../../utils/number
     styleUrl: './cache-details.scss',
 })
 export class CacheDetails {
+    private readonly cacheService = inject(CacheService);
     private readonly cacheDataService = inject(CacheDataService);
 
     readonly config = input.required<CacheConfig>();
@@ -36,6 +39,10 @@ export class CacheDetails {
     readonly loadingEntries = signal<boolean>(false);
     readonly displayedColumns: string[] = ['key', 'value', 'actions'];
 
+    readonly subscribers = signal<SubscribedClient[] | null>(null);
+    readonly loadingSubscribers = signal<boolean>(false);
+    readonly subscribersDisplayedColumns: string[] = ['appName', 'connectionId'];
+
     private currentGroupName: string | null = null;
 
     constructor() {
@@ -44,8 +51,26 @@ export class CacheDetails {
             if (this.currentGroupName !== groupName) {
                 this.currentGroupName = groupName;
                 this.cacheEntries.set(null);
+                this.subscribers.set(null);
             }
         });
+    }
+
+    onRefreshSubscribers(): void {
+        const groupName = this.config().groupName;
+        this.loadingSubscribers.set(true);
+
+        this.cacheService
+            .getSubscribers(groupName)
+            .pipe(
+                catchError(() => of([])),
+                finalize(() => this.loadingSubscribers.set(false)),
+            )
+            .subscribe({
+                next: (data) => {
+                    this.subscribers.set(data || []);
+                },
+            });
     }
 
     onRefreshValues(): void {

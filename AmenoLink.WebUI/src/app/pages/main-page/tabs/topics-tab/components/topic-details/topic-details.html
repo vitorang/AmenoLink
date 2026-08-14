@@ -10,7 +10,7 @@
 
 <div class="details-card">
     <div class="section-header">
-        <div class="section-title">Inscrições</div>
+        <div class="section-title">Inscritos</div>
         <button mat-stroked-button (click)="onRefreshSubscribers()" [disabled]="loadingSubscribers()">
             <mat-icon>refresh</mat-icon>
             Atualizar
@@ -18,9 +18,9 @@
     </div>
 
     @if (subscribers() === null) {
-        <div class="empty-values">Clique em "Atualizar" para carregar as inscrições.</div>
+        <div class="empty-values">Clique em "Atualizar" para carregar os inscritos.</div>
     } @else if (subscribers()!.length === 0) {
-        <div class="empty-values">Nenhuma inscrição neste tópico.</div>
+        <div class="empty-values">Nenhum inscrito neste tópico.</div>
     } @else {
         <div class="table-container">
             <table mat-table [dataSource]="subscribers()!" class="values-table">
