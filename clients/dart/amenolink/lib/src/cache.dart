@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'cache_watcher.dart';
 import 'shared.dart';
 
 class Cache {
   final String group;
 
   Cache(this.group);
+
+  CacheWatcher watch() => CacheWatcher(group);
 
   Future<T?> get<T>(String key) async {
     final rawValue = await _request('GET', _cacheUrl(key));

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:signalr_core/signalr_core.dart';
+import 'cache_manager.dart';
 import 'dtos.dart';
 import 'shared.dart';
 import 'topic_manager.dart';
@@ -10,10 +11,12 @@ class ConnectionManager implements IConnectionManager {
   HubConnection? _connection;
   ConnectionStatus status = ConnectionStatus.disconnected;
   late final TopicManager topicManager;
+  late final CacheManager cacheManager;
   final Set<void Function(ConnectionStatus)> _statusListeners = {};
 
   ConnectionManager() {
     topicManager = TopicManager(this);
+    cacheManager = CacheManager(this);
   }
 
   @override
@@ -57,6 +60,7 @@ class ConnectionManager implements IConnectionManager {
     });
 
     _connection!.on('Topic.Message', _onTopicMessageReceived);
+    _connection!.on('Cache.ValueChanged', _onCacheValueChanged);
 
     try {
       await _connection!.start()?.timeout(Duration(milliseconds: (timeoutSeconds * 1000).toInt()));
@@ -77,11 +81,13 @@ class ConnectionManager implements IConnectionManager {
   void _onConnectionOpened() {
     _updateStatus(ConnectionStatus.connected);
     topicManager.resubscribeAll();
+    cacheManager.resubscribeAll();
   }
 
   void _onConnectionReconnected() {
     _updateStatus(ConnectionStatus.connected);
     topicManager.resubscribeAll();
+    cacheManager.resubscribeAll();
   }
 
   void _onConnectionClosed() {
@@ -130,6 +136,16 @@ class ConnectionManager implements IConnectionManager {
     }
 
     topicManager.dispatchMessage(topicName, topicMessage);
+  }
+
+  void _onCacheValueChanged(List<dynamic>? arguments) {
+    if (arguments == null || arguments.length < 3) return;
+
+    final groupName = arguments[0] as String;
+    final key = arguments[1] as String;
+    final rawValue = arguments[2];
+
+    cacheManager.dispatchValueChanged(groupName, key, rawValue);
   }
 }
 

@@ -133,7 +133,7 @@ Em breve!
 
 ### Bibliotecas de Clientes
 - [x] Python
-- [ ] Dart (em desenvolvimento)
+- [x] Dart
 - [ ] TypeScript
 - [ ] C#
 
