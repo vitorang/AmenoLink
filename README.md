@@ -49,10 +49,8 @@ Os dados enviados podem ser tipos primitivos ou instâncias de classes, mas não
 ### Cache
 O *cache* é em memória, mas se diferencia dos programas por valores serem inseridos em grupos que possuem configurações pré-definidas. As configurações são tempo de expiração por desuso e tempo de vida total.
 
-
 Exemplo de uso de *Cache*:
 ```python
-
 from amenolink import cache
 
 gary = User('Gary Stu', id='1')
@@ -65,12 +63,29 @@ users.set(mary.id, mary)
 user = users.get('1', User)
 ```
 
+Também é possível monitorar alterações no cache em tempo real com `watch()`:
+```python
+from amenolink import cache, connect
+
+def on_theme_changed(theme: str):
+    print(f'Tema alterado para: {theme}')
+
+settings = cache('example.settings')
+
+watcher = settings.watch()
+watcher.key('theme', on_theme_changed)
+
+connect()
+
+settings.set('theme', 'dark')
+```
+
 ### Topic (Pub/Sub)
 Ao contrário do uso de filas, nenhum programa será iniciado automaticamente. A mensagem será enviada para todos os inscritos num tópico.
 
 Use o método `connect` para iniciar a comunicação em tempo real com AmenoLink. Use `dispose` para destruir todas as inscrições daquela instância de `Topic`.
 
-Toda mensagem é do tipo `TopicMessage<T>`, que conterá outras informações como todas as mensagens anteriores que originaram essa. A quantidade de chamadas anteriores é limitada por configuração para evitar problemas de loops infinitos acidentais. Quando uma atingir o limite, não haverá envio para os tópicos.
+Toda mensagem é do tipo `TopicMessage<T>`, que conterá outras informações como todas as mensagens anteriores que originaram essa. A quantidade de chamadas anteriores é limitada por configuração para evitar problemas de loops infinitos acidentais. Quando atingir o limite, não haverá envio para os tópicos.
 
 Exemplo de envio e recebimento de mensagem:
 ```python
@@ -117,11 +132,79 @@ bye_topic.dispose()
 
 Note: você pode chamar `connect` após chamar o `subscribe`. A inscrição com tópicos é feita também quando ocorre a reconexão com AmenoLink. Mas uma vez feito `dispose`, a reconexão daquela instância não será refeita.
 
-## Instruções de instalação
-Em breve!
+## Instruções de configuração
+
+### Pré-requisitos
+
+**Para compilar o AmenoLink (Host/Desktop):**
+- .NET SDK 10.0+
+- Node.js e npm (para compilação da interface gráfica em Angular)
+
+**Opcionais (para empacotamento ou execução de exemplos):**
+- Python 3.12+ e ferramenta uv (para empacotamento do cliente Python e execução dos exemplos)
+- Dart SDK 3.0+ (para execução dos exemplos em Dart)
+
+### Publicação Automatizada
+Para compilar o backend .NET, o frontend WebUI (Angular) e gerar os pacotes das bibliotecas de clientes, execute o script PowerShell na raiz do projeto:
+
+```powershell
+.\publish.ps1
+```
+
+O script gerará a pasta `dist/AmenoLink` contendo:
+- O executável principal `AmenoLink.exe` pronto para uso.
+- Os pacotes da biblioteca Python (`.whl` e `.tar.gz`) em `clients/python/`.
+- A biblioteca cliente Dart em `clients/dart/`.
+
+---
 
 ### Execução de exemplos
-Em breve!
+
+Inicie o aplicativo **AmenoLink** (`dist/AmenoLink/AmenoLink.exe`) e cadastre os recursos na interface gráfica:
+
+- **Programas (Actions):** Adicione o programa que executará as ações (apontando para o `action_server.py` ou para o executável `action_server.exe` compilado em Dart) e vincule a ação `example.action`
+- **Caches:** Adicione o grupo `example.cache`
+- **Tópicos:** Adicione o tópico `example.topic`
+
+> **Nota:** Jamais execute o `action_server` manualmente. Ele é um processo gerenciado automaticamente pelo AmenoLink sob demanda e não se encerrará sozinho.
+
+#### Python
+Navegue até a pasta de exemplos em Python:
+
+```powershell
+cd examples/python
+
+# Crie e ative o ambiente virtual
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+# Instale a biblioteca gerada na publicação
+pip install ..\..\clients\python\dist\amenolink-0.0.1-py3-none-any.whl
+
+# Execute os exemplos
+python cache_example.py
+python topic_example.py
+python action_client.py
+```
+
+#### Dart
+Navegue até a pasta de exemplos em Dart:
+
+```powershell
+cd examples/dart
+
+# Obtenha as dependências
+dart pub get
+
+# (Opcional) Compile o servidor de ações em executável
+# ou use o action_server de outro exemplo
+dart compile exe lib/action_server.dart -o lib/action_server.exe
+
+# Execute os exemplos
+dart run lib/cache_example.dart
+dart run lib/topic_example.dart
+dart run lib/action_example.dart
+```
 
 ## Roadmap & Status do Projeto
 
@@ -146,7 +229,7 @@ Ao contrário de soluções *serverless*, AmenoLink não usa contêiner e faz um
 O nível de isolamento dos recursos é apenas por nome. Por exemplo, caso saiba o nome de um `Topic`, ou saiba o nome do grupo de um `Cache`, poderá acessar dados de outros programas que os usam.
 
 ### Interface Gráfica
-A interface gráfica é um *webview* que abre um SPA desenvolvido em Angular Material. O programa pode ser minimizado para o *tray*, e quando é feito isso, o *webview* é destruído para economizar memória. Em compensação, quando o programa é reaberto, recarregará o SPA.
+A interface gráfica é um *webview* que abre um SPA desenvolvido em Angular Material. O programa pode ser minimizado para o *tray*, e quando isso é feito, o *webview* é destruído para economizar memória. Em compensação, quando o programa é reaberto, recarregará o SPA.
 
 Para facilitar a inspeção de dados, a interface gráfica exibe as mensagens salvas por tópico e os dados salvos em cada grupo de *cache*, assim como os programas inscritos nos tópicos.
 

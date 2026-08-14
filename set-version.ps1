@@ -70,4 +70,13 @@ if (Test-Path $reqFile) {
     Write-Host "  [Python Example] requirements.txt -> amenolink-$version" -ForegroundColor Green
 }
 
+# 6. README.md
+$readmeFile = Join-Path $rootDir "README.md"
+if (Test-Path $readmeFile) {
+    $readmeContent = Get-Content $readmeFile -Raw
+    $readmeContent = $readmeContent -replace 'amenolink-[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?-py3', "amenolink-$version-py3"
+    Set-Content -Path $readmeFile -Value $readmeContent -NoNewline
+    Write-Host "  [Docs] README.md -> amenolink-$version" -ForegroundColor Green
+}
+
 Write-Host "Versao $version aplicada com sucesso a todos os projetos!" -ForegroundColor Cyan
