@@ -2,10 +2,10 @@ import json
 import urllib.request
 import urllib.parse
 import urllib.error
+import inspect
 from dataclasses import is_dataclass, asdict
 from typing import Any, Callable
 from ._shared import AmenoException, T, _parse_data, client_setup
-
 
 
 class Cache:
@@ -28,13 +28,15 @@ class Cache:
         self._request('POST', self._cache_url(key), data=serialized_value)
 
     def get_or_create(self, key: str, creator: Callable[[], T]) -> T:
+        raw_cached = self._request('GET', self._cache_url(key))
+        if raw_cached is not None:
+            signature = inspect.signature(creator)
+            return_annotation = signature.return_annotation
+            if return_annotation not in (inspect.Signature.empty, Any):
+                return _parse_data(raw_cached, return_annotation)
+            return raw_cached
+
         created_value = creator()
-        target_type = type(created_value)
-
-        cached_value = self.get(key, target_type)
-        if cached_value is not None:
-            return cached_value
-
         self.set(key, created_value)
         return created_value
 
