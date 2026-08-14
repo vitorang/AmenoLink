@@ -6,7 +6,6 @@ namespace AmenoLink.Interfaces.Hub;
 internal interface IHubService
 {
     string TopicChannel(string name);
-    string StoreChannel(string name);
     bool Add(HubClient client);
     bool Remove(string connectionId, out HubClient? client);
     HubClient Get(string connectionId);

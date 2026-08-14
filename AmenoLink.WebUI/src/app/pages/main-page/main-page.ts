@@ -6,17 +6,16 @@ import { GeneralTab } from './tabs/general-tab/general-tab';
 import { ProgramsTab } from './tabs/programs-tab/programs-tab';
 import { CachesTab } from './tabs/caches-tab/caches-tab';
 import { TopicsTab } from './tabs/topics-tab/topics-tab';
-import { StoresTab } from './tabs/stores-tab/stores-tab';
 import { GeneralService } from '../../services/general.service';
 import { ProgramsService } from '../../services/programs.service';
 import { CacheService } from '../../services/cache.service';
 import { TopicService } from '../../services/topic.service';
 
-export type TabAlias = 'general' | 'programs' | 'caches' | 'topics' | 'stores';
+export type TabAlias = 'general' | 'programs' | 'caches' | 'topics';
 
 @Component({
     selector: 'app-main-page',
-    imports: [MatTabsModule, MatButtonModule, MatIconModule, GeneralTab, ProgramsTab, CachesTab, TopicsTab, StoresTab],
+    imports: [MatTabsModule, MatButtonModule, MatIconModule, GeneralTab, ProgramsTab, CachesTab, TopicsTab],
     templateUrl: './main-page.html',
     styleUrl: './main-page.scss',
 })
@@ -33,10 +32,9 @@ export class MainPage implements OnInit {
         programs: 1,
         caches: 2,
         topics: 3,
-        stores: 4,
     };
 
-    readonly tabAliases: TabAlias[] = ['general', 'programs', 'caches', 'topics', 'stores'];
+    readonly tabAliases: TabAlias[] = ['general', 'programs', 'caches', 'topics'];
 
     get isCurrentTabModified(): boolean {
         if (this.activeTab === 'general')

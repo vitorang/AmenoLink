@@ -93,17 +93,6 @@ internal static class ConfigPathProvider
         public static void SaveConfig(GeneralConfig config) => ConfigPathProvider.SaveSingleConfig(GetFilePath(), config);
     }
 
-    public static class Store
-    {
-        private const string ConfigFileName = "store-config.json";
-
-        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
-
-        public static StoreConfig[] LoadConfigs() => ConfigPathProvider.LoadConfigs<StoreConfig>(GetFilePath());
-
-        public static void SaveConfigs(StoreConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
-    }
-
     public static class Topic
     {
         private const string ConfigFileName = "topic-config.json";

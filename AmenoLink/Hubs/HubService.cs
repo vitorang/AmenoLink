@@ -11,8 +11,6 @@ internal class HubService(IHubContext<AppHub> hubContext) : IHubService
 
     public string TopicChannel(string name) => $"topic:{name}";
 
-    public string StoreChannel(string name) => $"store:{name}";
-
     public bool Add(HubClient client) => clients.TryAdd(client.ConnectionId, client);
 
     public bool Remove(string connectionId, out HubClient? client) => clients.TryRemove(connectionId, out client);
