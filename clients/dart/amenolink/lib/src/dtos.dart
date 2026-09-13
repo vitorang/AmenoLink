@@ -193,3 +193,32 @@ class TopicMessage<T> extends Message {
     return resultDictionary;
   }
 }
+
+class Resources {
+  final List<String> actions;
+  final List<String> caches;
+  final List<String> topics;
+
+  Resources({
+    this.actions = const [],
+    this.caches = const [],
+    this.topics = const [],
+  });
+
+  factory Resources.fromJson(Map<String, dynamic> json) {
+    return Resources(
+      actions: (json['actions'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      caches: (json['caches'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      topics: (json['topics'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'actions': actions,
+      'caches': caches,
+      'topics': topics,
+    };
+  }
+}
+

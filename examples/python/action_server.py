@@ -5,7 +5,7 @@
 
 from datetime import date
 from dtos import UserAstrology, User
-from amenolink import actions, action, setup
+from amenolink import actions, action_context, ensure_ready, setup
 
 
 # Configuração inicial do programa. É recomendado definir app_name,
@@ -61,12 +61,16 @@ def get_zodiac_sign(dt: date) -> str:
 
 # Assim é declarado uma ação.
 def hello(user: User) -> UserAstrology:
+    # Caso use recursos, declare-os antes da validação
+    ensure_ready()
+
     week_day = get_week_day(user.birth_date)
     sign = get_zodiac_sign(user.birth_date)
 
-    # Use action() para obter contexto da ação atual.
-    action().log(f'Olá, {user.name}!')
-    action().log(f'Você é de {sign} e nasceu {week_day}!')
+    # Use action_context() para obter contexto da ação atual.
+    context = action_context()
+    context.log(f'Olá, {user.name}!')
+    context.log(f'Você é de {sign} e nasceu {week_day}!')
 
     return UserAstrology(
         name=user.name,

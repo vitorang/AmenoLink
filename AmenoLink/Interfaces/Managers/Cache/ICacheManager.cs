@@ -13,4 +13,5 @@ internal interface ICacheManager
     void Delete(string groupName, string key);
     Dictionary<string, JsonElement?> All(string groupName);
     void Clear(string groupName);
+    string[] ListMissingNames(IEnumerable<string> groupNames);
 }

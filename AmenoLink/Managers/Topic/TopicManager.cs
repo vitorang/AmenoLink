@@ -26,6 +26,15 @@ internal class TopicManager(IHubService hubService, IConfigurationManager config
         return topicConfigs.Any(c => c.Name == topicName);
     }
 
+    public string[] ListMissingNames(IEnumerable<string> topicNames)
+    {
+        var existingTopics = topicConfigs.Select(c => c.Name).ToHashSet();
+        return topicNames
+            .Where(topicName => !existingTopics.Contains(topicName))
+            .Distinct()
+            .ToArray();
+    }
+
     public HubClient[] ListSubscribers(string topicName)
     {
         return hubService.ListSubscribers(topicName);

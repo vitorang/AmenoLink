@@ -11,11 +11,9 @@
     - Na aba TÓPICOS, adicione "example.action".
 '''
 
-from amenolink import connect, disconnect, setup
-from amenolink.dtos import ActionResponse
+from amenolink import action, connect, disconnect, ensure_ready, setup, topic, ConnectionStatus
+from amenolink.dtos import ActionResponse, TopicMessage
 from datetime import date
-from amenolink import request, queue, topic, ConnectionStatus
-from amenolink.dtos import TopicMessage
 from dtos import User, UserAstrology
 from time import sleep
 
@@ -25,29 +23,35 @@ ACTION_ROUTE = 'example.action'
 def main():
     setup(app_name='Action Example (Python)')
 
+    # Declaração dos recursos utilizados
+    example_action = action(ACTION_ROUTE)
+    action_topic = topic(ACTION_ROUTE, ActionResponse[UserAstrology])
+
+    # Valida se os recursos estão configurados
+    ensure_ready()
+
     gary_stu = User(name='Gary Stu', birth_date=date(2001, 1, 20))
     mary_sue = User(name='Mary Sue', birth_date=date(1988, 8, 19))
-  
+
     # Abre uma conexão persistente
     connect(on_status_change=on_status_change)
 
     # Os resultados são publicados no tópico com mesmo nome da ação
-    t = topic(ACTION_ROUTE, ActionResponse[UserAstrology])
-    t.subscribe(on_message_received)
+    action_topic.subscribe(on_message_received)
 
     # Com request poderá obter resultados de forma síncrona
     # e não precisará usar tópico ou conexão persistente.
     # Porém, o resultado será publicado no tópico!
-    ua = request(ACTION_ROUTE, gary_stu, UserAstrology)
-    print(f'Resposta de requisição: {format_user_astrology(ua)}')
+    astrology = example_action.request(gary_stu, UserAstrology)
+    print(f'Resposta de requisição: {format_user_astrology(astrology)}')
     sleep(0.5)
 
     # Ou executar de forma assíncrona se não precisar do resultado ou o processamento for lento
-    queue(ACTION_ROUTE, mary_sue)
+    example_action.queue(mary_sue)
     sleep(1)
 
     # Desativa conexão do tópico. Após isso, ele não poderá ser usado
-    t.dispose()
+    action_topic.dispose()
 
     # Fecha a conexão
     disconnect()

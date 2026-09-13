@@ -178,3 +178,26 @@ class TopicMessage(Message, Generic[T]):
             'payload': serialized_payload,
         })
         return result_dictionary
+
+
+@dataclass(frozen=True)
+class Resources:
+    actions: list[str] = field(default_factory=list)
+    caches: list[str] = field(default_factory=list)
+    topics: list[str] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> Self:
+        return cls(
+            actions=list(data.get('actions') or []),
+            caches=list(data.get('caches') or []),
+            topics=list(data.get('topics') or []),
+        )
+
+    def to_dict(self) -> dict:
+        return {
+            'actions': list(self.actions),
+            'caches': list(self.caches),
+            'topics': list(self.topics),
+        }
+

@@ -96,7 +96,7 @@ actions = ActionRouter()
 current_action: ActionContext | None = None
 
 
-def action() -> ActionContext:
+def action_context() -> ActionContext:
     if current_action is None:
         raise RuntimeError('Nenhuma ação está em execução no momento.')
     return current_action

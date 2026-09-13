@@ -48,6 +48,14 @@ internal class CacheManager(IHubService hubService) : ICacheManager
 
     public bool Exists(string groupName) => CacheGroups.ContainsKey(groupName);
 
+    public string[] ListMissingNames(IEnumerable<string> groupNames)
+    {
+        return groupNames
+            .Where(groupName => !CacheGroups.ContainsKey(groupName))
+            .Distinct()
+            .ToArray();
+    }
+
     public HubClient[] ListSubscribers(string groupName) => hubService.ListCacheSubscribers(groupName);
 
     public JsonElement? Get(string groupName, string key)

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'cache_watcher.dart';
+import 'resource_manager.dart';
 import 'shared.dart';
 
 class Cache {
@@ -102,4 +103,7 @@ class Cache {
   }
 }
 
-Cache cache(String groupName) => Cache(groupName);
+Cache cache(String groupName) {
+  resourceManager.caches.add(groupName);
+  return Cache(groupName);
+}

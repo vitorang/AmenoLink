@@ -7,6 +7,7 @@ from dataclasses import is_dataclass, asdict
 from typing import Any, Callable
 from ._shared import AmenoException, T, _parse_data, client_setup
 from ._cache_watcher import CacheWatcher
+from ._resource_manager import resource_manager
 
 
 class Cache:
@@ -85,4 +86,5 @@ class Cache:
 
 
 def cache(group_name: str) -> Cache:
+    resource_manager.caches.add(group_name)
     return Cache(group_name)

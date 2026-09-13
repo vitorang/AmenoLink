@@ -53,13 +53,17 @@ String getZodiacSign(DateTime dt) {
 }
 
 // Assim é declarada uma ação.
-UserAstrology hello(User user) {
+Future<UserAstrology> hello(User user) async {
+  // Caso use recursos, declare-os antes da validação
+  await ensureReady();
+
   final weekDay = getWeekDay(user.birthDate);
   final sign = getZodiacSign(user.birthDate);
 
-  // Use action() para obter contexto da ação atual.
-  action().log('Olá, ${user.name}!');
-  action().log('Você é de $sign e nasceu $weekDay!');
+  // Use actionContext() para obter contexto da ação atual.
+  final context = actionContext();
+  context.log('Olá, ${user.name}!');
+  context.log('Você é de $sign e nasceu $weekDay!');
 
   return UserAstrology(name: user.name, birthDate: user.birthDate, weekDay: weekDay, sign: sign);
 }

@@ -8,53 +8,58 @@
 import 'package:amenolink/amenolink.dart';
 import 'dtos.dart';
 
+const cacheGroup = 'example.cache';
+
 void main() async {
   setup(appName: 'Cache Example (Dart)');
   registerType<User>(User.fromJson);
 
-  await basicExample();
-  await watcherExample();
+  // Declaração do grupo de cache
+  final exampleCache = cache(cacheGroup);
+
+  // Valida se os recursos estão configurados
+  await ensureReady();
+
+  await basicExample(exampleCache);
+  await watcherExample(exampleCache);
 }
 
-Future<void> basicExample() async {
+Future<void> basicExample(Cache exampleCache) async {
   final garyStu = User(name: 'Gary Stu', birthDate: DateTime(2001, 1, 20));
   final marySue = User(name: 'Mary Sue', birthDate: DateTime(1988, 8, 19));
 
-  // Esse é o grupo de valores
-  final c = cache('example.cache');
-
   // Valor não definido retorna null
-  var user = await c.get<User>('gary');
+  var user = await exampleCache.get<User>('gary');
   print('get: $user\n');
 
   // Caso não exista, será criado
-  user = await c.getOrCreate<User>('gary', () async => garyStu);
+  user = await exampleCache.getOrCreate<User>('gary', () async => garyStu);
   print('getOrCreate: $user');
   print('get: $user\n');
 
   // Definir e excluir valores
-  await c.set('mary', marySue);
-  user = await c.get<User>('mary');
+  await exampleCache.set('mary', marySue);
+  user = await exampleCache.get<User>('mary');
   print('set: $user\n');
 
-  await c.delete('mary');
-  user = await c.get<User>('mary');
+  await exampleCache.delete('mary');
+  user = await exampleCache.get<User>('mary');
   print('delete: $user\n');
 
   // Obter todos os registros:
-  await c.set('mary', marySue);
-  await c.set('port', 13545);
-  await c.set('true', true);
-  var map = await c.all();
-  print('all: $map\n');
+  await exampleCache.set('mary', marySue);
+  await exampleCache.set('port', 13545);
+  await exampleCache.set('true', true);
+  var entries = await exampleCache.all();
+  print('all: $entries\n');
 
   // Remover todos os registros:
-  await c.clear();
-  map = await c.all();
-  print('clear: $map\n');
+  await exampleCache.clear();
+  entries = await exampleCache.all();
+  print('clear: $entries\n');
 }
 
-Future<void> watcherExample() async {
+Future<void> watcherExample(Cache exampleCache) async {
   void valueChanged(String key, dynamic value) {
     print('[$key]: $value');
   }
@@ -65,32 +70,31 @@ Future<void> watcherExample() async {
 
   final joe = User(name: 'Average Joe', birthDate: DateTime(2010, 7, 12));
   final jane = User(name: 'Average Jane', birthDate: DateTime(2010, 12, 7));
-  final c = cache('example.cache');
 
   await connect();
 
   // Esse é o observador de alterações
-  final w = c.watch();
+  final watcher = exampleCache.watch();
 
   // Pode monitorar todas as alterações
-  w.all(valueChanged);
-  await c.set('total', 5);
-  await c.set('checked', false);
+  watcher.all(valueChanged);
+  await exampleCache.set('total', 5);
+  await exampleCache.set('checked', false);
 
   // Ou monitorar uma chave específica
-  w.key<User>('user', userChanged);
-  await c.set('user', joe);
-  await c.set('user', jane);
+  watcher.key<User>('user', userChanged);
+  await exampleCache.set('user', joe);
+  await exampleCache.set('user', jane);
 
   // Ao excluir valores, eles virão nulos
-  await c.delete('user');
-  await c.clear();
+  await exampleCache.delete('user');
+  await exampleCache.clear();
   await Future.delayed(const Duration(seconds: 1));
 
   // No fim, descarte o watcher para encerrar as inscrições
-  w.dispose();
-  await c.set('total', 9);
+  watcher.dispose();
+  await exampleCache.set('total', 9);
   await Future.delayed(const Duration(seconds: 1));
-  await c.clear();
+  await exampleCache.clear();
   await disconnect();
 }

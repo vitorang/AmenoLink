@@ -10,4 +10,5 @@ internal interface ITopicManager
     HubClient[] ListSubscribers(string topicName);
     Task Publish(string topicName, TopicMessage message);
     TopicMessage[] GetRecentMessages(string topicName);
+    string[] ListMissingNames(IEnumerable<string> topicNames);
 }

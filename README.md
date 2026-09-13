@@ -35,12 +35,12 @@ actions.serve()
 Há duas formas de executar ações, por requisição ou por fila. Toda *Action* publicará o resultado automaticamente no tópico de mesmo nome, abordarei na seção *Topic* como funciona.
 
 ```python
-from amenolink import request, queue
+from amenolink import action
 
-greeting = request('example.hello', 'Gary Stu', str)
+greeting = action('example.hello').request('Gary Stu', str)
 print(greeting)
 
-queue('example.bye', 'Gary Stu')
+action('example.bye').queue('Gary Stu')
 ```
 
 Os dados enviados podem ser tipos primitivos ou instâncias de classes, mas não é possível enviar listas ou outras coleções diretamente. Essa decisão foi tomada para garantir portabilidade entre linguagens. Note que no Python é necessário indicar o tipo de dado!
@@ -110,7 +110,7 @@ chat.dispose()
 As mensagens vindas de `Action` serão `TopicMessage<ActionResponse<T>>`, porém é necessário que os nomes de ambos sejam os mesmos!
 
 ```python
-from amenolink import connect, queue, topic
+from amenolink import action, connect, topic
 from amenolink.dtos import ActionResponse, TopicMessage
 from time import sleep
 
@@ -125,7 +125,7 @@ bye_topic.subscribe(on_bye)
 
 connect()
 
-queue('example.bye', user)
+action('example.bye').queue(user)
 sleep(1)
 bye_topic.dispose()
 ```

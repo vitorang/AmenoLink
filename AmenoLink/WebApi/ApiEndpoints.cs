@@ -18,6 +18,23 @@ internal static class ApiEndpoints
 
         group.MapGet("/", () => "AmenoLink");
 
+        group.MapPost("/resources/missing", (
+            Resources resources,
+            IProgramManager programManager,
+            ICacheManager cacheManager,
+            ITopicManager topicManager) =>
+        {
+            var missingActions = programManager.ListMissingNames(resources.Actions);
+            var missingCaches = cacheManager.ListMissingNames(resources.Caches);
+            var missingTopics = topicManager.ListMissingNames(resources.Topics);
+
+            return Results.Ok(new Resources(
+                Actions: missingActions,
+                Caches: missingCaches,
+                Topics: missingTopics
+            ));
+        });
+
         group.MapPost("/request", async (ActionRequest request, IProgramManager programManager) =>
         {
             var response = await programManager.Execute(request);

@@ -4,6 +4,7 @@ from ulid import ULID
 from ._shared import AmenoException, T, _parse_data, client_setup
 from ._http_requests import _post_json
 from ._connection_manager import connection_manager
+from ._resource_manager import resource_manager
 from .dtos import Message, TopicMessage
 
 
@@ -72,4 +73,5 @@ class Topic(Generic[T]):
 
 
 def topic(name: str, value_type: type[T] = Any) -> Topic[T]:
+    resource_manager.topics.add(name)
     return Topic(name=name, value_type=value_type)

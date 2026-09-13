@@ -22,6 +22,13 @@ void main() async {
   // Registra os DTOs
   registerType<UserAstrology>(UserAstrology.fromJson);
 
+  // Declaração dos recursos utilizados
+  final exampleAction = action(actionRoute);
+  final actionTopic = topic<ActionResponse<UserAstrology>>(actionRoute);
+
+  // Valida se os recursos estão configurados
+  await ensureReady();
+
   final garyStu = User(name: 'Gary Stu', birthDate: DateTime(2001, 1, 20));
   final marySue = User(name: 'Mary Sue', birthDate: DateTime(1988, 8, 19));
 
@@ -29,22 +36,21 @@ void main() async {
   await connect(onStatusChange: onStatusChange);
 
   // Os resultados são publicados no tópico com mesmo nome da ação
-  final t = topic<ActionResponse<UserAstrology>>(actionRoute);
-  t.subscribe(onMessageReceived);
+  actionTopic.subscribe(onMessageReceived);
 
   // Com request poderá obter resultados de forma síncrona
   // e não precisará usar tópico ou conexão persistente.
   // Porém, o resultado será publicado no tópico!
-  final ua = await request<UserAstrology>(actionRoute, garyStu);
-  print('Resposta de requisição: ${formatUserAstrology(ua)}');
+  final astrology = await exampleAction.request<UserAstrology>(garyStu);
+  print('Resposta de requisição: ${formatUserAstrology(astrology)}');
   await Future.delayed(const Duration(milliseconds: 500));
 
   // Ou executar de forma assíncrona se não precisar do resultado ou o processamento for lento
-  await queue(actionRoute, marySue);
+  await exampleAction.queue(marySue);
   await Future.delayed(const Duration(seconds: 1));
 
   // Desativa conexão do tópico. Após isso, ele não poderá ser usado
-  t.dispose();
+  actionTopic.dispose();
 
   // Fecha a conexão. É necessário para o programa se encerrar.
   await disconnect();

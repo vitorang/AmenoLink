@@ -3,6 +3,7 @@ import 'package:ulid/ulid.dart';
 import 'connection_manager.dart';
 import 'dtos.dart';
 import 'http_requests.dart';
+import 'resource_manager.dart';
 import 'shared.dart';
 import 'topic_manager.dart';
 
@@ -82,4 +83,7 @@ class Topic<T> implements ITopic {
   }
 }
 
-Topic<T> topic<T>(String name) => Topic<T>(name);
+Topic<T> topic<T>(String name) {
+  resourceManager.topics.add(name);
+  return Topic<T>(name);
+}

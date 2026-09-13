@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:amenolink/src/shared.dart' show clientSetup, parseData;
@@ -9,7 +10,7 @@ const onActionSuccess = '[AmenoLink.ActionSuccess]';
 const onActionError = '[AmenoLink.ActionError]';
 const onActionLogged = '[AmenoLink.ActionLog]';
 
-typedef ActionHandler<T, R> = R Function(T input);
+typedef ActionHandler<T, R> = FutureOr<R> Function(T input);
 
 class ActionRoute {
   final String route;
@@ -38,11 +39,11 @@ class ActionRouter {
     );
   }
 
-  String _execute(ActionRequest request) {
+  Future<String> _execute(ActionRequest request) async {
     for (final route in _routes) {
       if (route.route == request.route) {
         final argument = route.parseInput(request.payload);
-        final rawResult = Function.apply(route.handler, [argument]);
+        final rawResult = await Function.apply(route.handler, [argument]);
         return _formatResult(rawResult);
       }
     }
@@ -67,7 +68,7 @@ class ActionRouter {
     final lines = stdin.transform(utf8.decoder).transform(const LineSplitter());
 
     lines.listen(
-      (rawInput) {
+      (rawInput) async {
         if (rawInput.trim().isEmpty) return;
 
         try {
@@ -77,7 +78,7 @@ class ActionRouter {
           final request = ActionRequest.fromJson(requestMap);
 
           currentAction = ActionContext(request);
-          final result = _execute(request);
+          final result = await _execute(request);
           sendMessage(onActionSuccess, result);
         } catch (exception) {
           sendMessage(onActionError, exception.toString());
@@ -95,7 +96,7 @@ class ActionRouter {
 final actions = ActionRouter();
 ActionContext? currentAction;
 
-ActionContext action() {
+ActionContext actionContext() {
   final current = currentAction;
   if (current == null) {
     throw StateError('Nenhuma ação está em execução no momento.');

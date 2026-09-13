@@ -69,6 +69,17 @@ internal class ProgramManager(ITopicManager topicManager) : IProgramManager
         return response;
     }
 
+    public string[] ListMissingNames(IEnumerable<string> actionNames)
+    {
+        lock (routeMap)
+        {
+            return actionNames
+                .Where(name => !routeMap.ContainsKey(name))
+                .Distinct()
+                .ToArray();
+        }
+    }
+
     public void Dispose()
     {
         lock (runners)

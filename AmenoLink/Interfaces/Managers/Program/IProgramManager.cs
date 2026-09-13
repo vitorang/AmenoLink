@@ -6,4 +6,5 @@ internal interface IProgramManager : IDisposable
 {
     void LoadConfigurations();
     Task<ActionResponse> Execute(ActionRequest request);
+    string[] ListMissingNames(IEnumerable<string> actionNames);
 }
