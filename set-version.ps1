@@ -43,13 +43,18 @@ if (Test-Path $pyProjectFile) {
     Write-Host "  [Python] pyproject.toml -> $version" -ForegroundColor Green
 }
 
-# 3. Dart (pubspec.yaml)
+# 3. Dart (pubspec.yaml e version.dart)
 $pubspecFile = Join-Path $rootDir "clients\dart\amenolink\pubspec.yaml"
 if (Test-Path $pubspecFile) {
     $pubContent = Get-Content $pubspecFile -Raw
     $pubContent = $pubContent -replace 'version:\s*[^\r\n]+', "version: $version"
     Set-Content -Path $pubspecFile -Value $pubContent -NoNewline
     Write-Host "  [Dart] pubspec.yaml -> $version" -ForegroundColor Green
+}
+$dartVersionFile = Join-Path $rootDir "clients\dart\amenolink\lib\src\version.dart"
+if (Test-Path $dartVersionFile) {
+    Set-Content -Path $dartVersionFile -Value "const packageVersion = '$version';`r`n" -NoNewline
+    Write-Host "  [Dart] version.dart -> $version" -ForegroundColor Green
 }
 
 # 4. WebUI (package.json)

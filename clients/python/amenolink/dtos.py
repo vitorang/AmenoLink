@@ -185,6 +185,7 @@ class Resources:
     actions: list[str] = field(default_factory=list)
     caches: list[str] = field(default_factory=list)
     topics: list[str] = field(default_factory=list)
+    version: str = ''
 
     @classmethod
     def from_dict(cls, data: dict) -> Self:
@@ -192,6 +193,7 @@ class Resources:
             actions=list(data.get('actions') or []),
             caches=list(data.get('caches') or []),
             topics=list(data.get('topics') or []),
+            version=str(data.get('version') or ''),
         )
 
     def to_dict(self) -> dict:
@@ -199,5 +201,6 @@ class Resources:
             'actions': list(self.actions),
             'caches': list(self.caches),
             'topics': list(self.topics),
+            'version': self.version,
         }
 

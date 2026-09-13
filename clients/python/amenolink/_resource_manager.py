@@ -10,15 +10,24 @@ class ResourceManager:
         self.topics: set[str] = set()
 
     def ensure_ready(self) -> None:
+        from importlib.metadata import version
+        client_version = version('amenolink')
+
         resources = Resources(
             actions=list(self.actions),
             caches=list(self.caches),
             topics=list(self.topics),
+            version=client_version,
         )
 
         url = f'{client_setup.origin_url}/api/resources/missing'
         response_data = _post_json(url, resources.to_dict())
         missing_resources = Resources.from_dict(response_data)
+
+        if missing_resources.version != client_version:
+            raise AmenoException(
+                f'Versão incompatível do AmenoLink. Host: {missing_resources.version}, Cliente: {client_version}.'
+            )
 
         missing_items: list[str] = []
 

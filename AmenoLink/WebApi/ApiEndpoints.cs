@@ -28,10 +28,13 @@ internal static class ApiEndpoints
             var missingCaches = cacheManager.ListMissingNames(resources.Caches);
             var missingTopics = topicManager.ListMissingNames(resources.Topics);
 
+            var appVersion = typeof(ApiEndpoints).Assembly.GetName().Version!.ToString(3);
+
             return Results.Ok(new Resources(
                 Actions: missingActions,
                 Caches: missingCaches,
-                Topics: missingTopics
+                Topics: missingTopics,
+                Version: appVersion
             ));
         });
 

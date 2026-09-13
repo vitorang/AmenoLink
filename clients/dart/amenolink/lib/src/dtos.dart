@@ -198,11 +198,13 @@ class Resources {
   final List<String> actions;
   final List<String> caches;
   final List<String> topics;
+  final String version;
 
   Resources({
     this.actions = const [],
     this.caches = const [],
     this.topics = const [],
+    this.version = '',
   });
 
   factory Resources.fromJson(Map<String, dynamic> json) {
@@ -210,6 +212,7 @@ class Resources {
       actions: (json['actions'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       caches: (json['caches'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
       topics: (json['topics'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const [],
+      version: json['version'] as String? ?? '',
     );
   }
 
@@ -218,6 +221,7 @@ class Resources {
       'actions': actions,
       'caches': caches,
       'topics': topics,
+      'version': version,
     };
   }
 }

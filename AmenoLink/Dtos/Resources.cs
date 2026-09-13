@@ -3,7 +3,8 @@ namespace AmenoLink.Dtos;
 public record Resources(
     string[] Actions = null!,
     string[] Caches = null!,
-    string[] Topics = null!
+    string[] Topics = null!,
+    string Version = ""
 )
 {
     public string[] Actions { get; init; } = Actions ?? [];

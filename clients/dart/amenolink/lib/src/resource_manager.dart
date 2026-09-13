@@ -1,6 +1,7 @@
 import 'dtos.dart';
 import 'http_requests.dart';
 import 'shared.dart';
+import 'version.dart';
 
 class ResourceManager {
   final Set<String> actions = {};
@@ -8,11 +9,22 @@ class ResourceManager {
   final Set<String> topics = {};
 
   Future<void> ensureReady() async {
-    final resources = Resources(actions: actions.toList(), caches: caches.toList(), topics: topics.toList());
+    final resources = Resources(
+      actions: actions.toList(),
+      caches: caches.toList(),
+      topics: topics.toList(),
+      version: packageVersion,
+    );
 
     final url = '${clientSetup.originUrl}/api/resources/missing';
     final responseData = await postJson(url, resources.toJson());
     final missingResources = Resources.fromJson(responseData);
+
+    if (missingResources.version != packageVersion) {
+      throw AmenoException(
+        'Versão incompatível do AmenoLink. Host: ${missingResources.version}, Cliente: $packageVersion.',
+      );
+    }
 
     final missingItems = <String>[];
 
