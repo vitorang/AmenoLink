@@ -38,7 +38,7 @@ def main():
         reply_talk = Talk(author='Bot', text='Não há ninguém por aqui. Você será desconectado.', reply=False)
         # Ao enviar uma mensagem que é resposta a outra, envie a anterior para manter histórico
         # Caso haja loop de chamadas consecutivas, isso evitará loop infinito
-        sender.publish(reply_talk, message)
+        sender.publish(reply_talk, previous=message)
 
     listener.subscribe(show_talk)
     listener.subscribe(reply)
