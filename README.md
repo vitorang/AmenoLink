@@ -14,6 +14,7 @@ Todos os recursos do AmenoLink são configuráveis por interface gráfica de for
 ### Action
 É a forma de atender requisições e filas, inspirado no padrão *Lambdalith* (ou *Monolithic Lambda*). Ao registrar um programa executável ou script Python, define todas as rotas que o programa atenderá. Quando uma requisição para a rota for feita, o AmenoLink iniciará o programa automaticamente, reaproveitará a mesma instância para requisições seguintes evitando a penalidade do *cold-start* e encerrará o processo quando ele ficar em desuso.
 
+![Aba de programas](https://vitorang.github.io/Portfolio/projetos/amenolink-programs.jpg)
 
 O número de instâncias do programa, tempos limites de inicialização e inatividade são configuráveis. O tempo limite de execução para cada *Action* é configurável individualmente por rotas.
 
@@ -47,7 +48,9 @@ Os dados enviados podem ser tipos primitivos ou instâncias de classes, mas não
 
 
 ### Cache
-O *cache* é em memória, mas se diferencia dos programas por valores serem inseridos em grupos que possuem configurações pré-definidas. As configurações são tempo de expiração por desuso e tempo de vida total.
+O *cache* é em memória e a configuração de expiração é por domínio, ao invés de por cada item individualmente. As configurações são tempo de expiração por inatividade e tempo de vida total.
+
+![Aba de caches](https://vitorang.github.io/Portfolio/projetos/amenolink-caches.jpg)
 
 Exemplo de uso de *Cache*:
 ```python
@@ -81,7 +84,9 @@ settings.set('theme', 'dark')
 ```
 
 ### Topic (Pub/Sub)
-Ao contrário do uso de filas, nenhum programa será iniciado automaticamente. A mensagem será enviada para todos os inscritos num tópico.
+Ao contrário de Action, nenhum programa será iniciado automaticamente. A mensagem será enviada para todos os inscritos no tópico naquele momento.
+
+![Aba de tópicos](https://vitorang.github.io/Portfolio/projetos/amenolink-topics.jpg)
 
 Use o método `connect` para iniciar a comunicação em tempo real com AmenoLink. Use `dispose` para destruir todas as inscrições daquela instância de `Topic`.
 
@@ -107,7 +112,7 @@ sleep(1)
 chat.dispose()
 ```
 
-As mensagens vindas de `Action` serão `TopicMessage<ActionResponse<T>>`, porém é necessário que os nomes de ambos sejam os mesmos!
+Caso tenha Action e Topic com o mesmo nome, a resposta será publicada como `TopicMessage<ActionResponse<T>>`.
 
 ```python
 from amenolink import action, connect, topic
@@ -213,6 +218,7 @@ dart run lib/action_example.dart
 - [x] Actions: execução de processos sob demanda
 - [x] Cache em memória + eventos
 - [x] Topics: Pub/Sub
+- [ ] Servir múltiplos SPAs
 
 ### Bibliotecas de Clientes
 - [x] Python
@@ -239,4 +245,4 @@ A comunicação entre processos (*Actions*) é feita por mensagens em `base64` c
 Entre programas que usam a API do AmenoLink, a comunicação é feita trafegando JSON por HTTP ou por SignalR. No Python há necessidade de informar os tipos por causa da conversão de JSON em instância de classe que a biblioteca fará automaticamente.
 
 ### Concorrência
-A gestão de requisições e filas usa internamente `SemaphoreSlim`, se aproveitando do mecanismo que o .NET fornece. Como as travas funcionam por instâncias de programas, e não por rotas de *Actions*, não é recomendado usar o método `request()` para programas com *Actions* que fazem processamento pesado. É permitido cadastrar o mesmo programa várias vezes para driblar essa limitação, porém as rotas não podem se repetir.
+A gestão de requisições e filas usa internamente `SemaphoreSlim`, se aproveitando do mecanismo que o .NET fornece. Como as travas funcionam por instâncias de programas, e não por rotas de *Actions*, não é recomendado usar o método `request()` para programas com *Actions* que fazem processamento pesado. É permitido cadastrar o mesmo programa várias vezes para driblar essa restrição.
