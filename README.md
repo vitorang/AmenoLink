@@ -1,6 +1,6 @@
 # AmenoLink
 
-Durante meus estudos sobre arquiteturas *cloud*, me interessei bastante pelos conceitos de Serverless, FaaS (*Function as a Service*) e mensageria. No entanto, percebi que para reproduzir esses padrões em ambiente de desenvolvimento é frequentemente necessário lidar com contêineres e configurações complexas — algo que exige bastante pesquisa ou o uso de IA. Além disso, muitos serviços dependem de validação de licenças online, inviabilizando o funcionamento em redes privadas ou isoladas.
+Durante meus estudos sobre arquiteturas *cloud*, me interessei bastante pelos conceitos de Serverless, FaaS (*Function as a Service*) e mensageria. No entanto, percebi que para reproduzir esses padrões em ambiente de desenvolvimento local é frequentemente necessário lidar com contêineres e configurações complexas — algo que exige bastante pesquisa ou o uso de IA. Além disso, muitos serviços dependem de validação de licenças online, inviabilizando o funcionamento em redes privadas ou isoladas.
 
 Com essas necessidades em mente, criei o **AmenoLink**: um projeto inspirado em serviços *cloud* que opera de forma nativa na própria máquina, totalmente offline, com configuração simplificada e sem a necessidade de contêineres ou dependências externas.
 
@@ -84,7 +84,7 @@ settings.set('theme', 'dark')
 ```
 
 ### Topic (Pub/Sub)
-Ao contrário de Action, nenhum programa será iniciado automaticamente. A mensagem será enviada para todos os inscritos no tópico naquele momento.
+Ao contrário de Action, nenhum programa será iniciado automaticamente. A mensagem será enviada para todos os inscritos no tópico.
 
 ![Aba de tópicos](https://vitorang.github.io/Portfolio/projetos/amenolink-topics.jpg)
 
