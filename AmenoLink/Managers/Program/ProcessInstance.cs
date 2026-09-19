@@ -1,6 +1,5 @@
-using AmenoLink.Dtos;
+using AmenoLink.Dtos.Configuration;
 using AmenoLink.Interfaces.Managers.Program;
-using AmenoLink.Managers.Configuration;
 using AmenoLink.Shared;
 using System.Collections.Concurrent;
 using System.Diagnostics;

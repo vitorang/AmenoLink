@@ -1,5 +1,3 @@
-using AmenoLink.Dtos;
-
 namespace AmenoLink.Interfaces.Managers.Program;
 
 internal interface IProgramManager : IDisposable

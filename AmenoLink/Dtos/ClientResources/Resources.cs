@@ -1,4 +1,4 @@
-namespace AmenoLink.Dtos;
+namespace AmenoLink.Dtos.ClientResources;
 
 public record Resources(
     string[] Actions = null!,

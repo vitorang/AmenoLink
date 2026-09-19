@@ -1,4 +1,5 @@
 using AmenoLink.Dtos;
+using AmenoLink.Dtos.Configuration;
 using AmenoLink.Interfaces.Managers.Cache;
 using AmenoLink.Interfaces.Managers.Configuration;
 using AmenoLink.Interfaces.Managers.Program;

@@ -1,4 +1,4 @@
-using AmenoLink.Dtos;
+using AmenoLink.Dtos.Configuration;
 using AmenoLink.Interfaces.Managers.Program;
 using AmenoLink.Interfaces.Managers.Topic;
 using AmenoLink.Managers.Configuration;

@@ -1,4 +1,4 @@
-namespace AmenoLink.Managers.Configuration;
+namespace AmenoLink.Dtos.Configuration;
 
 public record ProgramConfig(
     string Id,

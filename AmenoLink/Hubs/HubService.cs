@@ -1,4 +1,3 @@
-using AmenoLink.Dtos;
 using AmenoLink.Interfaces.Hub;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
