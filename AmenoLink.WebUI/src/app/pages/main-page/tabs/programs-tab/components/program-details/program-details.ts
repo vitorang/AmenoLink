@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ProgramConfig, ProgramConfigAction } from '../../../../../../models/program-config.model';
 import { ConfigurationService } from '../../../../../../services/configuration.service';
@@ -23,6 +24,7 @@ import { AlertDialogComponent } from '../../../../../../components/alert-dialog/
         MatInputModule,
         MatIconModule,
         MatButtonModule,
+        MatTooltipModule,
         MatDialogModule,
         ActionEntry,
     ],

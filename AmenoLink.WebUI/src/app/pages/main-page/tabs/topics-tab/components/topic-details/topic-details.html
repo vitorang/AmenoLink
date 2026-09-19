@@ -18,9 +18,8 @@
 <div class="details-card">
     <div class="section-header">
         <div class="section-title">Inscritos</div>
-        <button mat-stroked-button (click)="onRefreshSubscribers()" [disabled]="loadingSubscribers()">
+        <button mat-icon-button (click)="onRefreshSubscribers()" [disabled]="loadingSubscribers()" matTooltip="Atualizar inscritos">
             <mat-icon>refresh</mat-icon>
-            Atualizar
         </button>
     </div>
 
@@ -51,9 +50,8 @@
 <div class="details-card">
     <div class="section-header">
         <div class="section-title">Mensagens Recentes</div>
-        <button mat-stroked-button (click)="onRefreshRecentMessages()" [disabled]="loadingRecentMessages()">
+        <button mat-icon-button (click)="onRefreshRecentMessages()" [disabled]="loadingRecentMessages()" matTooltip="Atualizar mensagens recentes">
             <mat-icon>refresh</mat-icon>
-            Atualizar
         </button>
     </div>
 

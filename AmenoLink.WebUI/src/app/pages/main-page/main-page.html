@@ -28,15 +28,25 @@
             </mat-tab>
         </mat-tab-group>
 
-        @if (isCurrentTabModified) {
-            <div class="tab-actions">
-                <button mat-icon-button color="primary" (click)="onUndo()" title="Desfazer alterações">
-                    <mat-icon>undo</mat-icon>
-                </button>
-                <button mat-icon-button color="primary" (click)="onSave()" title="Salvar alterações">
-                    <mat-icon>save</mat-icon>
-                </button>
-            </div>
-        }
+        <div class="tab-actions">
+            <button
+                mat-icon-button
+                [color]="isCurrentTabModified ? 'primary' : null"
+                [disabled]="!isCurrentTabModified"
+                (click)="onUndo()"
+                matTooltip="Desfazer alterações"
+            >
+                <mat-icon>undo</mat-icon>
+            </button>
+            <button
+                mat-icon-button
+                [color]="isCurrentTabModified ? 'primary' : null"
+                [disabled]="!isCurrentTabModified"
+                (click)="onSave()"
+                matTooltip="Salvar alterações"
+            >
+                <mat-icon>save</mat-icon>
+            </button>
+        </div>
     </div>
 </div>

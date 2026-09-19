@@ -1,6 +1,7 @@
 import { Component, ElementRef, computed, effect, input, output, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface GroupManagerItem {
     id: string;
@@ -11,7 +12,7 @@ export interface GroupManagerItem {
 
 @Component({
     selector: 'app-group-manager',
-    imports: [MatButtonModule, MatIconModule],
+    imports: [MatButtonModule, MatIconModule, MatTooltipModule],
     templateUrl: './group-manager.html',
     styleUrl: './group-manager.scss',
 })

@@ -1,5 +1,6 @@
 import { Component, input, output, inject, signal, effect, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -13,7 +14,7 @@ import { ProgramsService } from '../../../../../../services/programs.service';
 
 @Component({
     selector: 'app-topic-details',
-    imports: [MatIconModule, MatButtonModule, MatTableModule, MatExpansionModule],
+    imports: [MatIconModule, MatButtonModule, MatTooltipModule, MatTableModule, MatExpansionModule],
     templateUrl: './topic-details.html',
     styleUrl: './topic-details.scss',
 })

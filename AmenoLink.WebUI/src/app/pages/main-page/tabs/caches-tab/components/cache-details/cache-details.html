@@ -33,9 +33,8 @@
 <div class="details-card">
     <div class="section-header">
         <div class="section-title">Inscritos</div>
-        <button mat-stroked-button (click)="onRefreshSubscribers()" [disabled]="loadingSubscribers()">
+        <button mat-icon-button (click)="onRefreshSubscribers()" [disabled]="loadingSubscribers()" matTooltip="Atualizar inscritos">
             <mat-icon>refresh</mat-icon>
-            Atualizar
         </button>
     </div>
 
@@ -66,9 +65,8 @@
 <div class="details-card">
     <div class="section-header">
         <div class="section-title">Valores</div>
-        <button mat-stroked-button (click)="onRefreshValues()" [disabled]="loadingEntries()">
+        <button mat-icon-button (click)="onRefreshValues()" [disabled]="loadingEntries()" matTooltip="Atualizar valores">
             <mat-icon>refresh</mat-icon>
-            Atualizar
         </button>
     </div>
 
@@ -92,7 +90,7 @@
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
                     <td mat-cell *matCellDef="let element" class="actions-cell">
-                        <button mat-icon-button class="delete-button" (click)="onDeleteEntry(element.key)" title="Excluir">
+                        <button mat-icon-button class="delete-button" (click)="onDeleteEntry(element.key)" matTooltip="Excluir">
                             <mat-icon>close</mat-icon>
                         </button>
                     </td>

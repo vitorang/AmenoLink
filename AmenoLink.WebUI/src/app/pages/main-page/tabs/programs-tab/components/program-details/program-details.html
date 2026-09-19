@@ -5,7 +5,7 @@
             <h2 class="details-title">{{ programName }}</h2>
             <span class="details-subtitle">{{ program().path }}</span>
         </div>
-        <button mat-icon-button (click)="onChangeExecutable()" title="Alterar executável">
+        <button mat-icon-button (click)="onChangeExecutable()" matTooltip="Alterar executável">
             <mat-icon>folder_open</mat-icon>
         </button>
     </div>
@@ -49,9 +49,8 @@
             <mat-icon class="section-icon">bolt</mat-icon>
             Ações
         </div>
-        <button mat-stroked-button (click)="onAddAction()">
+        <button mat-icon-button (click)="onAddAction()" matTooltip="Adicionar ação">
             <mat-icon>add</mat-icon>
-            Adicionar Ação
         </button>
     </div>
 

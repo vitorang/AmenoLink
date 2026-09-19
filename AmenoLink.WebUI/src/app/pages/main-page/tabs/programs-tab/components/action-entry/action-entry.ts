@@ -1,12 +1,13 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProgramConfigAction } from '../../../../../../models/program-config.model';
 import { TopicService } from '../../../../../../services/topic.service';
 
 @Component({
     selector: 'app-action-entry',
-    imports: [MatIconModule, MatButtonModule],
+    imports: [MatIconModule, MatButtonModule, MatTooltipModule],
     templateUrl: './action-entry.html',
     styleUrl: './action-entry.scss',
 })

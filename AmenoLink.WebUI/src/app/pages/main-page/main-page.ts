@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { GeneralTab } from './tabs/general-tab/general-tab';
 import { ProgramsTab } from './tabs/programs-tab/programs-tab';
@@ -15,7 +16,16 @@ export type TabAlias = 'general' | 'programs' | 'caches' | 'topics';
 
 @Component({
     selector: 'app-main-page',
-    imports: [MatTabsModule, MatButtonModule, MatIconModule, GeneralTab, ProgramsTab, CachesTab, TopicsTab],
+    imports: [
+        MatTabsModule,
+        MatButtonModule,
+        MatTooltipModule,
+        MatIconModule,
+        GeneralTab,
+        ProgramsTab,
+        CachesTab,
+        TopicsTab,
+    ],
     templateUrl: './main-page.html',
     styleUrl: './main-page.scss',
 })
