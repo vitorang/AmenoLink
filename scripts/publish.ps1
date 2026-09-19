@@ -1,5 +1,11 @@
 $ErrorActionPreference = "Stop"
 
+if (-not (Test-Path "AmenoLink") -or -not (Test-Path "AmenoLink.WebUI")) {
+    Write-Host "ERRO: Este script deve ser executado a partir da raiz do repositorio AmenoLink." -ForegroundColor Red
+    Write-Host "Exemplo de uso: .\scripts\publish.ps1" -ForegroundColor Yellow
+    exit 1
+}
+
 $rootDir = Get-Location
 $distDir = Join-Path $rootDir "dist\AmenoLink"
 $pythonDistDir = Join-Path $distDir "clients\python"
@@ -64,4 +70,3 @@ if (Test-Path $dartClientDir) {
     Write-Host "ERRO: Diretorio do cliente Dart nao encontrado em $dartClientDir." -ForegroundColor Red
     exit 1
 }
-

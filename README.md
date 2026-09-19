@@ -148,7 +148,7 @@ Note: você pode chamar `connect` após chamar o `subscribe`. A inscrição com 
 Para compilar o backend .NET, o frontend WebUI (Angular) e gerar os pacotes das bibliotecas de clientes, execute o script PowerShell na raiz do projeto:
 
 ```powershell
-.\publish.ps1
+.\scripts\publish.ps1
 ```
 
 O script gerará a pasta `dist/AmenoLink` contendo:

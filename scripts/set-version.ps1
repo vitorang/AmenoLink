@@ -3,17 +3,24 @@ param (
 )
 
 $ErrorActionPreference = "Stop"
+
+if (-not (Test-Path "AmenoLink") -or -not (Test-Path "AmenoLink.WebUI")) {
+    Write-Host "ERRO: Este script deve ser executado a partir da raiz do repositorio AmenoLink." -ForegroundColor Red
+    Write-Host "Exemplo de uso: .\scripts\set-version.ps1 <nova_versao>" -ForegroundColor Yellow
+    exit 1
+}
+
 $rootDir = Get-Location
 $versionFile = Join-Path $rootDir "VERSION"
 
-# Se uma versão foi passada como argumento ex: .\set-version.ps1 0.2.0, atualiza o arquivo VERSION
+# Se uma versão foi passada como argumento ex: .\scripts\set-version.ps1 0.2.0, atualiza o arquivo VERSION
 if ($NewVersion) {
     Set-Content -Path $versionFile -Value $NewVersion -NoNewline
     $version = $NewVersion.Trim()
 } else {
     if (-not (Test-Path $versionFile)) {
         Write-Host "ERRO: Arquivo VERSION nao encontrado na raiz e nenhuma versao foi informada." -ForegroundColor Red
-        Write-Host "Uso: .\set-version.ps1 <nova_versao>" -ForegroundColor Yellow
+        Write-Host "Uso: .\scripts\set-version.ps1 <nova_versao>" -ForegroundColor Yellow
         exit 1
     }
     $version = (Get-Content $versionFile).Trim()

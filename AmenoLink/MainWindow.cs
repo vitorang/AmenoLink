@@ -25,10 +25,20 @@ internal partial class MainWindow : Form
         this.programManager = programManager;
         this.configurationManager = configurationManager;
         InitializeComponent();
+        LoadWindowIcon();
         EnableDarkModeTitleBar();
         if (!configurationManager.General.StartMinimizedToTray)
             InitializeWebView();
         InitializeTrayIcon();
+    }
+
+    private void LoadWindowIcon()
+    {
+        var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.ico");
+        if (File.Exists(iconPath))
+            Icon = new Icon(iconPath);
+        else
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
     }
 
     protected override void SetVisibleCore(bool value)
