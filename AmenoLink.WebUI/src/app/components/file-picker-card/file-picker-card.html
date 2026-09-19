@@ -1,0 +1,32 @@
+@if (filePath()) {
+    <div class="file-card has-file" [matTooltip]="filePath()">
+        <mat-icon class="file-icon">description</mat-icon>
+        <div class="file-info">
+            <span class="file-name">{{ fileName() }}</span>
+            <span class="file-path">{{ filePath() }}</span>
+        </div>
+        <button
+            mat-icon-button
+            type="button"
+            class="file-action"
+            (click)="onSelect()"
+            [disabled]="selecting()"
+            matTooltip="Alterar arquivo"
+        >
+            <mat-icon class="icon-18">folder_open</mat-icon>
+        </button>
+    </div>
+} @else {
+    <div
+        class="file-card empty-card"
+        [class.disabled]="selecting()"
+        (click)="onSelect()"
+    >
+        <mat-icon class="file-icon">upload_file</mat-icon>
+        <div class="file-info">
+            <span class="empty-title">Selecionar {{ expectedFileName() }}</span>
+            <span class="empty-subtitle">Arquivo não selecionado</span>
+        </div>
+        <mat-icon class="action-icon icon-18">add</mat-icon>
+    </div>
+}

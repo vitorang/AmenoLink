@@ -1,0 +1,40 @@
+<div class="project-row">
+    <div class="col-type">
+        <span class="type-badge" [class]="typeMetadata().cssClass">
+            {{ typeMetadata().label }}
+        </span>
+    </div>
+    <div class="col-name">
+        <span class="project-name">{{ project().name }}</span>
+        <span class="project-manifest">{{ project().packageManifest }}</span>
+    </div>
+    <div class="col-version">
+        @if (loadingVersion()) {
+            <mat-icon class="version-spinner">sync</mat-icon>
+        } @else if (packageVersion()) {
+            @if (packageVersion()?.errorReason) {
+                <span class="version-badge version-error" [matTooltip]="packageVersion()!.errorReason!">
+                    <mat-icon class="icon-16">warning</mat-icon>
+                </span>
+            } @else if (!packageVersion()?.isCompatible) {
+                <span class="version-badge version-mismatch">
+                    {{ packageVersion()!.version }}
+                </span>
+            } @else {
+                <span class="version-badge version-compatible">
+                    {{ packageVersion()!.version }}
+                </span>
+            }
+        } @else {
+            <span class="version-text">-</span>
+        }
+    </div>
+    <div class="col-actions">
+        <button mat-icon-button class="action-btn install-button" (click)="onInstallOrUpdateClick($event)" matTooltip="Instalar / Atualizar biblioteca">
+            <mat-icon class="icon-16">download</mat-icon>
+        </button>
+        <button mat-icon-button class="action-btn remove-button" (click)="onRemoveClick($event)" matTooltip="Remover projeto">
+            <mat-icon class="icon-16">close</mat-icon>
+        </button>
+    </div>
+</div>

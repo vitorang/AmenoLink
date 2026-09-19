@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+
+<mat-dialog-content class="modal-content">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Nome do Projeto</mat-label>
+        <input
+            matInput
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            cdkFocusInitial
+        />
+        <mat-icon matSuffix>drive_file_rename_outline</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tipo</mat-label>
+        <mat-select [ngModel]="type()" (ngModelChange)="onTypeChange($event)">
+            <mat-option value="dart">Dart</mat-option>
+            <mat-option value="python">Python</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <app-file-picker-card
+        [filePath]="packageManifest()"
+        [expectedFileName]="expectedFileName()"
+        [selecting]="selectingFile()"
+        (selectFile)="onSelectManifest()"
+    />
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="onConfirm()" [disabled]="!isValid">
+        Salvar
+    </button>
+</mat-dialog-actions>

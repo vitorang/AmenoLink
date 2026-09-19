@@ -1,0 +1,98 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.file-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+
+    .file-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        opacity: 0.9;
+        flex-shrink: 0;
+    }
+
+    .file-info {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex: 1;
+
+        .file-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.95;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-path {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            direction: rtl;
+            text-align: left;
+        }
+    }
+
+    &.has-file {
+        background-color: var(--surface-panel-background);
+        border: 1px solid var(--border-color-medium);
+
+        .file-action {
+            flex-shrink: 0;
+            opacity: 0.9;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+
+            &:hover {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    &.empty-card {
+        background-color: transparent;
+        border: 1px dashed var(--border-color-dashed);
+        cursor: pointer;
+        opacity: 0.9;
+
+        &:hover {
+            opacity: 1;
+            background-color: var(--surface-panel-background-hover);
+            border-color: var(--border-color-hover);
+        }
+
+        &.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .empty-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0.95;
+        }
+
+        .empty-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.45;
+        }
+
+        .action-icon {
+            opacity: 0.85;
+            flex-shrink: 0;
+        }
+    }
+}

@@ -6,6 +6,7 @@ using AmenoLink.Interfaces.Managers.Program;
 using AmenoLink.Interfaces.Managers.Topic;
 using AmenoLink.Managers.Configuration;
 using AmenoLink.Managers.Program;
+using AmenoLink.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -38,6 +39,28 @@ internal static class ConfigEndpoints
             return Results.Ok();
         });
 
+        group.MapGet("/general/packages/manifest", (string? type, string? currentPath, IProjectManager projectManager) =>
+        {
+            if (string.IsNullOrWhiteSpace(type))
+                return Results.Ok((string?)null);
+
+            var options = projectManager.GetManifestDialogOptions(type);
+            if (options is null)
+                return Results.Ok((string?)null);
+
+            string? selectedFile = DialogUtils.ShowOpenFileDialog(options.Value.Filter, options.Value.Title, currentPath);
+            return Results.Ok(selectedFile);
+        });
+
+        group.MapGet("/general/packages/version", (string? manifestPath, string? type, IProjectManager projectManager) =>
+        {
+            if (string.IsNullOrWhiteSpace(manifestPath) || string.IsNullOrWhiteSpace(type))
+                return Results.Ok(new PackageVersion(ManifestPath: manifestPath ?? string.Empty, ErrorReason: "Parâmetros inválidos"));
+
+            var result = projectManager.GetPackageVersion(manifestPath, type);
+            return Results.Ok(result);
+        });
+
         #endregion
 
         #region Programs
@@ -57,36 +80,12 @@ internal static class ConfigEndpoints
 
         group.MapGet("/programs/select-executable", (string? currentPath) =>
         {
-            string? selectedFile = null;
+            string extensionsPattern = string.Join(";", Constants.SupportedExtensions.Select(ext => $"*{ext}"));
+            string extensionsLabels = string.Join(", ", Constants.SupportedExtensions.Select(ext => ext.TrimStart('.').ToUpperInvariant()));
+            string filter = $"Programas e Scripts ({extensionsLabels})|{extensionsPattern}";
+            string title = "Selecionar Executável ou Script";
 
-            var thread = new Thread(() =>
-            {
-                string extensionsPattern = string.Join(";", Constants.SupportedExtensions.Select(ext => $"*{ext}"));
-                string extensionsLabels = string.Join(", ", Constants.SupportedExtensions.Select(ext => ext.TrimStart('.').ToUpperInvariant()));
-
-                using var openFileDialog = new OpenFileDialog
-                {
-                    Filter = $"Programas e Scripts ({extensionsLabels})|{extensionsPattern}|Todos os Arquivos (*.*)|*.*",
-                    Title = "Selecionar Executável ou Script"
-                };
-
-                if (!string.IsNullOrWhiteSpace(currentPath))
-                {
-                    string? directory = Path.GetDirectoryName(currentPath);
-                    if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
-                        openFileDialog.InitialDirectory = directory;
-                    else if (Directory.Exists(currentPath))
-                        openFileDialog.InitialDirectory = currentPath;
-                }
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                    selectedFile = openFileDialog.FileName?.Replace('\\', '/');
-            });
-
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            thread.Join();
-
+            string? selectedFile = DialogUtils.ShowOpenFileDialog(filter, title, currentPath);
             return Results.Ok(selectedFile);
         });
 

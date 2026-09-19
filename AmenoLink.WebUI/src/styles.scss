@@ -174,3 +174,10 @@ textarea,
         height: 48px !important;
     }
 }
+
+.mat-mdc-tooltip .mdc-tooltip__surface {
+    max-width: 450px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}

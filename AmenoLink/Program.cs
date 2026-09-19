@@ -128,6 +128,7 @@ internal static class Program
         });
 
         services.AddSingleton<IConfigurationManager, ConfigurationManager>();
+        services.AddSingleton<IProjectManager, ProjectManager>();
         services.AddSingleton<IHubService, HubService>();
         services.AddSingleton<IProgramManager, ProgramManager>();
         services.AddSingleton<ICacheManager, CacheManager>();

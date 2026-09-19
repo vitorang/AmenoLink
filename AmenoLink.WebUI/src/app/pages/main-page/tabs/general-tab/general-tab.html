@@ -47,3 +47,44 @@
         </mat-form-field>
     </div>
 </div>
+
+<div class="details-card">
+    <div class="details-header">
+        <mat-icon class="header-icon">deployed_code</mat-icon>
+        <div class="header-titles">
+            <h2 class="details-title">Projetos</h2>
+            <span class="details-subtitle">Bibliotecas do AmenoLink nos projetos</span>
+        </div>
+        <div class="header-actions">
+            <button mat-icon-button (click)="onAddProject()" matTooltip="Adicionar projeto">
+                <mat-icon>add</mat-icon>
+            </button>
+            <button mat-icon-button (click)="onCheckVersions()" [disabled]="generalService.loadingVersions()" matTooltip="Verificar versões">
+                <mat-icon [class.spinning]="generalService.loadingVersions()">refresh</mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="projects-list">
+        @if (generalService.generalConfig().projects && generalService.generalConfig().projects.length > 0) {
+            <div class="projects-table">
+                <div class="project-row project-header-row">
+                    <span class="col-type">Tipo</span>
+                    <span class="col-name">Nome</span>
+                    <span class="col-version">Versão</span>
+                    <span class="col-actions">Ações</span>
+                </div>
+                @for (project of generalService.generalConfig().projects; track $index) {
+                    <app-project-entry
+                        [project]="project"
+                        [packageVersion]="generalService.projectVersions()[project.packageManifest.toLowerCase()]"
+                        [loadingVersion]="generalService.loadingVersions()"
+                        (remove)="onRemoveProject($index)"
+                    />
+                }
+            </div>
+        } @else {
+            <div class="empty-values">Nenhum projeto cadastrado.</div>
+        }
+    </div>
+</div>

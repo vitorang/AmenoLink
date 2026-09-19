@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProgramConfig } from '../models/program-config.model';
+import { PackageVersion } from '../models/project-config.model';
 import { CacheConfig } from '../models/cache-config.model';
 import { TopicConfig } from '../models/topic-config.model';
 import { GeneralConfig } from '../models/general-config.model';
@@ -17,6 +18,19 @@ export class GeneralConfigEndpoint {
 
     save(config: GeneralConfig): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/general`, config);
+    }
+
+    selectPackageManifest(type: string, currentPath?: string): Observable<string | null> {
+        let url = `${this.baseUrl}/general/packages/manifest?type=${encodeURIComponent(type)}`;
+        if (currentPath)
+            url += `&currentPath=${encodeURIComponent(currentPath)}`;
+
+        return this.http.get<string | null>(url);
+    }
+
+    getPackageVersion(manifestPath: string, type: string): Observable<PackageVersion> {
+        const url = `${this.baseUrl}/general/packages/version?manifestPath=${encodeURIComponent(manifestPath)}&type=${encodeURIComponent(type)}`;
+        return this.http.get<PackageVersion>(url);
     }
 }
 

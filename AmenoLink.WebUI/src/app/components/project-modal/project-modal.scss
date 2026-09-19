@@ -1,0 +1,13 @@
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 8px !important;
+    width: 450px;
+    max-width: 450px;
+    box-sizing: border-box;
+
+    mat-form-field {
+        width: 100%;
+    }
+}
