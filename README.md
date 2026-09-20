@@ -137,6 +137,15 @@ bye_topic.dispose()
 
 Note: você pode chamar `connect` após chamar o `subscribe`. A inscrição com tópicos é feita também quando ocorre a reconexão com AmenoLink. Mas uma vez feito `dispose`, a reconexão daquela instância não será refeita.
 
+### SPA
+Permite servir múltiplos SPAs sob rotas dedicadas (`/spa/{rota}/`).
+
+![Aba de SPAs](https://vitorang.github.io/Portfolio/projetos/amenolink-spas.jpg)
+
+Basta definir o nome da rota, selecionar a pasta raiz dos arquivos compilados e indicar o arquivo inicial (como `index.html`).
+
+O AmenoLink altera o `<base href>` automaticamente para evitar problemas de carregamento em rotas aninhadas.
+
 ## Instruções de configuração
 
 ### Pré-requisitos
@@ -218,7 +227,7 @@ dart run lib/action_example.dart
 - [x] Actions: execução de processos sob demanda
 - [x] Cache em memória + eventos
 - [x] Topics: Pub/Sub
-- [ ] Servir múltiplos SPAs
+- [x] Servir múltiplos SPAs
 
 ### Bibliotecas de Clientes
 - [x] Python
