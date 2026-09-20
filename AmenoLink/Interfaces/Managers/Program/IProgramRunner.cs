@@ -1,4 +1,3 @@
-using AmenoLink.Dtos.Configuration;
 using AmenoLink.Managers.Program;
 
 namespace AmenoLink.Interfaces.Managers.Program;

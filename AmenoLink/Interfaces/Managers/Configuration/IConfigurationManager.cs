@@ -1,5 +1,3 @@
-using AmenoLink.Dtos.Configuration;
-
 namespace AmenoLink.Interfaces.Managers.Configuration;
 
 internal interface IConfigurationManager
