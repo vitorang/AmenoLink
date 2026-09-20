@@ -33,4 +33,42 @@ internal static class DialogUtils
 
         return selectedFile;
     }
+
+    public static string? ShowFolderBrowserDialog(string title, string? currentPath = null)
+    {
+        string? selectedFolder = null;
+
+        var thread = new Thread(() =>
+        {
+            using var folderBrowserDialog = new FolderBrowserDialog
+            {
+                Description = title,
+                UseDescriptionForTitle = true
+            };
+
+            if (!string.IsNullOrWhiteSpace(currentPath) && Directory.Exists(currentPath))
+                folderBrowserDialog.InitialDirectory = currentPath;
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                selectedFolder = folderBrowserDialog.SelectedPath?.Replace('\\', '/');
+        });
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
+        return selectedFolder;
+    }
+
+    public static void OpenInBrowser(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return;
+
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        });
+    }
 }

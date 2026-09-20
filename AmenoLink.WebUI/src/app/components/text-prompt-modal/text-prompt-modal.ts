@@ -12,6 +12,7 @@ export interface TextPromptModalData {
     value?: string;
     icon?: string;
     confirmButtonText?: string;
+    pattern?: RegExp;
 }
 
 @Component({
@@ -35,6 +36,7 @@ export class TextPromptModal {
     readonly label = this.data.label || 'Nome';
     readonly icon = this.data.icon || '';
     readonly confirmButtonText = this.data.confirmButtonText || 'Salvar';
+    readonly pattern = this.data.pattern;
 
     readonly value = signal<string>(this.data.value || '');
 
@@ -45,6 +47,8 @@ export class TextPromptModal {
         if (val.trim() !== val)
             return false;
         if (val.trim().length === 0)
+            return false;
+        if (this.pattern && !this.pattern.test(val.trim()))
             return false;
 
         return true;

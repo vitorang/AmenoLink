@@ -1,0 +1,46 @@
+<div class="details-card">
+    <div class="details-header">
+        <mat-icon class="header-icon">web</mat-icon>
+        <div class="header-titles">
+            <h2 class="details-title">/spa/{{ config().route }}</h2>
+            <span class="details-subtitle">Aplicação SPA</span>
+        </div>
+        <button mat-icon-button (click)="onOpenInBrowser()" matTooltip="Acessar no navegador">
+            <mat-icon>open_in_new</mat-icon>
+        </button>
+    </div>
+
+    <div class="folder-picker-row">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="folder-input">
+            <mat-label>Caminho da Pasta</mat-label>
+            <input
+                matInput
+                [ngModel]="config().rootPath"
+                (ngModelChange)="onRootPathChange($event)"
+                placeholder="Ex: C:/Projetos/MeuApp/dist"
+            />
+        </mat-form-field>
+
+        <button
+            mat-icon-button
+            (click)="onBrowseFolder()"
+            [disabled]="selectingFolder()"
+            matTooltip="Selecionar diretório"
+        >
+            <mat-icon>folder_open</mat-icon>
+        </button>
+    </div>
+
+    <div class="fields-grid">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Arquivo Index</mat-label>
+            <input
+                matInput
+                [ngModel]="config().indexFile"
+                (ngModelChange)="onIndexFileChange($event)"
+                placeholder="index.html"
+            />
+            <mat-icon matSuffix>html</mat-icon>
+        </mat-form-field>
+    </div>
+</div>

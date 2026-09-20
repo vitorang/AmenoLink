@@ -104,4 +104,15 @@ internal static class ConfigPathProvider
 
         public static void SaveConfigs(TopicConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
     }
+
+    public static class Spa
+    {
+        private const string ConfigFileName = "spa-config.json";
+
+        public static string GetFilePath() => Path.Combine(GetConfigDirectory(), ConfigFileName);
+
+        public static SpaConfig[] LoadConfigs() => ConfigPathProvider.LoadConfigs<SpaConfig>(GetFilePath());
+
+        public static void SaveConfigs(SpaConfig[] configs) => ConfigPathProvider.SaveConfigs(GetFilePath(), configs);
+    }
 }

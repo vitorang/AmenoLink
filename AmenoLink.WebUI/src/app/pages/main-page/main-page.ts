@@ -7,12 +7,14 @@ import { GeneralTab } from './tabs/general-tab/general-tab';
 import { ProgramsTab } from './tabs/programs-tab/programs-tab';
 import { CachesTab } from './tabs/caches-tab/caches-tab';
 import { TopicsTab } from './tabs/topics-tab/topics-tab';
+import { SpasTab } from './tabs/spas-tab/spas-tab';
 import { GeneralService } from '../../services/general.service';
 import { ProgramsService } from '../../services/programs.service';
 import { CacheService } from '../../services/cache.service';
 import { TopicService } from '../../services/topic.service';
+import { SpaService } from '../../services/spa.service';
 
-export type TabAlias = 'general' | 'programs' | 'caches' | 'topics';
+export type TabAlias = 'general' | 'programs' | 'caches' | 'topics' | 'spas';
 
 @Component({
     selector: 'app-main-page',
@@ -25,6 +27,7 @@ export type TabAlias = 'general' | 'programs' | 'caches' | 'topics';
         ProgramsTab,
         CachesTab,
         TopicsTab,
+        SpasTab,
     ],
     templateUrl: './main-page.html',
     styleUrl: './main-page.scss',
@@ -34,6 +37,7 @@ export class MainPage implements OnInit {
     protected readonly programsService = inject(ProgramsService);
     protected readonly cacheService = inject(CacheService);
     protected readonly topicService = inject(TopicService);
+    protected readonly spaService = inject(SpaService);
 
     activeTab: TabAlias = 'general';
 
@@ -42,9 +46,10 @@ export class MainPage implements OnInit {
         programs: 1,
         caches: 2,
         topics: 3,
+        spas: 4,
     };
 
-    readonly tabAliases: TabAlias[] = ['general', 'programs', 'caches', 'topics'];
+    readonly tabAliases: TabAlias[] = ['general', 'programs', 'caches', 'topics', 'spas'];
 
     get isCurrentTabModified(): boolean {
         if (this.activeTab === 'general')
@@ -55,6 +60,8 @@ export class MainPage implements OnInit {
             return this.cacheService.isModified();
         if (this.activeTab === 'topics')
             return this.topicService.isModified();
+        if (this.activeTab === 'spas')
+            return this.spaService.isModified();
         return false;
     }
 
@@ -71,6 +78,7 @@ export class MainPage implements OnInit {
         this.programsService.load();
         this.cacheService.load();
         this.topicService.load();
+        this.spaService.load();
     }
 
     onUndo(): void {
@@ -82,6 +90,8 @@ export class MainPage implements OnInit {
             this.cacheService.load();
         else if (this.activeTab === 'topics')
             this.topicService.load();
+        else if (this.activeTab === 'spas')
+            this.spaService.load();
     }
 
     onSave(): void {
@@ -93,5 +103,7 @@ export class MainPage implements OnInit {
             this.cacheService.save();
         else if (this.activeTab === 'topics')
             this.topicService.save();
+        else if (this.activeTab === 'spas')
+            this.spaService.save();
     }
 }

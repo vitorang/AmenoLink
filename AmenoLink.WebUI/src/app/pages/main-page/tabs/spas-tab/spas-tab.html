@@ -1,0 +1,27 @@
+<div class="tab-layout-container">
+    <div class="left-column">
+        <app-group-manager
+            [items]="spaItems()"
+            [selectedId]="spaService.selectedSpaConfig()?.route ?? null"
+            badgeIcon="web"
+            emptyText="Nenhum SPA cadastrado."
+            (add)="onAdd()"
+            (remove)="onRemove($event)"
+            (select)="onSelect($event)"
+        />
+    </div>
+
+    <div class="right-column">
+        @if (spaService.selectedSpaConfig(); as selected) {
+            <app-spa-details
+                [config]="selected"
+                (configChange)="spaService.updateSelectedSpaConfig($event)"
+            />
+        } @else {
+            <app-empty-state
+                icon="mouse"
+                message="Selecione ou adicione um SPA para ver os detalhes."
+            />
+        }
+    </div>
+</div>

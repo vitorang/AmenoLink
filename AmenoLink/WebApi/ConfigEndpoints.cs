@@ -3,6 +3,7 @@ using AmenoLink.Dtos.Configuration;
 using AmenoLink.Interfaces.Managers.Cache;
 using AmenoLink.Interfaces.Managers.Configuration;
 using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Interfaces.Managers.Spa;
 using AmenoLink.Interfaces.Managers.Topic;
 using AmenoLink.Managers.Configuration;
 using AmenoLink.Managers.Program;
@@ -24,6 +25,15 @@ internal static class ConfigEndpoints
         group.MapGet("/show-app", (MainWindow mainWindow) =>
         {
             mainWindow.Invoke(mainWindow.RestoreFromTray);
+            return Results.Ok();
+        });
+
+        group.MapPost("/open-url", (OpenUrlRequest request) =>
+        {
+            if (string.IsNullOrWhiteSpace(request?.Url))
+                return Results.BadRequest("URL é obrigatória");
+
+            DialogUtils.OpenInBrowser(request.Url);
             return Results.Ok();
         });
 
@@ -150,6 +160,30 @@ internal static class ConfigEndpoints
         {
             var recentMessages = topicManager.GetRecentMessages(topicName);
             return Results.Ok(recentMessages);
+        });
+
+        #endregion
+
+        #region SPA
+
+        group.MapGet("/spa", (ISpaManager spaManager) =>
+        {
+            var configs = ConfigPathProvider.Spa.LoadConfigs();
+            return Results.Ok(configs);
+        });
+
+        group.MapPost("/spa", (SpaConfig[] configs, ISpaManager spaManager) =>
+        {
+            ConfigPathProvider.Spa.SaveConfigs(configs);
+            spaManager.LoadConfigurations();
+            return Results.Ok();
+        });
+
+        group.MapGet("/spa/select-folder", (string? currentPath) =>
+        {
+            string title = "Selecionar Diretório do SPA";
+            string? selectedFolder = DialogUtils.ShowFolderBrowserDialog(title, currentPath);
+            return Results.Ok(selectedFolder);
         });
 
         #endregion

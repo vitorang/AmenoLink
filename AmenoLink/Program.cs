@@ -3,10 +3,12 @@ using AmenoLink.Interfaces.Hub;
 using AmenoLink.Interfaces.Managers.Cache;
 using AmenoLink.Interfaces.Managers.Configuration;
 using AmenoLink.Interfaces.Managers.Program;
+using AmenoLink.Interfaces.Managers.Spa;
 using AmenoLink.Interfaces.Managers.Topic;
 using AmenoLink.Managers.Cache;
 using AmenoLink.Managers.Configuration;
 using AmenoLink.Managers.Program;
+using AmenoLink.Managers.Spa;
 using AmenoLink.Managers.Topic;
 using AmenoLink.WebApi;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +49,7 @@ internal static class Program
         app.UseCors("AllowLocalhostOrigins");
         app.MapApiEndpoints();
         app.MapConfigEndpoints();
+        app.MapSpaEndpoints();
         app.MapHub<AppHub>("/app-hub");
 
         var staticPath = ResolveStaticPath(builder.Environment);
@@ -91,6 +94,9 @@ internal static class Program
         var topicManager = ServiceProvider.GetRequiredService<ITopicManager>();
         topicManager.LoadConfigurations();
 
+        var spaManager = ServiceProvider.GetRequiredService<ISpaManager>();
+        spaManager.LoadConfigurations();
+
         var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
         try
         {
@@ -133,6 +139,7 @@ internal static class Program
         services.AddSingleton<IProgramManager, ProgramManager>();
         services.AddSingleton<ICacheManager, CacheManager>();
         services.AddSingleton<ITopicManager, TopicManager>();
+        services.AddSingleton<ISpaManager, SpaManager>();
         services.AddSingleton<MainWindow>();
     }
 

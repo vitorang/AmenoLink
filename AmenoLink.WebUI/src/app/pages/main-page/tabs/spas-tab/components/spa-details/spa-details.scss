@@ -1,0 +1,11 @@
+@use '../../../../details-panel';
+
+.folder-picker-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    .folder-input {
+        flex: 1;
+    }
+}
