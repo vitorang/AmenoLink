@@ -34,6 +34,10 @@ export class GeneralTab {
     protected readonly generalService = inject(GeneralService);
     private readonly dialog = inject(MatDialog);
 
+    onCopyCommand(text: string): void {
+        navigator.clipboard.writeText(text);
+    }
+
     onAddProject(): void {
         const dialogRef = this.dialog.open<ProjectModal, ProjectModalData, ProjectConfig>(ProjectModal, {
             width: '450px',

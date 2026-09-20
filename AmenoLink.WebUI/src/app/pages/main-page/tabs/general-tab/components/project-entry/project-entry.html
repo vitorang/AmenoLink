@@ -9,15 +9,15 @@
         <span class="project-manifest">{{ project().packageManifest }}</span>
     </div>
     <div class="col-version">
-        @if (loadingVersion()) {
+        @if (loading()) {
             <mat-icon class="version-spinner">sync</mat-icon>
         } @else if (packageVersion()) {
             @if (packageVersion()?.errorReason) {
                 <span class="version-badge version-error" [matTooltip]="packageVersion()!.errorReason!">
-                    <mat-icon class="icon-16">warning</mat-icon>
+                    Erro
                 </span>
             } @else if (!packageVersion()?.isCompatible) {
-                <span class="version-badge version-mismatch">
+                <span class="version-badge version-warning" matTooltip="Instale a versão mais recente">
                     {{ packageVersion()!.version }}
                 </span>
             } @else {
@@ -30,10 +30,7 @@
         }
     </div>
     <div class="col-actions">
-        <button mat-icon-button class="action-btn install-button" (click)="onInstallOrUpdateClick($event)" matTooltip="Instalar / Atualizar biblioteca">
-            <mat-icon class="icon-16">download</mat-icon>
-        </button>
-        <button mat-icon-button class="action-btn remove-button" (click)="onRemoveClick($event)" matTooltip="Remover projeto">
+        <button mat-icon-button class="action-btn remove-button" [disabled]="loading()" (click)="onRemoveClick($event)" matTooltip="Remover projeto">
             <mat-icon class="icon-16">close</mat-icon>
         </button>
     </div>

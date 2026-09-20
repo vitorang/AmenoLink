@@ -13,9 +13,8 @@ import { ProjectConfig, PROJECT_TYPE_METADATA, ProjectTypeMetadata, PackageVersi
 export class ProjectEntry {
     readonly project = input.required<ProjectConfig>();
     readonly packageVersion = input<PackageVersion | undefined>();
-    readonly loadingVersion = input<boolean>(false);
+    readonly loading = input<boolean>(false);
     readonly remove = output<void>();
-    readonly installOrUpdate = output<void>();
 
     readonly typeMetadata = computed<ProjectTypeMetadata>(() => {
         const type = this.project().type;
@@ -25,11 +24,6 @@ export class ProjectEntry {
 
         return metadata;
     });
-
-    onInstallOrUpdateClick(event: MouseEvent): void {
-        event.stopPropagation();
-        this.installOrUpdate.emit();
-    }
 
     onRemoveClick(event: MouseEvent): void {
         event.stopPropagation();

@@ -44,11 +44,12 @@ internal static class ConfigEndpoints
             if (string.IsNullOrWhiteSpace(type))
                 return Results.Ok((string?)null);
 
-            var options = projectManager.GetManifestDialogOptions(type);
-            if (options is null)
+            string? filter = projectManager.GetManifestFilter(type);
+            if (filter is null)
                 return Results.Ok((string?)null);
 
-            string? selectedFile = DialogUtils.ShowOpenFileDialog(options.Value.Filter, options.Value.Title, currentPath);
+            string title = "Selecionar Manifesto";
+            string? selectedFile = DialogUtils.ShowOpenFileDialog(filter, title, currentPath);
             return Results.Ok(selectedFile);
         });
 
@@ -59,6 +60,12 @@ internal static class ConfigEndpoints
 
             var result = projectManager.GetPackageVersion(manifestPath, type);
             return Results.Ok(result);
+        });
+
+        group.MapGet("/general/packages/instructions", (IProjectManager projectManager) =>
+        {
+            var instructions = projectManager.GetInstallInstructions();
+            return Results.Ok(instructions);
         });
 
         #endregion

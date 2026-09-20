@@ -32,3 +32,9 @@ export interface PackageVersion {
     isCompatible: boolean;
     errorReason: string | null;
 }
+
+export interface PackageInstallInstructions {
+    dart: string;
+    python: string;
+    isDebugging: boolean;
+}

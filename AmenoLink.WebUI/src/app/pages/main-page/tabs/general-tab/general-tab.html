@@ -55,12 +55,48 @@
             <h2 class="details-title">Projetos</h2>
             <span class="details-subtitle">Bibliotecas do AmenoLink nos projetos</span>
         </div>
-        <div class="header-actions">
-            <button mat-icon-button (click)="onAddProject()" matTooltip="Adicionar projeto">
-                <mat-icon>add</mat-icon>
-            </button>
+    </div>
+
+    <div class="section-title">Instalação</div>
+    <div class="installation-guide">
+        @if (generalService.installInstructions().isDebugging) {
+            <div class="info-note">
+                <mat-icon class="note-icon icon-16">info</mat-icon>
+                <span>Os comandos de instalação funcionam apenas após a publicação do projeto.</span>
+            </div>
+        }
+
+        <div class="command-block">
+            <div class="command-header">
+                <span class="command-label">Dart (pubspec.yaml)</span>
+                <button mat-icon-button class="copy-btn" (click)="onCopyCommand(generalService.installInstructions().dart)" matTooltip="Copiar instrução" type="button">
+                    <mat-icon class="icon-16">content_copy</mat-icon>
+                </button>
+            </div>
+            <pre class="command-content selectable">{{ generalService.installInstructions().dart }}</pre>
+        </div>
+
+        <div class="command-block">
+            <div class="command-header">
+                <span class="command-label">Python (terminal)</span>
+                <button mat-icon-button class="copy-btn" (click)="onCopyCommand(generalService.installInstructions().python)" matTooltip="Copiar comandos" type="button">
+                    <mat-icon class="icon-16">content_copy</mat-icon>
+                </button>
+            </div>
+            <pre class="command-content selectable">{{ generalService.installInstructions().python }}</pre>
+        </div>
+    </div>
+
+    <div class="section-header">
+        <div class="section-title">
+            Meus Projetos
+        </div>
+        <div class="section-actions">
             <button mat-icon-button (click)="onCheckVersions()" [disabled]="generalService.loadingVersions()" matTooltip="Verificar versões">
                 <mat-icon [class.spinning]="generalService.loadingVersions()">refresh</mat-icon>
+            </button>
+            <button mat-icon-button (click)="onAddProject()" matTooltip="Adicionar projeto">
+                <mat-icon>add</mat-icon>
             </button>
         </div>
     </div>
@@ -72,13 +108,13 @@
                     <span class="col-type">Tipo</span>
                     <span class="col-name">Nome</span>
                     <span class="col-version">Versão</span>
-                    <span class="col-actions">Ações</span>
+                    <span class="col-actions"></span>
                 </div>
                 @for (project of generalService.generalConfig().projects; track $index) {
                     <app-project-entry
                         [project]="project"
                         [packageVersion]="generalService.projectVersions()[project.packageManifest.toLowerCase()]"
-                        [loadingVersion]="generalService.loadingVersions()"
+                        [loading]="generalService.loadingVersions()"
                         (remove)="onRemoveProject($index)"
                     />
                 }

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 import { ConfigurationService } from './configuration.service';
 import { GeneralConfig } from '../models/general-config.model';
-import { PackageVersion, ProjectConfig } from '../models/project-config.model';
+import { PackageInstallInstructions, PackageVersion, ProjectConfig } from '../models/project-config.model';
 import { AlertDialogComponent } from '../components/alert-dialog/alert-dialog.component';
 
 @Injectable({
@@ -25,12 +25,18 @@ export class GeneralService {
     readonly loading = signal<boolean>(false);
     readonly loadingVersions = signal<boolean>(false);
     readonly projectVersions = signal<Record<string, PackageVersion>>({});
+    readonly installInstructions = signal<PackageInstallInstructions>({
+        dart: '',
+        python: '',
+        isDebugging: false,
+    });
 
     load(): void {
         if (this.loading())
             return;
 
         this.loading.set(true);
+        this.loadInstallInstructions();
         this.configService.general
             .get()
             .pipe(finalize(() => this.loading.set(false)))
@@ -155,6 +161,15 @@ export class GeneralService {
                     this.projectVersions.set(map);
                 },
             });
+    }
+
+    loadInstallInstructions(): void {
+        this.configService.general.getPackageInstallInstructions().subscribe({
+            next: (instructions) => {
+                if (instructions)
+                    this.installInstructions.set(instructions);
+            },
+        });
     }
 
     private showErrorDialog(title: string, message: string): void {

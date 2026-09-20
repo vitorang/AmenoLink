@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AmenoLink.Dtos.Configuration;
 using AmenoLink.Interfaces.Managers.Configuration;
 
@@ -5,30 +6,38 @@ namespace AmenoLink.Managers.Configuration;
 
 internal class ProjectManager : IProjectManager
 {
-    private const string PythonFilter = "Requisitos do Python|requirements.txt|Arquivos de Texto (*.txt)|*.txt";
-    private const string PythonTitle = "Selecionar Manifesto do Python (requirements.txt)";
-
-    private const string DartFilter = "Especificação do Pacote Dart|pubspec.yaml|Arquivos YAML (*.yaml;*.yml)|*.yaml;*.yml";
-    private const string DartTitle = "Selecionar Manifesto do Dart (pubspec.yaml)";
+    #region Common
 
     private const string ManifestFileNotFoundError = "Arquivo de manifesto não foi encontrado";
     private const string UnknownProjectTypeError = "Tipo de projeto desconhecido";
-    private const string PackageNotFoundError = "Biblioteca não encontrada";
+    private const string MissingPackageVersion = "Ausente";
 
-    public (string Filter, string Title)? GetManifestDialogOptions(string type)
+    public string? GetManifestFilter(string type)
     {
         if (type.Equals("python", StringComparison.OrdinalIgnoreCase))
-            return (PythonFilter, PythonTitle);
+            return PythonFilter;
 
         if (type.Equals("dart", StringComparison.OrdinalIgnoreCase))
-            return (DartFilter, DartTitle);
+            return DartFilter;
 
         return null;
     }
 
+    public PackageInstallInstructions GetInstallInstructions()
+    {
+        string appVersion = typeof(ProjectManager).Assembly.GetName().Version!.ToString(3);
+        string dartInstruction = GetDartInstallInstruction();
+        string pythonInstruction = GetPythonInstallInstruction(appVersion);
+        bool isDebugging = System.Diagnostics.Debugger.IsAttached;
+#if DEBUG
+        isDebugging = true;
+#endif
+        return new PackageInstallInstructions(Dart: dartInstruction, Python: pythonInstruction, IsDebugging: isDebugging);
+    }
+
     public PackageVersion GetPackageVersion(string manifestPath, string type)
     {
-        string appVersion = typeof(ProjectManager).Assembly.GetName().Version?.ToString(3) ?? "0.0.1";
+        string appVersion = typeof(ProjectManager).Assembly.GetName().Version!.ToString(3);
 
         try
         {
@@ -49,6 +58,12 @@ internal class ProjectManager : IProjectManager
         }
     }
 
+    #endregion
+
+    #region Python
+
+    private const string PythonFilter = "Requisitos do Python|requirements.txt|Arquivos de Texto (*.txt)|*.txt";
+
     private static PackageVersion GetPythonPackageVersion(string manifestPath, string appVersion)
     {
         var lines = File.ReadAllLines(manifestPath);
@@ -62,24 +77,42 @@ internal class ProjectManager : IProjectManager
 
             if (line.StartsWith("amenolink", StringComparison.OrdinalIgnoreCase))
             {
+                var match = Regex.Match(line, @"amenolink-(\d+(?:\.\d+)+)", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    string version = match.Groups[1].Value;
+                    bool isCompatible = string.Equals(version, appVersion, StringComparison.OrdinalIgnoreCase);
+                    return new PackageVersion(manifestPath, version, appVersion, isCompatible);
+                }
+
                 string remainder = line["amenolink".Length..].Trim();
-
-                if (string.IsNullOrEmpty(remainder))
-                    return new PackageVersion(ManifestPath: manifestPath, Version: "*", AppVersion: appVersion);
-
                 char[] versionPrefixes = ['=', '>', '<', '~', '!'];
-                string version = remainder.TrimStart(versionPrefixes).Trim();
+                string simpleVersion = remainder.TrimStart(versionPrefixes).Trim();
 
-                if (string.IsNullOrEmpty(version))
-                    return new PackageVersion(ManifestPath: manifestPath, Version: "*", AppVersion: appVersion);
+                if (!string.IsNullOrEmpty(simpleVersion) && !simpleVersion.StartsWith('@'))
+                {
+                    bool isCompatible = string.Equals(simpleVersion, appVersion, StringComparison.OrdinalIgnoreCase);
+                    return new PackageVersion(manifestPath, simpleVersion, appVersion, isCompatible);
+                }
 
-                bool isCompatible = string.Equals(version, appVersion, StringComparison.OrdinalIgnoreCase);
-                return new PackageVersion(manifestPath, version, appVersion, isCompatible);
+                return new PackageVersion(ManifestPath: manifestPath, Version: "*", AppVersion: appVersion);
             }
         }
 
-        return new PackageVersion(ManifestPath: manifestPath, AppVersion: appVersion, ErrorReason: PackageNotFoundError);
+        return new PackageVersion(ManifestPath: manifestPath, Version: MissingPackageVersion, AppVersion: appVersion, IsCompatible: false);
     }
+
+    private static string GetPythonInstallInstruction(string appVersion)
+    {
+        string wheelPath = Path.Combine(AppContext.BaseDirectory, "clients", "python", $"amenolink-{appVersion}-py3-none-any.whl").Replace('\\', '/');
+        return $"pip install \"{wheelPath}\"\npip freeze > requirements.txt";
+    }
+
+    #endregion
+
+    #region Dart
+
+    private const string DartFilter = "Especificação do Pacote Dart|pubspec.yaml|Arquivos YAML (*.yaml;*.yml)|*.yaml;*.yml";
 
     private static PackageVersion GetDartPackageVersion(string manifestPath, string appVersion)
     {
@@ -97,13 +130,64 @@ internal class ProjectManager : IProjectManager
                 string version = line["amenolink:".Length..].Trim().Trim('^', '"', '\'').Trim();
 
                 if (string.IsNullOrEmpty(version))
+                {
+                    string? lockVersion = GetDartLockVersion(manifestPath);
+                    if (!string.IsNullOrEmpty(lockVersion))
+                    {
+                        bool lockCompatible = string.Equals(lockVersion, appVersion, StringComparison.OrdinalIgnoreCase);
+                        return new PackageVersion(manifestPath, lockVersion, appVersion, lockCompatible);
+                    }
+
                     return new PackageVersion(ManifestPath: manifestPath, Version: "*", AppVersion: appVersion);
+                }
 
                 bool isCompatible = string.Equals(version, appVersion, StringComparison.OrdinalIgnoreCase);
                 return new PackageVersion(manifestPath, version, appVersion, isCompatible);
             }
         }
 
-        return new PackageVersion(ManifestPath: manifestPath, AppVersion: appVersion, ErrorReason: PackageNotFoundError);
+        return new PackageVersion(ManifestPath: manifestPath, Version: MissingPackageVersion, AppVersion: appVersion, IsCompatible: false);
     }
+
+    private static string? GetDartLockVersion(string manifestPath)
+    {
+        string? directory = Path.GetDirectoryName(manifestPath);
+        if (string.IsNullOrEmpty(directory))
+            return null;
+
+        string lockPath = Path.Combine(directory, "pubspec.lock");
+        if (!File.Exists(lockPath))
+            return null;
+
+        var lines = File.ReadAllLines(lockPath);
+        bool inAmenolinkPackage = false;
+
+        foreach (var rawLine in lines)
+        {
+            string trimmed = rawLine.Trim();
+
+            if (rawLine.StartsWith("  ") && !rawLine.StartsWith("    "))
+            {
+                inAmenolinkPackage = trimmed.Equals("amenolink:", StringComparison.OrdinalIgnoreCase);
+                continue;
+            }
+
+            if (inAmenolinkPackage && trimmed.StartsWith("version:", StringComparison.OrdinalIgnoreCase))
+            {
+                string version = trimmed["version:".Length..].Trim().Trim('"', '\'').Trim();
+                if (!string.IsNullOrEmpty(version))
+                    return version;
+            }
+        }
+
+        return null;
+    }
+
+    private static string GetDartInstallInstruction()
+    {
+        string dartPackageDirectory = Path.Combine(AppContext.BaseDirectory, "clients", "dart", "amenolink").Replace('\\', '/');
+        return $"  amenolink:\n    path: {dartPackageDirectory}";
+    }
+
+    #endregion
 }

@@ -104,17 +104,22 @@
             cursor: default;
 
             &.version-compatible {
-                color: #e0e0e0;
-                opacity: 0.85;
+                color: #4caf50;
+                background-color: rgba(76, 175, 80, 0.12);
+                border: 1px solid rgba(76, 175, 80, 0.3);
+                border-radius: 4px;
+                padding: 1px 6px;
+                font-weight: 600;
             }
 
-            &.version-mismatch {
+            &.version-warning {
                 color: #ff9800;
                 background-color: rgba(255, 152, 0, 0.12);
                 border: 1px solid rgba(255, 152, 0, 0.3);
                 border-radius: 4px;
                 padding: 1px 6px;
                 font-weight: 600;
+                cursor: help;
             }
 
             &.version-error {
@@ -122,14 +127,9 @@
                 background-color: rgba(244, 67, 54, 0.12);
                 border: 1px solid rgba(244, 67, 54, 0.3);
                 border-radius: 4px;
-                padding: 2px 4px;
+                padding: 1px 6px;
+                font-weight: 600;
                 cursor: help;
-
-                mat-icon {
-                    font-size: 16px;
-                    width: 16px;
-                    height: 16px;
-                }
             }
         }
     }
@@ -162,12 +162,6 @@
             border-radius: 50%;
             opacity: 0.45;
             transition: all 0.15s ease;
-
-            &.install-button:hover {
-                opacity: 1;
-                color: var(--primary-color-light);
-                background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
-            }
 
             &.remove-button:hover {
                 opacity: 1;
