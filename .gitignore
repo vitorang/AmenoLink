@@ -36,6 +36,11 @@ env.bak/
 venv.bak/
 .venv/
 
+# TypeScript
+node_modules
+.tsup
+dist
+
 # OS generated files
 .DS_Store
 .DS_Store?

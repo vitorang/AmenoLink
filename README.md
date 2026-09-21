@@ -12,7 +12,7 @@ O programa foi desenvolvido em .NET + Angular (compatível com Windows). Adicion
 Todos os recursos do AmenoLink são configuráveis por interface gráfica de forma simplificada, priorizando a Experiência do Desenvolvedor (DX - *Developer Experience*). Os exemplos completos das funcionalidades estão no diretório `/examples` em diferentes linguagens.
 
 ### Action
-É a forma de atender requisições e filas, inspirado no padrão *Lambdalith* (ou *Monolithic Lambda*). Ao registrar um programa executável ou script Python, define todas as rotas que o programa atenderá. Quando uma requisição para a rota for feita, o AmenoLink iniciará o programa automaticamente, reaproveitará a mesma instância para requisições seguintes evitando a penalidade do *cold-start* e encerrará o processo quando ele ficar em desuso.
+É a forma de atender requisições e filas, inspirado no padrão *Lambdalith* (ou *Monolithic Lambda*). Ao registrar um programa executável ou script (Python ou TypeScript), define todas as rotas que o programa atenderá. Quando uma requisição para a rota for feita, o AmenoLink iniciará o programa automaticamente, reaproveitará a mesma instância para requisições seguintes evitando a penalidade do *cold-start* e encerrará o processo quando ele ficar em desuso.
 
 ![Aba de programas](https://vitorang.github.io/Portfolio/projetos/amenolink-programs.jpg)
 
@@ -169,6 +169,7 @@ O script gerará a pasta `dist/AmenoLink` contendo:
 - O executável principal `AmenoLink.exe` pronto para uso.
 - Os pacotes da biblioteca Python (`.whl` e `.tar.gz`) em `clients/python/`.
 - A biblioteca cliente Dart em `clients/dart/`.
+- A biblioteca cliente TypeScript compilada em `clients/typescript/`.
 
 ---
 
@@ -176,7 +177,7 @@ O script gerará a pasta `dist/AmenoLink` contendo:
 
 Inicie o aplicativo **AmenoLink** (`dist/AmenoLink/AmenoLink.exe`) e cadastre os recursos na interface gráfica:
 
-- **Programas (Actions):** Adicione o programa que executará as ações (apontando para o `action_server.py` ou para o executável `action_server.exe` compilado em Dart) e vincule a ação `example.action`
+- **Programas (Actions):** Adicione o programa que executará as ações (apontando para `action_server.py`, `action_server.ts` ou para o executável `action_server.exe` compilado em Dart) e vincule a ação `example.action`
 - **Caches:** Adicione o grupo `example.cache`
 - **Tópicos:** Adicione o tópico `example.topic`
 
@@ -220,6 +221,21 @@ dart run lib/topic_example.dart
 dart run lib/action_example.dart
 ```
 
+#### TypeScript
+Navegue até a pasta de exemplos em TypeScript:
+
+```powershell
+cd examples/typescript
+
+# Instale as dependências
+npm install
+
+# Execute os exemplos
+npm run cache
+npm run topic
+npm run action
+```
+
 ## Roadmap & Status do Projeto
 
 ### AmenoLink
@@ -232,7 +248,7 @@ dart run lib/action_example.dart
 ### Bibliotecas de Clientes
 - [x] Python
 - [x] Dart
-- [ ] TypeScript
+- [x] TypeScript
 - [ ] C#
 
 

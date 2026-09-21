@@ -82,7 +82,16 @@ if (Test-Path $reqFile) {
     Write-Host "  [Python Example] requirements.txt -> amenolink-$version" -ForegroundColor Green
 }
 
-# 6. README.md
+# 6. TypeScript Client (package.json)
+$tsClientPackageJsonFile = Join-Path $rootDir "clients\typescript\package.json"
+if (Test-Path $tsClientPackageJsonFile) {
+    $tsPkgContent = Get-Content $tsClientPackageJsonFile -Raw
+    $tsPkgContent = $tsPkgContent -replace '"version":\s*"[^"]+"', "`"version`": `"$version`""
+    Set-Content -Path $tsClientPackageJsonFile -Value $tsPkgContent -NoNewline
+    Write-Host "  [TypeScript Client] package.json -> $version" -ForegroundColor Green
+}
+
+# 7. README.md
 $readmeFile = Join-Path $rootDir "README.md"
 if (Test-Path $readmeFile) {
     $readmeContent = Get-Content $readmeFile -Raw

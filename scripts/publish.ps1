@@ -10,6 +10,7 @@ $rootDir = Get-Location
 $distDir = Join-Path $rootDir "dist\AmenoLink"
 $pythonDistDir = Join-Path $distDir "clients\python"
 $dartDistDir = Join-Path $distDir "clients\dart"
+$typeScriptDistDir = Join-Path $distDir "clients\typescript"
 
 Write-Host "Iniciando processo de publicacao..."
 
@@ -22,6 +23,7 @@ if (Test-Path $distDir) {
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null
 New-Item -ItemType Directory -Path $pythonDistDir -Force | Out-Null
 New-Item -ItemType Directory -Path $dartDistDir -Force | Out-Null
+New-Item -ItemType Directory -Path $typeScriptDistDir -Force | Out-Null
 
 # 2. Compila e publica o projeto C# (Desktop/Host)
 Write-Host "Publicando aplicacao C# (AmenoLink)..."
@@ -69,4 +71,24 @@ if (Test-Path $dartClientDir) {
 } else {
     Write-Host "ERRO: Diretorio do cliente Dart nao encontrado em $dartClientDir." -ForegroundColor Red
     exit 1
+}
+
+# 5. Compila e copia a biblioteca cliente TypeScript
+Write-Host "Compilando biblioteca cliente TypeScript..."
+$typeScriptClientDir = Join-Path $rootDir "clients\typescript"
+
+Push-Location $typeScriptClientDir
+try {
+    npm run build
+    if ($LASTEXITCODE -eq 0) {
+        Copy-Item -Path (Join-Path $typeScriptClientDir "package.json") -Destination $typeScriptDistDir -Force
+        Copy-Item -Path (Join-Path $typeScriptClientDir "dist") -Destination $typeScriptDistDir -Recurse -Force
+        Write-Host "Cliente TypeScript compilado e copiado com sucesso." -ForegroundColor Green
+    } else {
+        Write-Host "ERRO: Falha ao executar 'npm run build' no cliente TypeScript." -ForegroundColor Red
+        exit 1
+    }
+}
+finally {
+    Pop-Location
 }

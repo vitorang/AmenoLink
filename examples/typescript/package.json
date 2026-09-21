@@ -1,0 +1,20 @@
+{
+  "name": "amenolink-examples",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "topic": "tsx topic_example.ts",
+    "cache": "tsx cache_example.ts",
+    "action": "tsx action_example.ts",
+    "server": "tsx action_server.ts"
+  },
+  "dependencies": {
+    "amenolink": "file:../../clients/typescript"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
