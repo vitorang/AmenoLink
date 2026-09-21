@@ -1,5 +1,4 @@
-from ._shared import AmenoException, client_setup
-from ._http_requests import _post_json
+from ._shared import AmenoException, client_setup, _post_json
 from .dtos import Resources
 
 

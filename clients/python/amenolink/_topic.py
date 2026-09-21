@@ -1,8 +1,7 @@
 from dataclasses import is_dataclass, asdict
 from typing import Any, Callable, Generic
 from ulid import ULID
-from ._shared import AmenoException, T, _parse_data, client_setup
-from ._http_requests import _post_json
+from ._shared import AmenoException, T, client_setup, _parse_data, _post_json
 from ._connection_manager import connection_manager
 from ._resource_manager import resource_manager
 from .dtos import Message, TopicMessage

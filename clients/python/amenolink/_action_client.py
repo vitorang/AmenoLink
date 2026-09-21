@@ -1,8 +1,7 @@
 from dataclasses import is_dataclass
 from typing import Any
 from ulid import ULID
-from ._shared import AmenoException, T, _parse_data, client_setup
-from ._http_requests import _post_json
+from ._shared import AmenoException, T, _parse_data, client_setup, _post_json
 from ._resource_manager import resource_manager
 from .dtos import ActionRequest
 

@@ -1,3 +1,6 @@
+import json
+import urllib.request
+import urllib.error
 import types
 import typing
 from typing import Any, TypeVar, get_origin, get_args
@@ -57,3 +60,16 @@ def _parse_data(data: Any, response_type: type[T]) -> T:
     if callable(actual_type):
         return actual_type(data)
     return data
+
+
+def _post_json(url: str, data: dict) -> dict:
+    json_bytes = json.dumps(data).encode('utf-8')
+    request = urllib.request.Request(
+        url=url,
+        data=json_bytes,
+        headers={'Content-Type': 'application/json'},
+        method='POST',
+    )
+    with urllib.request.urlopen(request) as response:
+        body = response.read().decode('utf-8')
+        return json.loads(body) if body else {}
