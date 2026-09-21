@@ -1,4 +1,4 @@
-export type ProjectType = 'python' | 'dart';
+export type ProjectType = 'python' | 'dart' | 'typescript';
 
 export interface ProjectTypeMetadata {
     label: string;
@@ -16,6 +16,11 @@ export const PROJECT_TYPE_METADATA: Record<ProjectType, ProjectTypeMetadata> = {
         label: 'Python',
         manifestFileName: 'requirements.txt',
         cssClass: 'type-python',
+    },
+    typescript: {
+        label: 'TypeScript',
+        manifestFileName: 'package.json',
+        cssClass: 'type-typescript',
     },
 };
 
@@ -36,5 +41,6 @@ export interface PackageVersion {
 export interface PackageInstallInstructions {
     dart: string;
     python: string;
+    typeScript: string;
     isDebugging: boolean;
 }

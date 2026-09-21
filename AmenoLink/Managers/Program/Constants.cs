@@ -18,5 +18,6 @@ internal static class Constants
 
     public const string ExeExtension = ".exe";
     public const string PyExtension = ".py";
-    public static readonly string[] SupportedExtensions = [ExeExtension, PyExtension];
+    public const string TsExtension = ".ts";
+    public static readonly string[] SupportedExtensions = [ExeExtension, PyExtension, TsExtension];
 }

@@ -28,6 +28,7 @@ export class GeneralService {
     readonly installInstructions = signal<PackageInstallInstructions>({
         dart: '',
         python: '',
+        typeScript: '',
         isDebugging: false,
     });
 

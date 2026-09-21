@@ -19,6 +19,9 @@ internal class ProjectManager : IProjectManager
         if (type.Equals("dart", StringComparison.OrdinalIgnoreCase))
             return DartFilter;
 
+        if (type.Equals("typescript", StringComparison.OrdinalIgnoreCase))
+            return TypeScriptFilter;
+
         return null;
     }
 
@@ -27,11 +30,12 @@ internal class ProjectManager : IProjectManager
         string appVersion = typeof(ProjectManager).Assembly.GetName().Version!.ToString(3);
         string dartInstruction = GetDartInstallInstruction();
         string pythonInstruction = GetPythonInstallInstruction(appVersion);
+        string typeScriptInstruction = GetTypeScriptInstallInstruction();
         bool isDebugging = System.Diagnostics.Debugger.IsAttached;
 #if DEBUG
         isDebugging = true;
 #endif
-        return new PackageInstallInstructions(Dart: dartInstruction, Python: pythonInstruction, IsDebugging: isDebugging);
+        return new PackageInstallInstructions(Dart: dartInstruction, Python: pythonInstruction, TypeScript: typeScriptInstruction, IsDebugging: isDebugging);
     }
 
     public PackageVersion GetPackageVersion(string manifestPath, string type)
@@ -49,6 +53,9 @@ internal class ProjectManager : IProjectManager
             if (type.Equals("dart", StringComparison.OrdinalIgnoreCase))
                 return GetDartPackageVersion(manifestPath, appVersion);
 
+            if (type.Equals("typescript", StringComparison.OrdinalIgnoreCase))
+                return GetTypeScriptPackageVersion(manifestPath, appVersion);
+
             return new PackageVersion(ManifestPath: manifestPath, AppVersion: appVersion, ErrorReason: UnknownProjectTypeError);
         }
         catch (Exception exception)
@@ -61,7 +68,7 @@ internal class ProjectManager : IProjectManager
 
     #region Python
 
-    private const string PythonFilter = "Requisitos do Python|requirements.txt|Arquivos de Texto (*.txt)|*.txt";
+    private const string PythonFilter = "Requisitos do Python (requirements.txt)|requirements.txt";
 
     private static PackageVersion GetPythonPackageVersion(string manifestPath, string appVersion)
     {
@@ -111,7 +118,7 @@ internal class ProjectManager : IProjectManager
 
     #region Dart
 
-    private const string DartFilter = "Especificação do Pacote Dart|pubspec.yaml|Arquivos YAML (*.yaml;*.yml)|*.yaml;*.yml";
+    private const string DartFilter = "Especificação do Pacote Dart (pubspec.yaml)|pubspec.yaml";
 
     private static PackageVersion GetDartPackageVersion(string manifestPath, string appVersion)
     {
@@ -186,6 +193,37 @@ internal class ProjectManager : IProjectManager
     {
         string dartPackageDirectory = Path.Combine(AppContext.BaseDirectory, "clients", "dart", "amenolink").Replace('\\', '/');
         return $"  amenolink:\n    path: {dartPackageDirectory}";
+    }
+
+    #endregion
+
+    #region TypeScript
+
+    private const string TypeScriptFilter = "Manifesto do TypeScript (package.json)|package.json";
+
+    private static PackageVersion GetTypeScriptPackageVersion(string manifestPath, string appVersion)
+    {
+        using var jsonDocument = System.Text.Json.JsonDocument.Parse(File.ReadAllText(manifestPath));
+        var rootElement = jsonDocument.RootElement;
+
+        string? foundVersion = null;
+        if (rootElement.TryGetProperty("dependencies", out var dependencies) && dependencies.TryGetProperty("amenolink", out var dependencyVersion))
+            foundVersion = dependencyVersion.GetString();
+        else if (rootElement.TryGetProperty("devDependencies", out var devDependencies) && devDependencies.TryGetProperty("amenolink", out var devDependencyVersion))
+            foundVersion = devDependencyVersion.GetString();
+
+        if (foundVersion == null)
+            return new PackageVersion(ManifestPath: manifestPath, Version: MissingPackageVersion, AppVersion: appVersion, IsCompatible: false);
+
+        string cleanVersion = foundVersion.TrimStart('^', '~').Trim();
+        bool isCompatible = string.Equals(cleanVersion, appVersion, StringComparison.OrdinalIgnoreCase);
+        return new PackageVersion(manifestPath, cleanVersion, appVersion, isCompatible);
+    }
+
+    private static string GetTypeScriptInstallInstruction()
+    {
+        string typeScriptPackageDirectory = Path.Combine(AppContext.BaseDirectory, "clients", "typescript").Replace('\\', '/');
+        return $"npm install \"{typeScriptPackageDirectory}\"";
     }
 
     #endregion

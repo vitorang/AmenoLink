@@ -231,6 +231,7 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             {
                 FileName = fileName,
                 Arguments = arguments,
+                WorkingDirectory = Path.GetDirectoryName(config.Path) ?? string.Empty,
                 StandardInputEncoding = utf8WithoutBom,
                 StandardOutputEncoding = utf8WithoutBom,
                 RedirectStandardInput = true,
@@ -336,7 +337,11 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
         if (extension == Constants.PyExtension)
             return ResolvePython(path);
 
-        return ("", "", $"Formato de arquivo '{extension}' não suportado. Apenas arquivos '{Constants.ExeExtension}' e '{Constants.PyExtension}' são permitidos.");
+        if (extension == Constants.TsExtension)
+            return ResolveTypeScript(path);
+
+        string supportedFormats = string.Join(", ", Constants.SupportedExtensions.Select(e => $"'{e}'"));
+        return ("", "", $"Formato de arquivo '{extension}' não suportado. Apenas arquivos {supportedFormats} são permitidos.");
     }
 
     private static (string fileName, string arguments, string? errorMessage) ResolveExe(string path)
@@ -363,6 +368,19 @@ internal sealed class ProcessInstance(IProgramRunner runner, ProgramConfig confi
             return ("", "", $"Ambiente virtual Python (.venv ou venv) não encontrado no diretório '{scriptDir}'.");
 
         return (selectedPython, $"\"{path}\"", null);
+    }
+
+    private static (string fileName, string arguments, string? errorMessage) ResolveTypeScript(string path)
+    {
+        string? scriptDir = Path.GetDirectoryName(path);
+        if (string.IsNullOrEmpty(scriptDir))
+            scriptDir = Directory.GetCurrentDirectory();
+
+        string packageJsonPath = Path.Combine(scriptDir, "package.json");
+        if (!File.Exists(packageJsonPath))
+            return ("", "", $"Arquivo de manifesto 'package.json' não encontrado no diretório '{scriptDir}'.");
+
+        return ("node", $"--import tsx \"{path}\"", null);
     }
 
     private static bool IsMessage(string? data, string prefixConstant)

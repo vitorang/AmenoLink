@@ -62,7 +62,7 @@
         @if (generalService.installInstructions().isDebugging) {
             <div class="info-note">
                 <mat-icon class="note-icon icon-16">info</mat-icon>
-                <span>Os comandos de instalação funcionam apenas após a publicação do projeto.</span>
+                <span>Os comandos de instalação não funcionam no modo debug.</span>
             </div>
         }
 
@@ -84,6 +84,16 @@
                 </button>
             </div>
             <pre class="command-content selectable">{{ generalService.installInstructions().python }}</pre>
+        </div>
+
+        <div class="command-block">
+            <div class="command-header">
+                <span class="command-label">TypeScript (terminal)</span>
+                <button mat-icon-button class="copy-btn" (click)="onCopyCommand(generalService.installInstructions().typeScript)" matTooltip="Copiar comandos" type="button">
+                    <mat-icon class="icon-16">content_copy</mat-icon>
+                </button>
+            </div>
+            <pre class="command-content selectable">{{ generalService.installInstructions().typeScript }}</pre>
         </div>
     </div>
 
