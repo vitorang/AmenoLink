@@ -1,5 +1,6 @@
 import 'cache_manager.dart';
 import 'connection_manager.dart';
+import 'interfaces.dart' as i;
 import 'shared.dart';
 
 typedef CacheAllHandler = void Function(String key, dynamic value);
@@ -10,7 +11,7 @@ class _KeySubscription {
   _KeySubscription(this.handler);
 }
 
-class CacheWatcher implements ICacheWatcher {
+class CacheWatcher implements ICacheWatcher, i.CacheWatcher {
   @override
   final String group;
   bool _disposed = false;
@@ -19,12 +20,14 @@ class CacheWatcher implements ICacheWatcher {
 
   CacheWatcher(this.group);
 
+  @override
   void all(CacheAllHandler handler) {
     _ensureNotDisposed();
     _allHandlers.add(handler);
     connectionManager.cacheManager.subscribeWatcher(this);
   }
 
+  @override
   void key<T>(String key, CacheKeyHandler<T> handler) {
     _ensureNotDisposed();
     if (!_keyHandlers.containsKey(key)) {
@@ -40,6 +43,7 @@ class CacheWatcher implements ICacheWatcher {
     connectionManager.cacheManager.subscribeWatcher(this);
   }
 
+  @override
   void dispose() {
     _ensureNotDisposed();
     _disposed = true;

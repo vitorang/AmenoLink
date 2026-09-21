@@ -2,13 +2,14 @@ import 'dart:async';
 import 'package:ulid/ulid.dart';
 import 'connection_manager.dart';
 import 'dtos.dart';
+import 'interfaces.dart' as i;
 import 'resource_manager.dart';
 import 'shared.dart';
 import 'topic_manager.dart';
 
 typedef TopicHandler<T> = void Function(TopicMessage<T> message);
 
-class Topic<T> implements ITopic {
+class Topic<T> implements ITopic, i.Topic<T> {
   @override
   final String name;
   bool _disposed = false;
@@ -16,12 +17,14 @@ class Topic<T> implements ITopic {
 
   Topic(this.name);
 
+  @override
   void subscribe(TopicHandler<T> handler) {
     _ensureNotDisposed();
     _handlers.add(handler);
     connectionManager.topicManager.subscribeTopic(this);
   }
 
+  @override
   Future<void> publish(T? value, {Message? previous}) async {
     _ensureNotDisposed();
 
@@ -47,6 +50,7 @@ class Topic<T> implements ITopic {
     await postJson(url, topicMessage.toJson());
   }
 
+  @override
   void dispose() {
     _ensureNotDisposed();
     _disposed = true;

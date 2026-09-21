@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:amenolink/src/shared.dart' show clientSetup, parseData;
 
 import 'dtos.dart';
+import 'interfaces.dart' as i;
 
 const onStartupSuccess = '[AmenoLink.StartupSuccess]';
 const onActionSuccess = '[AmenoLink.ActionSuccess]';
@@ -20,19 +21,22 @@ class ActionRoute {
   ActionRoute({required this.route, required this.handler, required this.parseInput});
 }
 
-class ActionContext {
+class ActionContext implements i.ActionContext {
+  @override
   final ActionRequest request;
 
   ActionContext(this.request);
 
+  @override
   void log(String message) {
     sendMessage(onActionLogged, message);
   }
 }
 
-class ActionRouter {
+class ActionRouter implements i.ActionRouter {
   final List<ActionRoute> _routes = [];
 
+  @override
   void add<T, R>({required String route, required ActionHandler<T, R> handler, T Function(dynamic json)? parseInput}) {
     _routes.add(
       ActionRoute(route: route, handler: handler, parseInput: parseInput ?? (json) => parseData<T>(json) as T),
@@ -62,6 +66,7 @@ class ActionRouter {
     }
   }
 
+  @override
   void serve() {
     sendMessage(onStartupSuccess, clientSetup.appName);
 

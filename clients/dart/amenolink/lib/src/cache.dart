@@ -1,22 +1,27 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'cache_watcher.dart';
+import 'interfaces.dart' as i;
 import 'resource_manager.dart';
 import 'shared.dart';
 
-class Cache {
+class Cache implements i.Cache {
+  @override
   final String group;
 
   Cache(this.group);
 
+  @override
   CacheWatcher watch() => CacheWatcher(group);
 
+  @override
   Future<T?> get<T>(String key) async {
     final rawValue = await _request('GET', _cacheUrl(key));
     if (rawValue == null) return null;
     return parseData<T>(rawValue) as T?;
   }
 
+  @override
   Future<void> set(String key, dynamic value) async {
     dynamic serializedValue = value;
     try {
@@ -28,6 +33,7 @@ class Cache {
     await _request('POST', _cacheUrl(key), data: serializedValue);
   }
 
+  @override
   Future<T> getOrCreate<T>(String key, Future<T> Function() creator) async {
     final cachedValue = await get<T>(key);
     if (cachedValue != null) return cachedValue;
@@ -37,6 +43,7 @@ class Cache {
     return createdValue;
   }
 
+  @override
   Future<Map<String, dynamic>> all() async {
     final responseData = await _request('GET', _cacheAllUrl());
     if (responseData is! Map<String, dynamic>) {
@@ -45,10 +52,12 @@ class Cache {
     return responseData;
   }
 
+  @override
   Future<void> clear() async {
     await _request('DELETE', _cacheAllUrl());
   }
 
+  @override
   Future<void> delete(String key) async {
     await _request('DELETE', _cacheUrl(key));
   }

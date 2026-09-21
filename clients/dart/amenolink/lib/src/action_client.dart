@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'package:ulid/ulid.dart';
 import 'dtos.dart';
+import 'interfaces.dart' as i;
 import 'resource_manager.dart';
 import 'shared.dart';
 
-class Action {
+class Action implements i.Action {
+  @override
   final String name;
 
   Action(this.name);
 
+  @override
   Future<T> request<T>(dynamic payload) async {
     dynamic serializedPayload = payload;
     if (payload != null) {
@@ -46,6 +49,7 @@ class Action {
     return parseData<T>(responseValue) as T;
   }
 
+  @override
   Future<void> queue(dynamic payload) async {
     dynamic serializedPayload = payload;
     if (payload != null) {
