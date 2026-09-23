@@ -2,9 +2,9 @@
 
 Durante meus estudos sobre arquiteturas *cloud*, me interessei bastante pelos conceitos de Serverless, FaaS (*Function as a Service*) e mensageria. No entanto, percebi que para reproduzir esses padrões em ambiente de desenvolvimento local é frequentemente necessário lidar com contêineres e configurações complexas — algo que exige bastante pesquisa ou o uso de IA. Além disso, muitos serviços dependem de validação de licenças online, inviabilizando o funcionamento em redes privadas ou isoladas.
 
-Com essas necessidades em mente, criei o **AmenoLink**: um projeto inspirado em serviços *cloud* que opera de forma nativa na própria máquina, totalmente offline, com configuração simplificada e sem a necessidade de contêineres ou dependências externas.
+Com essas necessidades em mente, criei o **AmenoLink**: uma plataforma leve de infraestrutura local que reúne **FaaS (execução de ações sob demanda), mensageria Pub/Sub, cache reativo em memória e servidor de SPAs** em um único aplicativo nativo, totalmente offline e sem a necessidade de contêineres ou configurações complexas.
 
-O programa foi desenvolvido em .NET + Angular (compatível com Windows). Adicionalmente, criei bibliotecas em diferentes linguagens para facilitar a integração com o AmenoLink.
+O programa foi desenvolvido em .NET + Angular (compatível com Windows) consumindo apenas ~20MB de RAM. Para integração simples com os microsserviços, disponibiliza bibliotecas clientes nativas em **C#**, **Dart**, **Python** e **TypeScript**.
 
 
 
@@ -90,7 +90,7 @@ Ao contrário de Action, nenhum programa será iniciado automaticamente. A mensa
 
 Use o método `connect` para iniciar a comunicação em tempo real com AmenoLink. Use `dispose` para destruir todas as inscrições daquela instância de `Topic`.
 
-Toda mensagem é do tipo `TopicMessage<T>`, que conterá outras informações como todas as mensagens anteriores que originaram essa. A quantidade de chamadas anteriores é limitada por configuração para evitar problemas de loops infinitos acidentais. Quando atingir o limite, não haverá envio para os tópicos.
+Toda mensagem é do tipo `TopicMessage<T>`, que conterá dados como a mensagem de origem. A profundidade do histórico de mensagens encadeadas é limitada por configuração para prevenir loops infinitos acidentais.
 
 Exemplo de envio e recebimento de mensagem:
 ```python
@@ -146,6 +146,12 @@ Basta definir o nome da rota, selecionar a pasta raiz dos arquivos compilados e 
 
 O AmenoLink altera o `<base href>` automaticamente para evitar problemas de carregamento em rotas aninhadas.
 
+### Gestão de Projetos
+Permite cadastrar projetos locais e visualizar a versão dos clientes AmenoLink utilizados neles. Também possui instruções de instalação das bibliotecas.
+
+![Visualização de projetos](https://vitorang.github.io/Portfolio/projetos/amenolink-projects.jpg)
+
+
 ## Instruções de configuração
 
 ### Pré-requisitos
@@ -158,18 +164,12 @@ O AmenoLink altera o `<base href>` automaticamente para evitar problemas de carr
 - Python 3.12+ e ferramenta uv (para empacotamento do cliente Python e execução dos exemplos)
 - Dart SDK 3.0+ (para execução dos exemplos em Dart)
 
-### Publicação Automatizada
-Para compilar o backend .NET, o frontend WebUI (Angular) e gerar os pacotes das bibliotecas de clientes, execute o script PowerShell na raiz do projeto:
+### Publicação
+Gera o executável `dist/AmenoLink/AmenoLink.exe` e todos os pacotes dos clientes:
 
 ```powershell
 .\scripts\publish.ps1
 ```
-
-O script gerará a pasta `dist/AmenoLink` contendo:
-- O executável principal `AmenoLink.exe` pronto para uso.
-- Os pacotes da biblioteca Python (`.whl` e `.tar.gz`) em `clients/python/`.
-- A biblioteca cliente Dart em `clients/dart/`.
-- A biblioteca cliente TypeScript compilada em `clients/typescript/`.
 
 ---
 
@@ -177,29 +177,22 @@ O script gerará a pasta `dist/AmenoLink` contendo:
 
 Inicie o aplicativo **AmenoLink** (`dist/AmenoLink/AmenoLink.exe`) e cadastre os recursos na interface gráfica:
 
-- **Programas (Actions):** Adicione o programa que executará as ações (apontando para `action_server.py`, `action_server.ts` ou para o executável `action_server.exe` compilado em Dart) e vincule a ação `example.action`
+- **Programas (Actions):** Adicione o programa que executará as ações (apontando para `action_server.py`, `action_server.ts` ou para o executável compilado em C# ou Dart) e vincule a ação `example.action`
 - **Caches:** Adicione o grupo `example.cache`
 - **Tópicos:** Adicione o tópico `example.topic`
 
 > **Nota:** Jamais execute o `action_server` manualmente. Ele é um processo gerenciado automaticamente pelo AmenoLink sob demanda e não se encerrará sozinho.
 
-#### Python
-Navegue até a pasta de exemplos em Python:
+#### C#
+Navegue até a pasta de exemplos em C#:
 
 ```powershell
-cd examples/python
+cd examples/csharp/AmenoLinkExamples
 
-# Crie e ative o ambiente virtual
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-
-# Instale a biblioteca gerada na publicação
-pip install ..\..\clients\python\dist\amenolink-0.0.1-py3-none-any.whl
-
-# Execute os exemplos
-python cache_example.py
-python topic_example.py
-python action_client.py
+# Execute os exemplos informando o comando desejado (topic, cache ou action)
+dotnet run topic
+dotnet run cache
+dotnet run action
 ```
 
 #### Dart
@@ -221,6 +214,23 @@ dart run lib/topic_example.dart
 dart run lib/action_example.dart
 ```
 
+#### Python
+Navegue até a pasta de exemplos em Python:
+
+```powershell
+cd examples/python
+
+# Crie e ative o ambiente virtual
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+# Execute os exemplos
+python cache_example.py
+python topic_example.py
+python action_client.py
+```
+
 #### TypeScript
 Navegue até a pasta de exemplos em TypeScript:
 
@@ -236,21 +246,6 @@ npm run topic
 npm run action
 ```
 
-## Roadmap & Status do Projeto
-
-### AmenoLink
-- [x] Interface gráfica
-- [x] Actions: execução de processos sob demanda
-- [x] Cache em memória + eventos
-- [x] Topics: Pub/Sub
-- [x] Servir múltiplos SPAs
-
-### Bibliotecas de Clientes
-- [x] Python
-- [x] Dart
-- [x] TypeScript
-- [ ] C#
-
 
 ## Decisões arquiteturais
 
@@ -262,7 +257,6 @@ O nível de isolamento dos recursos é apenas por nome. Por exemplo, caso saiba 
 ### Interface Gráfica
 A interface gráfica é um *webview* que abre um SPA desenvolvido em Angular Material. O programa pode ser minimizado para o *tray*, e quando isso é feito, o *webview* é destruído para economizar memória. Em compensação, quando o programa é reaberto, recarregará o SPA.
 
-Para facilitar a inspeção de dados, a interface gráfica exibe as mensagens salvas por tópico e os dados salvos em cada grupo de *cache*, assim como os programas inscritos nos tópicos.
 
 ### Comunicação entre programas
 A comunicação entre processos (*Actions*) é feita por mensagens em `base64` com prefixos indicadores através de `stdin/stdout` por ser de maior simplicidade que usar *sockets*. Por usar indicadores de inicialização e execução, o programa que fornecerá as *Actions* deverá usar a biblioteca para comunicação.
