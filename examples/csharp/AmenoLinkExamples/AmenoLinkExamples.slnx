@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../AmenoLinkExamples.ActionServer/AmenoLinkExamples.ActionServer.csproj" />
+  <Project Path="AmenoLinkExamples.csproj" />
+</Solution>

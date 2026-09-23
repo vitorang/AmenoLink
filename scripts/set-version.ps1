@@ -100,4 +100,17 @@ if (Test-Path $readmeFile) {
     Write-Host "  [Docs] README.md -> amenolink-$version" -ForegroundColor Green
 }
 
+# 8. C# Client (.csproj)
+$csharpClientProject = Join-Path $rootDir "clients\csharp\AmenoLink\AmenoLink.csproj"
+if (Test-Path $csharpClientProject) {
+    $csprojContent = Get-Content $csharpClientProject -Raw
+    if ($csprojContent -match "<Version>[^<]+</Version>") {
+        $csprojContent = $csprojContent -replace "<Version>[^<]+</Version>", "<Version>$version</Version>"
+    } else {
+        $csprojContent = $csprojContent -replace "<PropertyGroup>", "<PropertyGroup>`r`n    <Version>$version</Version>"
+    }
+    Set-Content -Path $csharpClientProject -Value $csprojContent -NoNewline
+    Write-Host "  [C# Client] AmenoLink.csproj -> $version" -ForegroundColor Green
+}
+
 Write-Host "Versao $version aplicada com sucesso a todos os projetos!" -ForegroundColor Cyan
