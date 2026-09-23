@@ -4,10 +4,10 @@ public class Topic<T>(string name) : ITopic<T>, ITopicSubscriber
 {
     public string Name { get; } = name;
     private bool disposed;
-    private readonly HashSet<Action<TopicMessage<T>>> handlers = [];
+    private readonly HashSet<Func<TopicMessage<T>, Task>> handlers = [];
     private readonly Lock lockObject = new();
 
-    public void Subscribe(Action<TopicMessage<T>> handler)
+    public void Subscribe(Func<TopicMessage<T>, Task> handler)
     {
         EnsureNotDisposed();
         lock (lockObject)
@@ -73,12 +73,12 @@ public class Topic<T>(string name) : ITopic<T>, ITopicSubscriber
             AppName: message.AppName
         );
 
-        List<Action<TopicMessage<T>>> targets;
+        List<Func<TopicMessage<T>, Task>> targets;
         lock (lockObject)
             targets = [.. handlers];
 
         foreach (var handler in targets)
-            handler(typedMessage);
+            _ = handler(typedMessage);
     }
 
     private void EnsureNotDisposed()

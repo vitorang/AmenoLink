@@ -68,13 +68,15 @@ public static class ActionExample
     }
 
     // Actions adicionam ActionResponse no payload de TopicMessage
-    private static void OnMessageReceived(TopicMessage<ActionResponse<UserAstrology>> message)
+    private static Task OnMessageReceived(TopicMessage<ActionResponse<UserAstrology>> message)
     {
         var response = message.Payload;
-        if (response == null)
-            return;
+        if (response != null)
+        {
+            string logs = JsonSerializer.Serialize(response.Logs, JsonOptions);
+            Console.WriteLine($"Mensagem do tópico: \n\tLogs: {logs}{FormatUserAstrology(response.Result)}");
+        }
 
-        string logs = JsonSerializer.Serialize(response.Logs, JsonOptions);
-        Console.WriteLine($"Mensagem do tópico: \n\tLogs: {logs}{FormatUserAstrology(response.Result)}");
+        return Task.CompletedTask;
     }
 }

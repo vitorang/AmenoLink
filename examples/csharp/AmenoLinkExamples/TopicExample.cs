@@ -5,6 +5,7 @@
     - Execute o programa AmenoLink, vá na aba TÓPICOS e adicione "example.topic" (sem aspas).
 */
 
+using AmenoLink;
 using static AmenoLink.AmenoLinkClient;
 
 namespace AmenoLinkExamples;
@@ -28,7 +29,7 @@ public static class TopicExample
         // recursos declarados antes ou após a usarão.
         await Connect();
 
-        async void Reply(AmenoLink.TopicMessage<Talk> message)
+        async Task Reply(TopicMessage<Talk> message)
         {
             await Task.Delay(500);
             var talk = message.Payload;
@@ -69,10 +70,12 @@ public static class TopicExample
         await Disconnect();
     }
 
-    private static void ShowTalk(AmenoLink.TopicMessage<Talk> message)
+    private static Task ShowTalk(TopicMessage<Talk> message)
     {
         var talk = message.Payload;
         if (talk != null)
             Console.WriteLine($"{talk.Author}: {talk.Text}");
+
+        return Task.CompletedTask;
     }
 }

@@ -30,7 +30,7 @@ public interface ICache
 public interface ITopic<T> : IDisposable
 {
     string Name { get; }
-    void Subscribe(Action<TopicMessage<T>> handler);
+    void Subscribe(Func<TopicMessage<T>, Task> handler);
     Task Publish(T value, Message? previous = null);
 }
 
