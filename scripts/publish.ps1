@@ -8,6 +8,7 @@ if (-not (Test-Path "AmenoLink") -or -not (Test-Path "AmenoLink.WebUI")) {
 
 $rootDir = Get-Location
 $distDir = Join-Path $rootDir "dist\AmenoLink"
+$csharpDistDir = Join-Path $distDir "clients\csharp"
 $pythonDistDir = Join-Path $distDir "clients\python"
 $dartDistDir = Join-Path $distDir "clients\dart"
 $typeScriptDistDir = Join-Path $distDir "clients\typescript"
@@ -21,6 +22,7 @@ if (Test-Path $distDir) {
 }
 
 New-Item -ItemType Directory -Path $distDir -Force | Out-Null
+New-Item -ItemType Directory -Path $csharpDistDir -Force | Out-Null
 New-Item -ItemType Directory -Path $pythonDistDir -Force | Out-Null
 New-Item -ItemType Directory -Path $dartDistDir -Force | Out-Null
 New-Item -ItemType Directory -Path $typeScriptDistDir -Force | Out-Null
@@ -83,7 +85,11 @@ try {
     if ($LASTEXITCODE -eq 0) {
         Copy-Item -Path (Join-Path $typeScriptClientDir "package.json") -Destination $typeScriptDistDir -Force
         Copy-Item -Path (Join-Path $typeScriptClientDir "dist") -Destination $typeScriptDistDir -Recurse -Force
-        Write-Host "Cliente TypeScript compilado e copiado com sucesso." -ForegroundColor Green
+        
+        Write-Host "Empacotando cliente TypeScript (npm pack)..."
+        npm pack --pack-destination $typeScriptDistDir
+        
+        Write-Host "Cliente TypeScript empacotado com sucesso." -ForegroundColor Green
     } else {
         Write-Host "ERRO: Falha ao executar 'npm run build' no cliente TypeScript." -ForegroundColor Red
         exit 1
@@ -92,3 +98,18 @@ try {
 finally {
     Pop-Location
 }
+
+# 6. Empacota a biblioteca cliente C# (dotnet pack)
+Write-Host "Empacotando biblioteca cliente C# (dotnet pack)..."
+$csharpClientProject = Join-Path $rootDir "clients\csharp\AmenoLink\AmenoLink.csproj"
+
+dotnet pack $csharpClientProject -c Release -o $csharpDistDir
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "Cliente C# empacotado com sucesso." -ForegroundColor Green
+} else {
+    Write-Host "ERRO: Falha ao executar 'dotnet pack' no cliente C#." -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Publicacao concluida com sucesso!" -ForegroundColor Cyan

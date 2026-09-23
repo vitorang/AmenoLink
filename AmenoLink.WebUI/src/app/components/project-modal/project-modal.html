@@ -15,6 +15,7 @@
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tipo</mat-label>
         <mat-select [ngModel]="type()" (ngModelChange)="onTypeChange($event)">
+            <mat-option value="csharp">C#</mat-option>
             <mat-option value="dart">Dart</mat-option>
             <mat-option value="python">Python</mat-option>
             <mat-option value="typescript">TypeScript</mat-option>

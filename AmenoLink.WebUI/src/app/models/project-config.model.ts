@@ -1,26 +1,26 @@
-export type ProjectType = 'python' | 'dart' | 'typescript';
+export type ProjectType = 'csharp' | 'dart' | 'python' | 'typescript';
 
 export interface ProjectTypeMetadata {
     label: string;
     manifestFileName: string;
-    cssClass: string;
 }
 
 export const PROJECT_TYPE_METADATA: Record<ProjectType, ProjectTypeMetadata> = {
+    csharp: {
+        label: 'C#',
+        manifestFileName: '*.csproj',
+    },
     dart: {
         label: 'Dart',
         manifestFileName: 'pubspec.yaml',
-        cssClass: 'type-dart',
     },
     python: {
         label: 'Python',
         manifestFileName: 'requirements.txt',
-        cssClass: 'type-python',
     },
     typescript: {
         label: 'TypeScript',
         manifestFileName: 'package.json',
-        cssClass: 'type-typescript',
     },
 };
 
@@ -39,6 +39,7 @@ export interface PackageVersion {
 }
 
 export interface PackageInstallInstructions {
+    cSharp: string;
     dart: string;
     python: string;
     typeScript: string;

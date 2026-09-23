@@ -68,6 +68,16 @@
 
         <div class="command-block">
             <div class="command-header">
+                <span class="command-label">C# (terminal)</span>
+                <button mat-icon-button class="copy-btn" (click)="onCopyCommand(generalService.installInstructions().cSharp)" matTooltip="Copiar comandos" type="button">
+                    <mat-icon class="icon-16">content_copy</mat-icon>
+                </button>
+            </div>
+            <pre class="command-content selectable">{{ generalService.installInstructions().cSharp }}</pre>
+        </div>
+
+        <div class="command-block">
+            <div class="command-header">
                 <span class="command-label">Dart (pubspec.yaml)</span>
                 <button mat-icon-button class="copy-btn" (click)="onCopyCommand(generalService.installInstructions().dart)" matTooltip="Copiar instrução" type="button">
                     <mat-icon class="icon-16">content_copy</mat-icon>

@@ -26,6 +26,7 @@ export class GeneralService {
     readonly loadingVersions = signal<boolean>(false);
     readonly projectVersions = signal<Record<string, PackageVersion>>({});
     readonly installInstructions = signal<PackageInstallInstructions>({
+        cSharp: '',
         dart: '',
         python: '',
         typeScript: '',

@@ -33,7 +33,7 @@ export interface ProjectModalData {
     styleUrl: './project-modal.scss',
 })
 export class ProjectModal {
-    private static lastSelectedType: ProjectType = 'dart';
+    private static lastSelectedType: ProjectType = 'csharp';
 
     private readonly dialogRef = inject(MatDialogRef<ProjectModal>);
     private readonly configService = inject(ConfigurationService);
