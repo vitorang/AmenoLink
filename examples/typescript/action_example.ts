@@ -3,7 +3,6 @@
 
     CONFIGURAÇÃO
     - Execute o programa AmenoLink e vá na aba PROGRAMAS. Adicione action_server.ts
-        (ou configure o comando: npx tsx action_server.ts)
         e adicione "example.action" (sem aspas) na seção Ações.
 
     - Na aba TÓPICOS, adicione "example.action".

@@ -19,8 +19,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly",
-    "dev": "tsup src/index.ts --format esm,cjs --watch"
+    "build": "tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "@microsoft/signalr": "^10.0.11",

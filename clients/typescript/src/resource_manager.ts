@@ -1,7 +1,8 @@
 import { Resources } from './dtos';
 import { clientSetup, postJson, AmenoException } from './shared';
+import packageJson from '../package.json' with { type: 'json' };
 
-export const PACKAGE_VERSION = '0.0.1';
+export const PACKAGE_VERSION = packageJson.version;
 
 export class ResourceManager {
     public readonly actions: Set<string> = new Set();

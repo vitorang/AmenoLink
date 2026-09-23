@@ -2,10 +2,10 @@
     Exemplos de execução de Action. Será demonstrado como usar recursos de requisição e filas.
 
     CONFIGURAÇÃO
-    - No diretório onde está este arquivo, execute o comando para instalar as dependências Dart:
-        dart pub get
+    - No projeto do ActionServer, gere o executável:
+        dart compile exe action_server.dart -o action_server.exe
 
-    - Execute o programa AmenoLink e vá na aba PROGRAMAS. Adicione action_server.dart
+    - Execute o programa AmenoLink e vá na aba PROGRAMAS. Adicione action_server.exe
         e adicione "example.action" (sem aspas) na seção Ações.
 
     - Na aba TÓPICOS, adicione "example.action".
