@@ -14,7 +14,7 @@ public class CacheWatcher(string group) : ICacheWatcher, ICacheWatcherSubscriber
         lock (lockObject)
             allHandlers.Add(handler);
 
-        AmenoLinkClient.Connection.CacheManager.SubscribeWatcher(this);
+        AmenoLinkClient.ConnectionManager.CacheManager.SubscribeWatcher(this);
     }
 
     public void Key<T>(string key, Action<T?> handler)
@@ -48,7 +48,7 @@ public class CacheWatcher(string group) : ICacheWatcher, ICacheWatcherSubscriber
             });
         }
 
-        AmenoLinkClient.Connection.CacheManager.SubscribeWatcher(this);
+        AmenoLinkClient.ConnectionManager.CacheManager.SubscribeWatcher(this);
     }
 
     public void Dispose()
@@ -62,7 +62,7 @@ public class CacheWatcher(string group) : ICacheWatcher, ICacheWatcherSubscriber
             keyHandlers.Clear();
         }
 
-        AmenoLinkClient.Connection.CacheManager.UnsubscribeWatcher(this);
+        AmenoLinkClient.ConnectionManager.CacheManager.UnsubscribeWatcher(this);
         GC.SuppressFinalize(this);
     }
 

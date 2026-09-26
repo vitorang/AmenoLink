@@ -5,7 +5,7 @@
     - Execute o programa AmenoLink, vá na aba TÓPICOS e adicione "example.topic" (sem aspas).
 */
 
-import { connect, disconnect, ensureReady, setup, topic, TopicMessage } from 'amenolink';
+import { connection, ensureReady, setup, topic, TopicMessage } from 'amenolink';
 import { Talk } from './dtos';
 
 const TOPIC_NAME = 'example.topic';
@@ -32,7 +32,7 @@ async function main(): Promise<void> {
 
     // A conexão é compartilhada por projeto,
     // recursos declarados antes ou após a usarão.
-    await connect();
+    await connection.connect();
 
     async function reply(message: TopicMessage<Talk>): Promise<void> {
         await sleep(500);
@@ -71,7 +71,8 @@ async function main(): Promise<void> {
     await sleep(500);
 
     sender.dispose();
-    await disconnect();
+    await connection.disconnect();
+    connection.unsubscribeAll();
 }
 
 main().catch(console.error);

@@ -5,7 +5,7 @@
     - Execute o programa AmenoLink, vá na aba CACHES e adicione "example.cache" (sem aspas).
 */
 
-import { cache, connect, disconnect, ensureReady, setup, Cache } from 'amenolink';
+import { cache, connection, ensureReady, setup, Cache } from 'amenolink';
 import { User } from './dtos';
 
 const CACHE_GROUP = 'example.cache';
@@ -61,7 +61,7 @@ async function watcherExample(exampleCache: Cache): Promise<void> {
     const joe: User = { name: 'Average Joe', birthDate: '12/07/2010' };
     const jane: User = { name: 'Average Jane', birthDate: '07/12/2010' };
 
-    await connect();
+    await connection.connect();
 
     // Esse é o observador de alterações
     const watcher = exampleCache.watch();
@@ -86,7 +86,8 @@ async function watcherExample(exampleCache: Cache): Promise<void> {
     await exampleCache.set('total', 9);
     await sleep(1000);
     await exampleCache.clear();
-    await disconnect();
+    await connection.disconnect();
+    connection.unsubscribeAll();
 }
 
 async function main(): Promise<void> {

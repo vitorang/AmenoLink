@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'connection_manager.dart' show ConnectionStatus;
 import 'dtos.dart';
 
 typedef ActionHandler<T, R> = FutureOr<R> Function(T input);
@@ -45,4 +46,12 @@ abstract interface class ActionContext {
 abstract interface class ActionRouter {
   void add<T, R>({required String route, required ActionHandler<T, R> handler, T Function(dynamic json)? parseInput});
   void serve();
+}
+
+abstract interface class Connection {
+  void subscribe(void Function(ConnectionStatus status) listener);
+  void unsubscribe(void Function(ConnectionStatus status) listener);
+  void unsubscribeAll();
+  Future<void> connect();
+  Future<void> disconnect();
 }

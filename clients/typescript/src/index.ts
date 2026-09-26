@@ -1,6 +1,7 @@
 export { setup, AmenoException } from './shared';
 export { ensureReady } from './resource_manager';
-export { connect, disconnect, ConnectionStatus } from './connection_manager';
+export { ConnectionStatus } from './connection_manager';
+export { Connection, connection } from './connection';
 export { cache } from './cache';
 export { topic } from './topic';
 export { action } from './action_client';
@@ -15,6 +16,7 @@ export type {
     CacheAllHandler,
     CacheKeyHandler,
     Topic,
-    TopicHandler
+    TopicHandler,
+    Connection as IConnection
 } from './interfaces';
 export * from './dtos';

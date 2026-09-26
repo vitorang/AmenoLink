@@ -150,19 +150,3 @@ class ConnectionManager implements IConnectionManager {
 }
 
 final connectionManager = ConnectionManager();
-
-Future<void> connect({
-  void Function(ConnectionStatus status)? onStatusChange,
-  int maxAttempts = 5,
-  double timeoutSeconds = 5.0,
-}) {
-  return connectionManager.connect(
-    onStatusChange: onStatusChange,
-    maxAttempts: maxAttempts,
-    timeoutSeconds: timeoutSeconds,
-  );
-}
-
-Future<void> disconnect() {
-  return connectionManager.disconnect();
-}

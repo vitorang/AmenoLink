@@ -11,7 +11,7 @@
     - Na aba TÓPICOS, adicione "example.action".
 '''
 
-from amenolink import action, connect, disconnect, ensure_ready, setup, topic, ConnectionStatus
+from amenolink import action, connection, ensure_ready, setup, topic, ConnectionStatus
 from amenolink.dtos import ActionResponse, TopicMessage
 from datetime import date
 from dtos import User, UserAstrology
@@ -33,8 +33,12 @@ def main():
     gary_stu = User(name='Gary Stu', birth_date=date(2001, 1, 20))
     mary_sue = User(name='Mary Sue', birth_date=date(1988, 8, 19))
 
+    # Inscreve para receber eventos de status da conexão
+    connection.subscribe(on_status_change)
+
     # Abre uma conexão persistente
-    connect(on_status_change=on_status_change)
+    connection.connect()
+
 
     # Os resultados são publicados no tópico com mesmo nome da ação
     action_topic.subscribe(on_message_received)
@@ -54,7 +58,14 @@ def main():
     action_topic.dispose()
 
     # Fecha a conexão
-    disconnect()
+    connection.disconnect()
+
+    # Pode desinscrever um evento
+    connection.unsubscribe(on_status_change)
+
+    # Ou desinscrever todos globalmente
+    connection.unsubscribe_all()
+
 
 
 def on_status_change(status: ConnectionStatus):

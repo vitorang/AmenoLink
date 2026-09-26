@@ -35,8 +35,13 @@ public static class ActionExample
         var garyStu = new User(Name: "Gary Stu", BirthDate: "20/01/2001");
         var marySue = new User(Name: "Mary Sue", BirthDate: "19/08/1988");
 
+        void OnStatusChange(ConnectionStatus status) => Console.WriteLine($"Estado da conexão: {status}");
+
+        // Inscreve para receber eventos de status da conexão
+        Connection.Subscribe(OnStatusChange);
+
         // Abre uma conexão persistente
-        await Connect(status => Console.WriteLine($"Estado da conexão: {status}"));
+        await Connection.Connect();
 
         // Os resultados são publicados no tópico com mesmo nome da ação
         actionTopic.Subscribe(OnMessageReceived);
@@ -55,9 +60,16 @@ public static class ActionExample
         // Desativa conexão do tópico. Após isso, ele não poderá ser usado
         actionTopic.Dispose();
 
-        // Fecha a conexão. É necessário para o programa se encerrar.
-        await Disconnect();
+        // Fecha a conexão.
+        await Connection.Disconnect();
+
+        // Pode desinscrever um evento
+        Connection.Unsubscribe(OnStatusChange);
+
+        // Ou desinscrever todos globalmente
+        Connection.UnsubscribeAll();
     }
+
 
     private static string FormatUserAstrology(UserAstrology? ua)
     {

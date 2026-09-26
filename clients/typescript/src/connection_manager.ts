@@ -1,4 +1,4 @@
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { CacheManager } from './cache_manager';
 import { TopicMessage } from './dtos';
 import { clientSetup, AmenoException } from './shared';
@@ -51,6 +51,7 @@ export class ConnectionManager implements IConnectionManager {
         this.connection = new HubConnectionBuilder()
             .withUrl(url)
             .withAutomaticReconnect(retryDelays)
+            .configureLogging(LogLevel.None)
             .build();
 
         this.connection.onreconnecting(() => {
@@ -134,15 +135,3 @@ export class ConnectionManager implements IConnectionManager {
 }
 
 export const connectionManager = new ConnectionManager();
-
-export function connect(options?: {
-    onStatusChange?: (status: ConnectionStatus) => void;
-    maxAttempts?: number;
-    timeoutSeconds?: number;
-}): Promise<void> {
-    return connectionManager.connect(options);
-}
-
-export function disconnect(): Promise<void> {
-    return connectionManager.disconnect();
-}

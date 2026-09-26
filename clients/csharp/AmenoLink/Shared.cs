@@ -24,7 +24,9 @@ public static class AmenoLinkClient
 {
     public static ClientSetup Settings { get; } = new();
     public static ResourceManager Resources { get; } = new();
-    public static ConnectionManager Connection { get; } = new();
+    internal static ConnectionManager ConnectionManager { get; } = new();
+    public static IConnection Connection { get; } = new Connection(ConnectionManager);
+
 
     private static readonly HttpClient HttpClient = new();
     public static readonly JsonSerializerOptions JsonOptions = new()
@@ -65,11 +67,6 @@ public static class AmenoLinkClient
     }
 
     public static Task EnsureReady() => Resources.EnsureReady();
-
-    public static Task Connect(Action<ConnectionStatus>? onStatusChange = null, int maxAttempts = 5, double timeoutSeconds = 5.0)
-        => Connection.Connect(onStatusChange, maxAttempts, timeoutSeconds);
-
-    public static Task Disconnect() => Connection.Disconnect();
 
     internal static async Task<T> PostJson<T>(string url, object data)
     {

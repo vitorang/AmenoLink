@@ -13,7 +13,7 @@ public class Topic<T>(string name) : ITopic<T>, ITopicSubscriber
         lock (lockObject)
             handlers.Add(handler);
 
-        AmenoLinkClient.Connection.TopicManager.SubscribeTopic(this);
+        AmenoLinkClient.ConnectionManager.TopicManager.SubscribeTopic(this);
     }
 
     public async Task Publish(T value, Message? previous = null)
@@ -42,7 +42,7 @@ public class Topic<T>(string name) : ITopic<T>, ITopicSubscriber
         lock (lockObject)
             handlers.Clear();
 
-        AmenoLinkClient.Connection.TopicManager.UnsubscribeTopic(this);
+        AmenoLinkClient.ConnectionManager.TopicManager.UnsubscribeTopic(this);
         GC.SuppressFinalize(this);
     }
 

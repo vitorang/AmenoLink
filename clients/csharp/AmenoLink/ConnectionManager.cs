@@ -10,7 +10,7 @@ public enum ConnectionStatus
     Connected
 }
 
-public class ConnectionManager : IConnectionManager
+internal class ConnectionManager : IConnectionManager
 {
     private HubConnection? connection;
     public ConnectionStatus Status { get; private set; } = ConnectionStatus.Disconnected;

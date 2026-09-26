@@ -27,7 +27,8 @@ public static class TopicExample
 
         // A conexão é compartilhada por projeto,
         // recursos declarados antes ou após a usarão.
-        await Connect();
+        await Connection.Connect();
+
 
         async Task Reply(TopicMessage<Talk> message)
         {
@@ -67,7 +68,8 @@ public static class TopicExample
         await Task.Delay(500);
 
         sender.Dispose();
-        await Disconnect();
+        await Connection.Disconnect();
+        Connection.UnsubscribeAll();
     }
 
     private static Task ShowTalk(TopicMessage<Talk> message)

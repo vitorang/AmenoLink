@@ -135,15 +135,3 @@ class ConnectionManager:
         self._connected_event.clear()
 
 connection_manager = ConnectionManager()
-
-
-def connect(
-    on_status_change: Callable[[ConnectionStatus], None] | None = None,
-    max_attempts: int = 5,
-    timeout_seconds: float = 5.0,
-) -> None:
-    connection_manager.connect(on_status_change=on_status_change, max_attempts=max_attempts, timeout_seconds=timeout_seconds)
-
-
-def disconnect() -> None:
-    connection_manager.disconnect()

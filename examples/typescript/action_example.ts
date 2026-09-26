@@ -8,7 +8,7 @@
     - Na aba TÓPICOS, adicione "example.action".
 */
 
-import { action, connect, disconnect, ensureReady, setup, topic, ActionResponse, TopicMessage } from 'amenolink';
+import { action, connection, ConnectionStatus, ensureReady, setup, topic, ActionResponse, TopicMessage } from 'amenolink';
 import { User, UserAstrology } from './dtos';
 
 const ACTION_ROUTE = 'example.action';
@@ -17,15 +17,8 @@ function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function onStatusChange(status: any): void {
+function onStatusChange(status: ConnectionStatus): void {
     console.log(`Estado da conexão: ${status}`);
-}
-
-function formatUserAstrology(ua?: UserAstrology | null): string {
-    if (!ua)
-        return '';
-
-    return `\n\t${ua.name} de ${ua.sign}\n\tNascido em ${ua.weekDay}, ${ua.birthDate}\n`;
 }
 
 // Actions adicionam ActionResponse no payload de TopicMessage
@@ -35,6 +28,13 @@ function onMessageReceived(message: TopicMessage<ActionResponse<UserAstrology>>)
         return;
 
     console.log(`Mensagem do tópico: \n\tLogs: ${JSON.stringify(response.logs)}${formatUserAstrology(response.result)}`);
+}
+
+function formatUserAstrology(ua?: UserAstrology | null): string {
+    if (!ua)
+        return '';
+
+    return `\n\t${ua.name} de ${ua.sign}\n\tNascido em ${ua.weekDay}, ${ua.birthDate}\n`;
 }
 
 async function main(): Promise<void> {
@@ -50,8 +50,11 @@ async function main(): Promise<void> {
     const garyStu: User = { name: 'Gary Stu', birthDate: '20/01/2001' };
     const marySue: User = { name: 'Mary Sue', birthDate: '19/08/1988' };
 
+    // Inscreve para receber eventos de status da conexão
+    connection.subscribe(onStatusChange);
+
     // Abre uma conexão persistente
-    await connect({ onStatusChange });
+    await connection.connect();
 
     // Os resultados são publicados no tópico com mesmo nome da ação
     actionTopic.subscribe(onMessageReceived);
@@ -70,8 +73,15 @@ async function main(): Promise<void> {
     // Desativa conexão do tópico. Após isso, ele não poderá ser usado
     actionTopic.dispose();
 
-    // Fecha a conexão. É necessário para o programa se encerrar.
-    await disconnect();
+    // Fecha a conexão.
+    await connection.disconnect();
+
+    // Pode desinscrever um evento
+    connection.unsubscribe(onStatusChange);
+
+    // Ou desinscrever todos globalmente
+    connection.unsubscribeAll();
 }
+
 
 main().catch(console.error);

@@ -45,3 +45,11 @@ export interface ActionRouter {
     add<T, R>(route: string, handler: ActionHandler<T, R>): void;
     serve(): void;
 }
+
+export interface Connection {
+    subscribe(listener: (status: any) => void): void;
+    unsubscribe(listener: (status: any) => void): void;
+    unsubscribeAll(): void;
+    connect(): Promise<void>;
+    disconnect(): Promise<void>;
+}

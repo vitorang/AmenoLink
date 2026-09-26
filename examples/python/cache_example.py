@@ -7,7 +7,7 @@
 
 from datetime import date
 from time import sleep
-from amenolink import cache, connect, disconnect, ensure_ready, setup, Cache
+from amenolink import cache, connection, ensure_ready, setup, Cache
 from dtos import User
 
 
@@ -58,7 +58,7 @@ def watcher_example(example_cache: Cache):
     joe = User(name='Average Joe', birth_date=date(2010, 7, 12))
     jane = User(name='Average Jane', birth_date=date(2010, 12, 7))
     
-    connect()
+    connection.connect()
 
     # Esse é o observador de alterações
     watcher = example_cache.watch()
@@ -83,7 +83,8 @@ def watcher_example(example_cache: Cache):
     example_cache.set('total', 9)
     sleep(1)
     example_cache.clear()
-    disconnect()
+    connection.disconnect()
+    connection.unsubscribe_all()
 
 
 def main():

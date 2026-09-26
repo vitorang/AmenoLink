@@ -190,9 +190,9 @@ Navegue até a pasta de exemplos em C#:
 cd examples/csharp/AmenoLinkExamples
 
 # Execute os exemplos informando o comando desejado (topic, cache ou action)
+dotnet run action
 dotnet run topic
 dotnet run cache
-dotnet run action
 ```
 
 #### Dart
@@ -209,9 +209,9 @@ dart pub get
 dart compile exe lib/action_server.dart -o lib/action_server.exe
 
 # Execute os exemplos
+dart run lib/action_example.dart
 dart run lib/cache_example.dart
 dart run lib/topic_example.dart
-dart run lib/action_example.dart
 ```
 
 #### Python
@@ -226,9 +226,9 @@ python -m venv venv
 pip install -r requirements.txt
 
 # Execute os exemplos
+python action_client.py
 python cache_example.py
 python topic_example.py
-python action_client.py
 ```
 
 #### TypeScript
@@ -241,9 +241,9 @@ cd examples/typescript
 npm install
 
 # Execute os exemplos
+npm run action
 npm run cache
 npm run topic
-npm run action
 ```
 
 

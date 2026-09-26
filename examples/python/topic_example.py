@@ -6,7 +6,7 @@
 '''
 
 
-from amenolink import connect, disconnect, ensure_ready, setup, topic, Topic
+from amenolink import connection, ensure_ready, setup, topic
 from amenolink.dtos import TopicMessage
 from dtos import Talk
 from time import sleep
@@ -27,7 +27,7 @@ def main():
 
     # A conexão é compartilhada por projeto,
     # recursos declarados antes ou após a usarão.
-    connect()
+    connection.connect()
 
     def reply(message: TopicMessage[Talk]):
         sleep(0.5)
@@ -59,7 +59,9 @@ def main():
     sender.publish(talk)
     sleep(0.5)
     sender.dispose()
-    disconnect()
+    connection.disconnect()
+    connection.unsubscribe_all()
+
 
 
 def show_talk(message: TopicMessage[Talk]):

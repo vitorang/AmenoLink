@@ -80,7 +80,7 @@ public static class CacheExample
         var joe = new User(Name: "Average Joe", BirthDate: "12/07/2010");
         var jane = new User(Name: "Average Jane", BirthDate: "07/12/2010");
 
-        await Connect();
+        await Connection.Connect();
 
         // Esse é o observador de alterações
         var watcher = exampleCache.Watch();
@@ -105,6 +105,7 @@ public static class CacheExample
         await exampleCache.Set("total", 9);
         await Task.Delay(1000);
         await exampleCache.Clear();
-        await Disconnect();
+        await Connection.Disconnect();
+        Connection.UnsubscribeAll();
     }
 }

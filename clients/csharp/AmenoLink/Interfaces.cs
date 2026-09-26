@@ -47,6 +47,15 @@ public interface IActionRouter
     void Serve();
 }
 
+public interface IConnection
+{
+    void Subscribe(Action<ConnectionStatus> listener);
+    void Unsubscribe(Action<ConnectionStatus> listener);
+    void UnsubscribeAll();
+    Task Connect();
+    Task Disconnect();
+}
+
 internal interface IConnectionManager
 {
     bool IsConnected { get; }

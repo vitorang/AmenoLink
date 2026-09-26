@@ -11,6 +11,7 @@
     - Na aba TÓPICOS, adicione "example.action".
 */
 
+import 'dart:io';
 import 'package:amenolink/amenolink.dart';
 import 'dtos.dart';
 
@@ -32,8 +33,11 @@ void main() async {
   final garyStu = User(name: 'Gary Stu', birthDate: DateTime(2001, 1, 20));
   final marySue = User(name: 'Mary Sue', birthDate: DateTime(1988, 8, 19));
 
+  // Inscreve para receber eventos de status da conexão
+  connection.subscribe(onStatusChange);
+
   // Abre uma conexão persistente
-  await connect(onStatusChange: onStatusChange);
+  await connection.connect();
 
   // Os resultados são publicados no tópico com mesmo nome da ação
   actionTopic.subscribe(onMessageReceived);
@@ -52,11 +56,19 @@ void main() async {
   // Desativa conexão do tópico. Após isso, ele não poderá ser usado
   actionTopic.dispose();
 
-  // Fecha a conexão. É necessário para o programa se encerrar.
-  await disconnect();
+  // Fecha a conexão.
+  await connection.disconnect();
+
+  // Pode desinscrever um evento
+  connection.unsubscribe(onStatusChange);
+
+  // Ou desinscrever todos globalmente
+  connection.unsubscribeAll();
+
+  exit(0);
 }
 
-void onStatusChange(dynamic status) {
+void onStatusChange(ConnectionStatus status) {
   print('Estado da conexão: $status');
 }
 

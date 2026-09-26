@@ -5,6 +5,7 @@
     - Execute o programa AmenoLink, vá na aba TÓPICOS e adicione "example.topic" (sem aspas).
 */
 
+import 'dart:io';
 import 'package:amenolink/amenolink.dart';
 import 'dtos.dart';
 
@@ -23,7 +24,7 @@ void main() async {
 
   // A conexão é compartilhada por projeto,
   // recursos declarados antes ou após a usarão.
-  await connect();
+  await connection.connect();
 
   void reply(TopicMessage<Talk> message) async {
     await Future.delayed(const Duration(milliseconds: 500));
@@ -57,7 +58,10 @@ void main() async {
   await sender.publish(talk);
   await Future.delayed(const Duration(milliseconds: 500));
   sender.dispose();
-  await disconnect();
+  await connection.disconnect();
+  connection.unsubscribeAll();
+
+  exit(0);
 }
 
 void showTalk(TopicMessage<Talk> message) {

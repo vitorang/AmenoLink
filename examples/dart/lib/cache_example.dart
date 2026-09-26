@@ -5,6 +5,7 @@
     - Execute o programa AmenoLink, vá na aba CACHES e adicione "example.cache" (sem aspas).
 */
 
+import 'dart:io';
 import 'package:amenolink/amenolink.dart';
 import 'dtos.dart';
 
@@ -22,6 +23,8 @@ void main() async {
 
   await basicExample(exampleCache);
   await watcherExample(exampleCache);
+
+  exit(0);
 }
 
 Future<void> basicExample(Cache exampleCache) async {
@@ -71,7 +74,7 @@ Future<void> watcherExample(Cache exampleCache) async {
   final joe = User(name: 'Average Joe', birthDate: DateTime(2010, 7, 12));
   final jane = User(name: 'Average Jane', birthDate: DateTime(2010, 12, 7));
 
-  await connect();
+  await connection.connect();
 
   // Esse é o observador de alterações
   final watcher = exampleCache.watch();
@@ -96,5 +99,6 @@ Future<void> watcherExample(Cache exampleCache) async {
   await exampleCache.set('total', 9);
   await Future.delayed(const Duration(seconds: 1));
   await exampleCache.clear();
-  await disconnect();
+  await connection.disconnect();
+  connection.unsubscribeAll();
 }

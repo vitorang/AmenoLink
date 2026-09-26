@@ -7,5 +7,6 @@ export 'src/action_server.dart' show actionContext, actions;
 export 'src/action_client.dart' show action;
 export 'src/cache.dart' show cache;
 export 'src/topic.dart' show topic;
-export 'src/connection_manager.dart' show connect, disconnect, ConnectionStatus;
+export 'src/connection.dart' show connection;
+export 'src/connection_manager.dart' show ConnectionStatus;
 export 'src/resource_manager.dart' show ensureReady;
